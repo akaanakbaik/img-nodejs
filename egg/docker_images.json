@@ -1,0 +1,11 @@
+{
+  "Node.js 18 (EOL)": "ghcr.io/akaanakbaik/img-nodejs:nodejs_18",
+  "Node.js 19 (EOL)": "ghcr.io/akaanakbaik/img-nodejs:nodejs_19",
+  "Node.js 20 (EOL)": "ghcr.io/akaanakbaik/img-nodejs:nodejs_20",
+  "Node.js 21 (EOL)": "ghcr.io/akaanakbaik/img-nodejs:nodejs_21",
+  "Node.js 22 (LTS)": "ghcr.io/akaanakbaik/img-nodejs:nodejs_22",
+  "Node.js 23 (EOL)": "ghcr.io/akaanakbaik/img-nodejs:nodejs_23",
+  "Node.js 24 (LTS)": "ghcr.io/akaanakbaik/img-nodejs:nodejs_24",
+  "Node.js 25 (EOL)": "ghcr.io/akaanakbaik/img-nodejs:nodejs_25",
+  "Node.js 26 (Current)": "ghcr.io/akaanakbaik/img-nodejs:nodejs_26"
+}
