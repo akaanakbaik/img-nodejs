@@ -100,7 +100,8 @@ jobs:
         run: |
           set -euo pipefail
           ref="ghcr.io/parkervcp/yolks:nodejs_${{ matrix.major }}"
-          digest="$(docker buildx imagetools inspect "$ref" | awk '/^Digest:/ {print $2; exit}')"
+          # Consume the full output; early awk exit can break buildx under pipefail.
+          digest="$(docker buildx imagetools inspect "$ref" | awk '/^Digest:/ {print $2}')"
           [[ "$digest" =~ ^sha256:[0-9a-f]{64}$ ]] || { echo "invalid base digest: $digest" >&2; exit 1; }
           printf 'ref=%s@%s\n' "$ref" "$digest" >> "$GITHUB_OUTPUT"
       - name: Build exact candidate (native architecture)

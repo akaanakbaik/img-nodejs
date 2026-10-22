@@ -25,7 +25,8 @@ elif [[ "$engine" == "podman" ]]; then
 fi
 
 case "$arch" in
-  amd64|arm64) ;;
+  amd64) runtime_arch=x64 ;;
+  arm64) runtime_arch=arm64 ;;
   *) echo "Unsupported architecture: $arch" >&2; exit 2 ;;
 esac
 
@@ -66,7 +67,7 @@ bash -n <<<"$startup_fixture" || fail "Egg startup fixture does not parse as Bas
 
 # The container command above keeps the inherited Tini entrypoint and configured user/workdir.
 grep -Eq "^v${expected_major}\\." /tmp/img-nodejs-smoke.log || fail "Egg startup did not run the expected Node.js major"
-actual_version="$("$engine" run --rm "${run_args[@]}" "${network_args[@]}" --platform "$platform" --env EXPECTED_NODE_MAJOR="$expected_major" "$image" /bin/bash -lc 'test "$(id -un)" = container && test "$HOME" = /home/container && test "$PWD" = /home/container && node -e '\''const m=process.versions.node.split(".")[0]; if(m!==process.env.EXPECTED_NODE_MAJOR) process.exit(1); if(!["x64","arm64"].includes(process.arch)) process.exit(1)'\'' && npm --version >/dev/null && node --version')"
+actual_version="$("$engine" run --rm "${run_args[@]}" "${network_args[@]}" --platform "$platform" --env EXPECTED_NODE_ARCH="$runtime_arch" --env EXPECTED_NODE_MAJOR="$expected_major" "$image" /bin/bash -lc 'test "$(id -un)" = container && test "$HOME" = /home/container && test "$PWD" = /home/container && node -e '\''const m=process.versions.node.split(".")[0]; if(m!==process.env.EXPECTED_NODE_MAJOR || process.arch!==process.env.EXPECTED_NODE_ARCH) process.exit(1)'\'' && npm --version >/dev/null && node --version')"
 if [[ -n "$expected_version" ]]; then
   [[ "$actual_version" == "v${expected_version}" ]] || fail "runtime Node.js exact version mismatch: $actual_version (expected v$expected_version)"
 else
