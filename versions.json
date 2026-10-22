@@ -1,0 +1,18 @@
+{
+  "runtime": "nodejs",
+  "source_image": "ghcr.io/parkervcp/yolks",
+  "verified_at": "2026-10-23",
+  "cve": "CVE-2026-111497",
+  "versions": [
+    {"major": 18, "version": "18.20.8", "supported": false},
+    {"major": 19, "version": "19.9.0", "supported": false},
+    {"major": 20, "version": "20.20.2", "supported": false},
+    {"major": 21, "version": "21.7.3", "supported": false},
+    {"major": 22, "version": "22.23.4", "supported": true, "minimum_patch": "22.23.4"},
+    {"major": 23, "version": "23.11.1", "supported": false},
+    {"major": 24, "version": "24.22.1", "supported": true, "minimum_patch": "24.22.1"},
+    {"major": 25, "version": "25.9.0", "supported": false},
+    {"major": 26, "version": "26.12.1", "supported": true, "minimum_patch": "26.12.1"}
+  ],
+  "support_policy": "All Node.js majors 18-26 are verified for compatibility; only 22, 24 and 26 are publication candidates by default. EOL is report-only unless explicitly requested and passing the same scan gate. Supported branches must meet their CVE minimum patch. No image is published on a failed security gate."
+}
