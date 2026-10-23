@@ -1,79 +1,76 @@
 # img-nodejs
 
-Image runtime Node.js berbasis [Parkervcp Yolks](https://github.com/parkervcp/yolks), dipublikasikan ke GitHub Container Registry (GHCR) agar dapat dipilih dari **Egg Pterodactyl**. Image ini hanya meneruskan major Node.js upstream yang sama; Node.js tidak dikompilasi atau dimodifikasi oleh repo ini.
+Runtime Node.js berbasis [Parkervcp Yolks](https://github.com/parkervcp/yolks) untuk Egg Pterodactyl, dengan pemeriksaan patch exact dan pemindaian sebelum publikasi. Target: Linux `amd64` dan `arm64`; bukan Windows container atau ARM 32-bit. Repo ini tidak mengompilasi atau mem-backport Node.js. Library Brotli OS dibangun sebagai paket Debian lokal dari source upstream fixed; ini bukan paket keamanan resmi Debian.
 
-## Tag yang tersedia
+## Patch keamanan Oktober 2026
 
-| Pilihan di Egg | Image |
-|---|---|
-| Node.js 18 | `ghcr.io/akaanakbaik/img-nodejs:nodejs_18` |
-| Node.js 19 | `ghcr.io/akaanakbaik/img-nodejs:nodejs_19` |
-| Node.js 20 | `ghcr.io/akaanakbaik/img-nodejs:nodejs_20` |
-| Node.js 21 | `ghcr.io/akaanakbaik/img-nodejs:nodejs_21` |
-| Node.js 22 | `ghcr.io/akaanakbaik/img-nodejs:nodejs_22` |
-| Node.js 23 | `ghcr.io/akaanakbaik/img-nodejs:nodejs_23` |
-| Node.js 24 | `ghcr.io/akaanakbaik/img-nodejs:nodejs_24` |
-| Node.js 25 | `ghcr.io/akaanakbaik/img-nodejs:nodejs_25` |
-| Node.js 26 | `ghcr.io/akaanakbaik/img-nodejs:nodejs_26` |
+[Rilis keamanan resmi 21 Oktober 2026](https://nodejs.org/en/blog/vulnerability/october-2026-security-releases) memperbaiki **CVE-2026-111497**, out-of-bounds write pada decoder Brotli yang dapat menyebabkan RCE, serta isu DNS, TLS, permission model dan dependensi lainnya. Versi minimum perbaikannya adalah **22.23.4, 24.22.1, dan 26.12.1**. Versi EOL tidak mempunyai patch resmi untuk insiden ini dan tidak boleh dianggap aman.
 
-Setiap tag dirancang sebagai **manifest multi-platform Linux `amd64` + `arm64`**. Pada `docker pull`, Docker memilih varian yang cocok dengan arsitektur host secara otomatis; Egg tidak perlu tag terpisah per arsitektur. Ini mencakup host Linux 64-bit yang didukung Docker/Wings. Ini **bukan** image Windows-container dan tidak menjanjikan dukungan `arm/v7`, `riscv64`, `s390x`, atau OS lain. Pterodactyl/Wings tetap memerlukan Docker-compatible host, akses jaringan ke GHCR, dan konfigurasi node yang benar.
+| Major/tag `nodejs_N` | Patch exact pada manifest | Status 23 Oktober 2026 | Kebijakan workflow |
+|---|---|---|---|
+| 18 | 18.20.8 | EOL | Verifikasi dan laporan saja |
+| 19 | 19.9.0 | EOL | Verifikasi dan laporan saja |
+| 20 | 20.20.2 | EOL | Verifikasi dan laporan saja |
+| 21 | 21.7.3 | EOL | Verifikasi dan laporan saja |
+| 22 | 22.23.4 | LTS | Kandidat publikasi, wajib lolos scan |
+| 23 | 23.11.1 | EOL | Verifikasi dan laporan saja |
+| 24 | 24.22.1 | LTS | Kandidat publikasi, wajib lolos scan |
+| 25 | 25.9.0 | EOL | Verifikasi dan laporan saja |
+| 26 | 26.12.1 | Current | Kandidat publikasi, wajib lolos scan |
 
-Tag mayor bersifat mutable: job terjadwal membangun ulang tag yang sama dari tag upstream yang bersesuaian, sehingga digest dapat berubah. Untuk deployment yang harus reproducible, pin digest yang sudah diverifikasi. Periksa siklus dukungan Node.js pada [halaman rilis resmi](https://nodejs.org/en/about/previous-releases); utamakan major LTS yang masih didukung. Tag EOL disediakan hanya untuk kompatibilitas aplikasi lama dan tidak menerima patch keamanan upstream.
+Versi bersumber dari [indeks rilis resmi](https://nodejs.org/dist/index.json) dan [status dukungan resmi](https://nodejs.org/en/about/previous-releases), dicatat pada [`versions.json`](versions.json). Jika ada rilis baru, pemeriksaan `--check` akan gagal sampai manifest diperbarui dan diperiksa; workflow tidak diam-diam memakai patch lama. Tag lama di GHCR **tidak dihapus atau diperbarui** oleh perubahan source saja. Lihat [hasil pemeriksaan keamanan](SECURITY-REVIEW.md) sebelum deployment.
 
-## Memasang image pada Egg Pterodactyl
+**Patch RCE bukan berarti seluruh image bebas kerentanan.** Pemindaian upstream saat pembaruan ini menemukan HIGH/CRITICAL pada paket OS/tool tambahan. Gerbang publikasi sengaja gagal selama temuan itu masih ada; tidak ada pengecualian diam-diam atau `--ignore-unfixed`. Hasil scanner adalah temuan paket, bukan bukti setiap CVE dapat dieksploitasi pada aplikasi Anda. Uji Brotli adalah uji fungsional dan penolakan input invalid, bukan pembuktian bahwa exploit RCE mustahil.
 
-File [`egg/docker_images.json`](egg/docker_images.json) adalah **isi objek `docker_images` saja**, bukan Egg lengkap. Di Panel, sebagai administrator:
+Baseline lama menemukan **CVE-2026-111497 pada Debian `libbrotli1 1.1.0-2+b7`**, severity `UNKNOWN`, dan probe HTTP aman membuktikan `curl --compressed` mencapai decoder sistem. Dockerfile remediasi membangun **Brotli upstream 1.1.1** sebagai paket Debian asli `1.1.1-0img1~deb13u1`, dengan source/checksum dipin, pengujian CMake/Python, serta pemeriksaan SONAME dan simbol ABI. Paket dan metadata dpkg tidak disamarkan atau ditimpa manual. Source dan packaging dapat diperiksa di [`security/brotli-source.json`](security/brotli-source.json).
 
-1. Buka **Nests → Egg** yang ingin diperbarui dan ekspor/cadangkan Egg terlebih dahulu.
-2. Ganti hanya nilai objek `docker_images` dengan isi file tersebut. Jangan mengganti seluruh JSON Egg dengan file snippet ini dan jangan menghapus field lain.
-3. Simpan perubahan, lalu pilih label **Node.js N** pada konfigurasi Docker image server. Reinstall/redeploy aplikasi bila dependensi perlu dipasang ulang; restart saja tidak selalu membangun ulang `node_modules`.
-4. Pastikan node Pterodactyl dapat menarik image GHCR publik. Contoh:
+[Debian tracker](https://security-tracker.debian.org/tracker/CVE-2026-111497) masih mencatat status vendor unfixed. Scanner dapat tetap menandai paket custom meskipun source fixed; **tidak ada pengecualian dibuat dan gate CVE tetap menolak semua severity**. Node upstream menggunakan Brotli bundled yang berbeda dari library OS. Hasil final dan blocker aktual ada pada [review keamanan](SECURITY-REVIEW.md); jangan menganggap keberhasilan build sebagai izin rilis.
 
-   ```sh
-   docker pull ghcr.io/akaanakbaik/img-nodejs:nodejs_24
-   docker run --rm ghcr.io/akaanakbaik/img-nodejs:nodejs_24 \
-     /bin/bash -lc 'node --version && npm --version'
-   ```
+Kelanjutan audit membangun ulang **TypeScript stabil 7.0.2** secara native dari source pinned memakai **Go 1.26.10 + x/text v0.41.0**, tanpa beta atau penghapusan compiler. Pada [run final 39915130063](https://github.com/akaanakbaik/img-nodejs/actions/runs/39915130063), keenam kandidat supported lulus build, tes upstream/regresi, Egg, runtime/provenance, scan dan SBOM, tetapi kedua gate tetap menolak. Hasilnya **333 HIGH + 6 CRITICAL per image** (15 HIGH compiler lama hilang); 339 pasangan Debian dan finding Brotli target tetap terbuka. [Triage per source/paket/path](docs/security/2026-10-23-triage/debian-summary.md) serta [digest dan bukti setiap kandidat](docs/security/2026-10-23-triage/candidates.json) tersedia. PR tetap draft; belum ada merge atau publikasi.
 
-Validator metadata dan audit Egg disertakan:
+## Verifikasi dan publikasi
+
+Workflow [`.github/workflows/publish.yml`](.github/workflows/publish.yml) mempertahankan jadwal Senin 04:23 UTC, juga berjalan pada PR/perubahan source dan dapat dijalankan manual. Tidak ada akses tulis registry dari PR atau branch selain `main`. Push dan jadwal hanya melakukan audit: publikasi mensyaratkan `workflow_dispatch` pada `main`, input boolean `publish=true`, persetujuan pemilik, dan seluruh gate supported lulus.
+
+1. Validasi pemetaan Egg, unit test, dan kecocokan seluruh patch terhadap indeks resmi.
+2. Resolve digest immutable image dasar, lalu build kandidat pada runner native `amd64` dan `arm64`.
+3. Build-time verifier menolak patch/major yang salah atau di bawah minimum CVE; jalankan Brotli synchronous/streaming round-trip dan input invalid yang aman.
+4. Smoke test user non-root `container`, `/home/container`, `HOME`, entrypoint Tini, fixture startup Egg, instalasi/uninstall paket npm lokal tanpa jaringan, kompilasi TypeScript, serta tersedianya curl/git/ffmpeg. Ini bukan uji integrasi Panel/Wings live.
+5. Trivy versi tetap dengan verifikasi checksum memindai kerentanan OS/library, secret dan misconfiguration repo, dan menghasilkan SBOM CycloneDX. Laporan, snapshot database scanner, digest kandidat, bukti linkage/consumer, korelasi paket/path/CVE/SBOM dan hash ELF paket OS tetap diunggah jika gerbang gagal. CVE-2026-111497 pada severity apa pun, temuan HIGH/CRITICAL atau kegagalan scanner menahan publikasi.
+6. Hanya image kandidat yang sudah diuji dan lolos gerbang yang disimpan, dipush, dan digabung menjadi manifest multi-platform berdasarkan digest, tanpa rebuild setelah pengujian. Image ID dan arsitektur scanner/SBOM harus cocok dengan kandidat; checksum tar dan image ID dicek ulang setelah artifact dimuat kembali. SBOM tersedia sebagai artifact; workflow ini tidak mengklaim signature keyless atau provenance attestation yang belum dibuat.
+
+Semua major tetap tercatat untuk kompatibilitas dan audit. Publikasi EOL dinonaktifkan tanpa opsi override; matrix publikasi hanya memuat 22/24/26 untuk kedua arsitektur. Temuan atau error audit EOL tetap terlihat di job/artifact, tetapi tidak menjadi prasyarat publikasi supported (`continue-on-error` hanya untuk EOL). Semua gerbang keamanan kandidat supported tetap hard-fail. Untuk produksi, migrasikan ke line LTS yang didukung; jangan memilih EOL hanya karena versi terakhirnya cocok.
+
+## Menghubungkan ke Egg Pterodactyl
+
+[`egg/docker_images.json`](egg/docker_images.json) hanya isi objek `docker_images`, bukan Egg lengkap. Nama dan tag dipertahankan agar kompatibel dengan Egg yang sudah ada. Label `Node.js 18/19/20/21/23/25` adalah legacy EOL, bukan pilihan aman.
+
+Cadangkan/ekspor Egg, ganti hanya objek `docker_images`, simpan, dan pilih runtime yang masih didukung. Audit ekspor sebelum import:
 
 ```sh
 python3 scripts/validate_egg.py
 python3 scripts/validate_egg.py --egg /path/ke/egg-export.json
 ```
 
-### Catatan penting untuk Egg pada lampiran
+Pastikan major installer sama dengan runtime untuk modul native; jangan memakai installer Node 14 yang sudah EOL. Jangan menyisipkan token ke URL Git. Matikan auto-update aplikasi secara default, deklarasikan seluruh placeholder startup, dan normalisasi skrip ke LF. Validator hanya memeriksa pola dasar, bukan audit aplikasi lengkap.
 
-Lampiran yang diaudit berformat `PTDL_v2`; peta saat ini menunjuk langsung ke Parkervcp Yolks untuk Node 18–25 dan belum mencantumkan 26. Peta repo ini memberi nama pilihan yang lebih jelas dan mencakup 18–26. **Penggantian peta saja tidak memperbaiki bagian Egg lain.** Sebelum memakai ekspor tersebut di produksi, tinjau hal-hal ini:
-
-- Startup merujuk `{{AUTO_UPDATE}}`, tetapi variabel itu belum dideklarasikan. Deklarasikan dengan default `0` (nonaktif), atau hapus referensinya. Deklarasikan juga variabel lain yang memang ingin digunakan (`NODE_PACKAGES`, `UNNODE_PACKAGES`, dan `CUSTOM_ENVIRONMENT_VARIABLES`); referensi installer ke `USER_UPLOAD` juga perlu dideklarasikan atau dirapikan.
-- `AUTO_UPDATE=1` menjalankan `git pull` saat server start dan dapat mengeksekusi kode remote terbaru. Biarkan nonaktif secara default; aktifkan hanya untuk repo/branch tepercaya dan pahami konsekuensinya. Untuk rilis yang dapat diulang, pin aplikasi ke tag/commit, bukan branch bergerak.
-- Installer memakai `node:14-buster-slim`, yang sudah EOL dan berbeda major dari runtime 18–26. Modul native yang dibuat saat instalasi dapat gagal pada runtime karena ABI Node.js berbeda. Gunakan installer yang major-nya cocok untuk runtime yang dipilih (misalnya Egg/installer per major), atau build dependensi native di lingkungan runtime yang cocok. Jangan menganggap `npm install` sekali dengan Node 14 kompatibel untuk semua major.
-- Skrip installer dalam ekspor memakai line ending CRLF. Pemeriksaan `bash -n` langsung gagal pada CRLF, sedangkan setelah dinormalisasi ke LF sintaksnya lolos. Normalisasi ke LF atau pastikan proses import Panel mengubahnya sebelum dijalankan.
-- Variabel `ACCESS_TOKEN` pada lampiran dapat dilihat pengguna dan skrip menyisipkannya ke URL Git. Jangan masukkan token ke URL remote, log, atau `.git/config`; gunakan akses publik bila memungkinkan. Untuk repo privat, batasi token hanya-baca dan gunakan mekanisme kredensial sementara yang tidak menyimpan token pada remote. Menyembunyikan field dari pengguna panel saja tidak mencegah token tertinggal di URL remote.
-
-Jalankan validator pada ekspor Egg sebelum import: masalah template yang belum dideklarasikan dan pola token berisiko akan ditandai. Repo ini hanya menyediakan image dan snippet; ia tidak mengubah Egg yang sudah terpasang.
-
-## Pembaruan otomatis dan pengujian
-
-GitHub Actions di [`.github/workflows/publish.yml`](.github/workflows/publish.yml) dijadwalkan **setiap Senin pukul 04:23 UTC** dan juga dapat dijalankan manual melalui **Actions → Build and publish Pterodactyl Node.js images → Run workflow**. Schedule berjalan dari default branch; GitHub dapat menunda atau melewatkan jadwal saat beban tinggi.
-
-Sebelum publish, workflow membangun dan menjalankan smoke test untuk setiap Node.js 18–26 pada runner Linux native `amd64` dan `arm64`, termasuk verifikasi `node`, `npm`, user `container`, `HOME`, working directory, entrypoint Tini, dan fixture startup Egg. Semua tes harus lolos dahulu; setelah itu Buildx menerbitkan manifest multi-platform untuk setiap tag. Build menghasilkan SBOM dan provenance. Aksi GitHub dipin ke SHA penuh dan memakai runtime Node 24; `GITHUB_TOKEN` hanya diberi izin `contents: read` secara default dan `packages: write` pada job publish. Tidak perlu GitHub CLI atau token pribadi.
-
-Pengujian native menggunakan runner [GitHub-hosted Linux ARM64](https://docs.github.com/en/actions/reference/runners/github-hosted-runners) karena repo ini publik. Ini menguji image container dan fixture command, **bukan** import Egg di Panel maupun integrasi live Panel/Wings. Tidak ada akses Panel/Wings yang tersedia dalam task ini, jadi uji integrasi tersebut belum dapat diklaim.
-
-Setelah job berhasil, GHCR tags yang sama diperbarui. Wings/Docker memilih arsitektur dari manifest saat menarik image; perilaku cache/pull tetap bergantung konfigurasi node dan tag mutable. Jika Dockerfile kelak menambah instruksi `RUN` lintas arsitektur, workflow build juga perlu memakai native runner per arsitektur atau emulator yang sesuai.
+Setelah **publikasi benar-benar berhasil**, pull image baru pada node/Wings, periksa digest dan `node --version`, lalu recreate/redeploy server sesuai prosedur panel. Restart saja dapat tetap memakai image/cache lama. Migrasi major mungkin memerlukan instalasi ulang dependensi native. Repo tidak mengubah Panel, Wings, Egg aktif, atau server produksi secara otomatis.
 
 ## Build dan validasi lokal
 
-Pada host Linux yang arsitekturnya sesuai:
+Default Dockerfile dipin ke digest upstream Node 24 yang diperiksa. Gunakan host native arsitektur target. Untuk major lain, tentukan `BASE_IMAGE` digest, `NODE_MAJOR`, dan `NODE_PATCH` bersama-sama; arg lama `NODE_VERSION` tidak dipakai karena bertabrakan dengan environment image upstream.
 
 ```sh
+python3 scripts/resolve_versions.py --check
+node scripts/test_verify_runtime.js
+python3 scripts/test_resolve_versions.py
 python3 scripts/validate_egg.py
 
-docker buildx build --pull --platform linux/amd64 --load \
-  --build-arg NODE_VERSION=24 -t local/img-nodejs:nodejs_24 .
-bash scripts/smoke_test_image.sh 24 amd64 local/img-nodejs:nodejs_24
+docker build -t local/img-nodejs:nodejs_24 .
+bash scripts/smoke_test_image.sh 24 amd64 local/img-nodejs:nodejs_24 24.22.1
+
+docker run --rm --env EXPECTED_NODE_VERSION=24.22.1 \
+  local/img-nodejs:nodejs_24 node /usr/local/share/image-security/verify_runtime.js
 ```
 
-Untuk menguji `arm64`, jalankan pada host ARM64 atau siapkan emulator binfmt/QEMU pada mesin lokal. Workflow CI menguji kedua arsitektur pada runner native. Major yang didukung pada matrix saat ini adalah 18–26; saat menambah/menghapus major, perbarui matrix dan peta Egg bersama-sama.
+Smoke test juga menerima `CONTAINER_ENGINE`, `CONTAINER_NETWORK`, dan `RUN_ARGS` untuk lingkungan pengujian Podman. Verifikasi patch runtime berdasarkan rilis resmi, bukan hanya `process.versions.brotli`: vendor dapat mem-backport fix tanpa mengubah nomor library tersebut.

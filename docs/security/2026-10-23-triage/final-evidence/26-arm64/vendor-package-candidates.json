@@ -1,0 +1,562 @@
+{
+  "scope": "Refreshed vendor candidates, not CVE fixed-status decisions; no package installation",
+  "packages": [
+    {
+      "package": "bsdutils",
+      "installed": "1:2.41.5-0+deb13u1",
+      "arch": "arm64",
+      "source_package": "util-linux",
+      "source_version": "2.41.5-0+deb13u1",
+      "candidate": "1:2.41.5-0+deb13u1",
+      "policy": "bsdutils:\n  Installed: 1:2.41.5-0+deb13u1\n  Candidate: 1:2.41.5-0+deb13u1\n  Version table:\n *** 1:2.41.5-0+deb13u1 500\n        500 http://deb.debian.org/debian trixie/main arm64 Packages\n        500 http://deb.debian.org/debian-security trixie-security/main arm64 Packages\n        100 /var/lib/dpkg/status\n"
+    },
+    {
+      "package": "curl",
+      "installed": "8.14.1-2+deb13u7",
+      "arch": "arm64",
+      "source_package": "curl",
+      "source_version": "8.14.1-2+deb13u7",
+      "candidate": "8.14.1-2+deb13u7",
+      "policy": "curl:\n  Installed: 8.14.1-2+deb13u7\n  Candidate: 8.14.1-2+deb13u7\n  Version table:\n *** 8.14.1-2+deb13u7 500\n        500 http://deb.debian.org/debian-security trixie-security/main arm64 Packages\n        100 /var/lib/dpkg/status\n     8.14.1-2+deb13u5 500\n        500 http://deb.debian.org/debian trixie/main arm64 Packages\n"
+    },
+    {
+      "package": "ffmpeg",
+      "installed": "7:7.1.5-0+deb13u1",
+      "arch": "arm64",
+      "source_package": "ffmpeg",
+      "source_version": "7:7.1.5-0+deb13u1",
+      "candidate": "7:7.1.5-0+deb13u1",
+      "policy": "ffmpeg:\n  Installed: 7:7.1.5-0+deb13u1\n  Candidate: 7:7.1.5-0+deb13u1\n  Version table:\n *** 7:7.1.5-0+deb13u1 500\n        500 http://deb.debian.org/debian trixie/main arm64 Packages\n        500 http://deb.debian.org/debian-security trixie-security/main arm64 Packages\n        100 /var/lib/dpkg/status\n"
+    },
+    {
+      "package": "libacl1:arm64",
+      "installed": "2.3.2-2+b1",
+      "arch": "arm64",
+      "source_package": "acl",
+      "source_version": "2.3.2-2",
+      "candidate": "2.3.2-2+b1",
+      "policy": "libacl1:\n  Installed: 2.3.2-2+b1\n  Candidate: 2.3.2-2+b1\n  Version table:\n *** 2.3.2-2+b1 500\n        500 http://deb.debian.org/debian trixie/main arm64 Packages\n        100 /var/lib/dpkg/status\n"
+    },
+    {
+      "package": "libavcodec61:arm64",
+      "installed": "7:7.1.5-0+deb13u1",
+      "arch": "arm64",
+      "source_package": "ffmpeg",
+      "source_version": "7:7.1.5-0+deb13u1",
+      "candidate": "7:7.1.5-0+deb13u1",
+      "policy": "libavcodec61:\n  Installed: 7:7.1.5-0+deb13u1\n  Candidate: 7:7.1.5-0+deb13u1\n  Version table:\n *** 7:7.1.5-0+deb13u1 500\n        500 http://deb.debian.org/debian trixie/main arm64 Packages\n        500 http://deb.debian.org/debian-security trixie-security/main arm64 Packages\n        100 /var/lib/dpkg/status\n"
+    },
+    {
+      "package": "libavdevice61:arm64",
+      "installed": "7:7.1.5-0+deb13u1",
+      "arch": "arm64",
+      "source_package": "ffmpeg",
+      "source_version": "7:7.1.5-0+deb13u1",
+      "candidate": "7:7.1.5-0+deb13u1",
+      "policy": "libavdevice61:\n  Installed: 7:7.1.5-0+deb13u1\n  Candidate: 7:7.1.5-0+deb13u1\n  Version table:\n *** 7:7.1.5-0+deb13u1 500\n        500 http://deb.debian.org/debian trixie/main arm64 Packages\n        500 http://deb.debian.org/debian-security trixie-security/main arm64 Packages\n        100 /var/lib/dpkg/status\n"
+    },
+    {
+      "package": "libavfilter10:arm64",
+      "installed": "7:7.1.5-0+deb13u1",
+      "arch": "arm64",
+      "source_package": "ffmpeg",
+      "source_version": "7:7.1.5-0+deb13u1",
+      "candidate": "7:7.1.5-0+deb13u1",
+      "policy": "libavfilter10:\n  Installed: 7:7.1.5-0+deb13u1\n  Candidate: 7:7.1.5-0+deb13u1\n  Version table:\n *** 7:7.1.5-0+deb13u1 500\n        500 http://deb.debian.org/debian trixie/main arm64 Packages\n        500 http://deb.debian.org/debian-security trixie-security/main arm64 Packages\n        100 /var/lib/dpkg/status\n"
+    },
+    {
+      "package": "libavformat61:arm64",
+      "installed": "7:7.1.5-0+deb13u1",
+      "arch": "arm64",
+      "source_package": "ffmpeg",
+      "source_version": "7:7.1.5-0+deb13u1",
+      "candidate": "7:7.1.5-0+deb13u1",
+      "policy": "libavformat61:\n  Installed: 7:7.1.5-0+deb13u1\n  Candidate: 7:7.1.5-0+deb13u1\n  Version table:\n *** 7:7.1.5-0+deb13u1 500\n        500 http://deb.debian.org/debian trixie/main arm64 Packages\n        500 http://deb.debian.org/debian-security trixie-security/main arm64 Packages\n        100 /var/lib/dpkg/status\n"
+    },
+    {
+      "package": "libavutil59:arm64",
+      "installed": "7:7.1.5-0+deb13u1",
+      "arch": "arm64",
+      "source_package": "ffmpeg",
+      "source_version": "7:7.1.5-0+deb13u1",
+      "candidate": "7:7.1.5-0+deb13u1",
+      "policy": "libavutil59:\n  Installed: 7:7.1.5-0+deb13u1\n  Candidate: 7:7.1.5-0+deb13u1\n  Version table:\n *** 7:7.1.5-0+deb13u1 500\n        500 http://deb.debian.org/debian trixie/main arm64 Packages\n        500 http://deb.debian.org/debian-security trixie-security/main arm64 Packages\n        100 /var/lib/dpkg/status\n"
+    },
+    {
+      "package": "libblkid1:arm64",
+      "installed": "2.41.5-0+deb13u1",
+      "arch": "arm64",
+      "source_package": "util-linux",
+      "source_version": "2.41.5-0+deb13u1",
+      "candidate": "2.41.5-0+deb13u1",
+      "policy": "libblkid1:\n  Installed: 2.41.5-0+deb13u1\n  Candidate: 2.41.5-0+deb13u1\n  Version table:\n *** 2.41.5-0+deb13u1 500\n        500 http://deb.debian.org/debian trixie/main arm64 Packages\n        500 http://deb.debian.org/debian-security trixie-security/main arm64 Packages\n        100 /var/lib/dpkg/status\n"
+    },
+    {
+      "package": "libbrotli1:arm64",
+      "installed": "1.1.1-0img1~deb13u1",
+      "arch": "arm64",
+      "source_package": "brotli",
+      "source_version": "1.1.1-0img1~deb13u1",
+      "candidate": "1.1.1-0img1~deb13u1",
+      "policy": "libbrotli1:\n  Installed: 1.1.1-0img1~deb13u1\n  Candidate: 1.1.1-0img1~deb13u1\n  Version table:\n *** 1.1.1-0img1~deb13u1 100\n        100 /var/lib/dpkg/status\n     1.1.0-2+b7 500\n        500 http://deb.debian.org/debian trixie/main arm64 Packages\n"
+    },
+    {
+      "package": "libcjson1:arm64",
+      "installed": "1.7.18-3.1+deb13u1",
+      "arch": "arm64",
+      "source_package": "cjson",
+      "source_version": "1.7.18-3.1+deb13u1",
+      "candidate": "1.7.18-3.1+deb13u1",
+      "policy": "libcjson1:\n  Installed: 1.7.18-3.1+deb13u1\n  Candidate: 1.7.18-3.1+deb13u1\n  Version table:\n *** 1.7.18-3.1+deb13u1 500\n        500 http://deb.debian.org/debian trixie/main arm64 Packages\n        500 http://deb.debian.org/debian-security trixie-security/main arm64 Packages\n        100 /var/lib/dpkg/status\n"
+    },
+    {
+      "package": "libcups2t64:arm64",
+      "installed": "2.4.10-3+deb13u2",
+      "arch": "arm64",
+      "source_package": "cups",
+      "source_version": "2.4.10-3+deb13u2",
+      "candidate": "2.4.10-3+deb13u2",
+      "policy": "libcups2t64:\n  Installed: 2.4.10-3+deb13u2\n  Candidate: 2.4.10-3+deb13u2\n  Version table:\n *** 2.4.10-3+deb13u2 500\n        500 http://deb.debian.org/debian trixie/main arm64 Packages\n        100 /var/lib/dpkg/status\n     2.4.10-3+deb13u1 500\n        500 http://deb.debian.org/debian-security trixie-security/main arm64 Packages\n"
+    },
+    {
+      "package": "libcurl3t64-gnutls:arm64",
+      "installed": "8.14.1-2+deb13u7",
+      "arch": "arm64",
+      "source_package": "curl",
+      "source_version": "8.14.1-2+deb13u7",
+      "candidate": "8.14.1-2+deb13u7",
+      "policy": "libcurl3t64-gnutls:\n  Installed: 8.14.1-2+deb13u7\n  Candidate: 8.14.1-2+deb13u7\n  Version table:\n *** 8.14.1-2+deb13u7 500\n        500 http://deb.debian.org/debian-security trixie-security/main arm64 Packages\n        100 /var/lib/dpkg/status\n     8.14.1-2+deb13u5 500\n        500 http://deb.debian.org/debian trixie/main arm64 Packages\n"
+    },
+    {
+      "package": "libcurl4t64:arm64",
+      "installed": "8.14.1-2+deb13u7",
+      "arch": "arm64",
+      "source_package": "curl",
+      "source_version": "8.14.1-2+deb13u7",
+      "candidate": "8.14.1-2+deb13u7",
+      "policy": "libcurl4t64:\n  Installed: 8.14.1-2+deb13u7\n  Candidate: 8.14.1-2+deb13u7\n  Version table:\n *** 8.14.1-2+deb13u7 500\n        500 http://deb.debian.org/debian-security trixie-security/main arm64 Packages\n        100 /var/lib/dpkg/status\n     8.14.1-2+deb13u5 500\n        500 http://deb.debian.org/debian trixie/main arm64 Packages\n"
+    },
+    {
+      "package": "liblastlog2-2:arm64",
+      "installed": "2.41.5-0+deb13u1",
+      "arch": "arm64",
+      "source_package": "util-linux",
+      "source_version": "2.41.5-0+deb13u1",
+      "candidate": "2.41.5-0+deb13u1",
+      "policy": "liblastlog2-2:\n  Installed: 2.41.5-0+deb13u1\n  Candidate: 2.41.5-0+deb13u1\n  Version table:\n *** 2.41.5-0+deb13u1 500\n        500 http://deb.debian.org/debian trixie/main arm64 Packages\n        500 http://deb.debian.org/debian-security trixie-security/main arm64 Packages\n        100 /var/lib/dpkg/status\n"
+    },
+    {
+      "package": "liblmdb0:arm64",
+      "installed": "0.9.31-1+b2",
+      "arch": "arm64",
+      "source_package": "lmdb",
+      "source_version": "0.9.31-1",
+      "candidate": "0.9.31-1+b2",
+      "policy": "liblmdb0:\n  Installed: 0.9.31-1+b2\n  Candidate: 0.9.31-1+b2\n  Version table:\n *** 0.9.31-1+b2 500\n        500 http://deb.debian.org/debian trixie/main arm64 Packages\n        100 /var/lib/dpkg/status\n"
+    },
+    {
+      "package": "libmount1:arm64",
+      "installed": "2.41.5-0+deb13u1",
+      "arch": "arm64",
+      "source_package": "util-linux",
+      "source_version": "2.41.5-0+deb13u1",
+      "candidate": "2.41.5-0+deb13u1",
+      "policy": "libmount1:\n  Installed: 2.41.5-0+deb13u1\n  Candidate: 2.41.5-0+deb13u1\n  Version table:\n *** 2.41.5-0+deb13u1 500\n        500 http://deb.debian.org/debian trixie/main arm64 Packages\n        500 http://deb.debian.org/debian-security trixie-security/main arm64 Packages\n        100 /var/lib/dpkg/status\n"
+    },
+    {
+      "package": "libncursesw6:arm64",
+      "installed": "6.5+20250216-2",
+      "arch": "arm64",
+      "source_package": "ncurses",
+      "source_version": "6.5+20250216-2",
+      "candidate": "6.5+20250216-2",
+      "policy": "libncursesw6:\n  Installed: 6.5+20250216-2\n  Candidate: 6.5+20250216-2\n  Version table:\n *** 6.5+20250216-2 500\n        500 http://deb.debian.org/debian trixie/main arm64 Packages\n        100 /var/lib/dpkg/status\n"
+    },
+    {
+      "package": "libnss-systemd:arm64",
+      "installed": "257.13-1~deb13u1",
+      "arch": "arm64",
+      "source_package": "systemd",
+      "source_version": "257.13-1~deb13u1",
+      "candidate": "257.13-1~deb13u1",
+      "policy": "libnss-systemd:\n  Installed: 257.13-1~deb13u1\n  Candidate: 257.13-1~deb13u1\n  Version table:\n *** 257.13-1~deb13u1 500\n        500 http://deb.debian.org/debian trixie/main arm64 Packages\n        100 /var/lib/dpkg/status\n"
+    },
+    {
+      "package": "libpam-systemd:arm64",
+      "installed": "257.13-1~deb13u1",
+      "arch": "arm64",
+      "source_package": "systemd",
+      "source_version": "257.13-1~deb13u1",
+      "candidate": "257.13-1~deb13u1",
+      "policy": "libpam-systemd:\n  Installed: 257.13-1~deb13u1\n  Candidate: 257.13-1~deb13u1\n  Version table:\n *** 257.13-1~deb13u1 500\n        500 http://deb.debian.org/debian trixie/main arm64 Packages\n        100 /var/lib/dpkg/status\n"
+    },
+    {
+      "package": "libperl5.40:arm64",
+      "installed": "5.40.1-6+deb13u1",
+      "arch": "arm64",
+      "source_package": "perl",
+      "source_version": "5.40.1-6+deb13u1",
+      "candidate": "5.40.1-6+deb13u1",
+      "policy": "libperl5.40:\n  Installed: 5.40.1-6+deb13u1\n  Candidate: 5.40.1-6+deb13u1\n  Version table:\n *** 5.40.1-6+deb13u1 500\n        500 http://deb.debian.org/debian trixie/main arm64 Packages\n        100 /var/lib/dpkg/status\n"
+    },
+    {
+      "package": "libpostproc58:arm64",
+      "installed": "7:7.1.5-0+deb13u1",
+      "arch": "arm64",
+      "source_package": "ffmpeg",
+      "source_version": "7:7.1.5-0+deb13u1",
+      "candidate": "7:7.1.5-0+deb13u1",
+      "policy": "libpostproc58:\n  Installed: 7:7.1.5-0+deb13u1\n  Candidate: 7:7.1.5-0+deb13u1\n  Version table:\n *** 7:7.1.5-0+deb13u1 500\n        500 http://deb.debian.org/debian trixie/main arm64 Packages\n        500 http://deb.debian.org/debian-security trixie-security/main arm64 Packages\n        100 /var/lib/dpkg/status\n"
+    },
+    {
+      "package": "libpython3.13:arm64",
+      "installed": "3.13.5-2+deb13u5",
+      "arch": "arm64",
+      "source_package": "python3.13",
+      "source_version": "3.13.5-2+deb13u5",
+      "candidate": "3.13.5-2+deb13u5",
+      "policy": "libpython3.13:\n  Installed: 3.13.5-2+deb13u5\n  Candidate: 3.13.5-2+deb13u5\n  Version table:\n *** 3.13.5-2+deb13u5 500\n        500 http://deb.debian.org/debian trixie/main arm64 Packages\n        100 /var/lib/dpkg/status\n"
+    },
+    {
+      "package": "libpython3.13-dev:arm64",
+      "installed": "3.13.5-2+deb13u5",
+      "arch": "arm64",
+      "source_package": "python3.13",
+      "source_version": "3.13.5-2+deb13u5",
+      "candidate": "3.13.5-2+deb13u5",
+      "policy": "libpython3.13-dev:\n  Installed: 3.13.5-2+deb13u5\n  Candidate: 3.13.5-2+deb13u5\n  Version table:\n *** 3.13.5-2+deb13u5 500\n        500 http://deb.debian.org/debian trixie/main arm64 Packages\n        100 /var/lib/dpkg/status\n"
+    },
+    {
+      "package": "libpython3.13-minimal:arm64",
+      "installed": "3.13.5-2+deb13u5",
+      "arch": "arm64",
+      "source_package": "python3.13",
+      "source_version": "3.13.5-2+deb13u5",
+      "candidate": "3.13.5-2+deb13u5",
+      "policy": "libpython3.13-minimal:\n  Installed: 3.13.5-2+deb13u5\n  Candidate: 3.13.5-2+deb13u5\n  Version table:\n *** 3.13.5-2+deb13u5 500\n        500 http://deb.debian.org/debian trixie/main arm64 Packages\n        100 /var/lib/dpkg/status\n"
+    },
+    {
+      "package": "libpython3.13-stdlib:arm64",
+      "installed": "3.13.5-2+deb13u5",
+      "arch": "arm64",
+      "source_package": "python3.13",
+      "source_version": "3.13.5-2+deb13u5",
+      "candidate": "3.13.5-2+deb13u5",
+      "policy": "libpython3.13-stdlib:\n  Installed: 3.13.5-2+deb13u5\n  Candidate: 3.13.5-2+deb13u5\n  Version table:\n *** 3.13.5-2+deb13u5 500\n        500 http://deb.debian.org/debian trixie/main arm64 Packages\n        100 /var/lib/dpkg/status\n"
+    },
+    {
+      "package": "libsmartcols1:arm64",
+      "installed": "2.41.5-0+deb13u1",
+      "arch": "arm64",
+      "source_package": "util-linux",
+      "source_version": "2.41.5-0+deb13u1",
+      "candidate": "2.41.5-0+deb13u1",
+      "policy": "libsmartcols1:\n  Installed: 2.41.5-0+deb13u1\n  Candidate: 2.41.5-0+deb13u1\n  Version table:\n *** 2.41.5-0+deb13u1 500\n        500 http://deb.debian.org/debian trixie/main arm64 Packages\n        500 http://deb.debian.org/debian-security trixie-security/main arm64 Packages\n        100 /var/lib/dpkg/status\n"
+    },
+    {
+      "package": "libsndfile1:arm64",
+      "installed": "1.2.2-2+deb13u1",
+      "arch": "arm64",
+      "source_package": "libsndfile",
+      "source_version": "1.2.2-2+deb13u1",
+      "candidate": "1.2.2-2+deb13u1",
+      "policy": "libsndfile1:\n  Installed: 1.2.2-2+deb13u1\n  Candidate: 1.2.2-2+deb13u1\n  Version table:\n *** 1.2.2-2+deb13u1 500\n        500 http://deb.debian.org/debian trixie/main arm64 Packages\n        100 /var/lib/dpkg/status\n"
+    },
+    {
+      "package": "libswresample5:arm64",
+      "installed": "7:7.1.5-0+deb13u1",
+      "arch": "arm64",
+      "source_package": "ffmpeg",
+      "source_version": "7:7.1.5-0+deb13u1",
+      "candidate": "7:7.1.5-0+deb13u1",
+      "policy": "libswresample5:\n  Installed: 7:7.1.5-0+deb13u1\n  Candidate: 7:7.1.5-0+deb13u1\n  Version table:\n *** 7:7.1.5-0+deb13u1 500\n        500 http://deb.debian.org/debian trixie/main arm64 Packages\n        500 http://deb.debian.org/debian-security trixie-security/main arm64 Packages\n        100 /var/lib/dpkg/status\n"
+    },
+    {
+      "package": "libswscale8:arm64",
+      "installed": "7:7.1.5-0+deb13u1",
+      "arch": "arm64",
+      "source_package": "ffmpeg",
+      "source_version": "7:7.1.5-0+deb13u1",
+      "candidate": "7:7.1.5-0+deb13u1",
+      "policy": "libswscale8:\n  Installed: 7:7.1.5-0+deb13u1\n  Candidate: 7:7.1.5-0+deb13u1\n  Version table:\n *** 7:7.1.5-0+deb13u1 500\n        500 http://deb.debian.org/debian trixie/main arm64 Packages\n        500 http://deb.debian.org/debian-security trixie-security/main arm64 Packages\n        100 /var/lib/dpkg/status\n"
+    },
+    {
+      "package": "libsystemd-shared:arm64",
+      "installed": "257.13-1~deb13u1",
+      "arch": "arm64",
+      "source_package": "systemd",
+      "source_version": "257.13-1~deb13u1",
+      "candidate": "257.13-1~deb13u1",
+      "policy": "libsystemd-shared:\n  Installed: 257.13-1~deb13u1\n  Candidate: 257.13-1~deb13u1\n  Version table:\n *** 257.13-1~deb13u1 500\n        500 http://deb.debian.org/debian trixie/main arm64 Packages\n        100 /var/lib/dpkg/status\n"
+    },
+    {
+      "package": "libsystemd0:arm64",
+      "installed": "257.13-1~deb13u1",
+      "arch": "arm64",
+      "source_package": "systemd",
+      "source_version": "257.13-1~deb13u1",
+      "candidate": "257.13-1~deb13u1",
+      "policy": "libsystemd0:\n  Installed: 257.13-1~deb13u1\n  Candidate: 257.13-1~deb13u1\n  Version table:\n *** 257.13-1~deb13u1 500\n        500 http://deb.debian.org/debian trixie/main arm64 Packages\n        100 /var/lib/dpkg/status\n"
+    },
+    {
+      "package": "libtiff6:arm64",
+      "installed": "4.7.0-3+deb13u3",
+      "arch": "arm64",
+      "source_package": "tiff",
+      "source_version": "4.7.0-3+deb13u3",
+      "candidate": "4.7.0-3+deb13u3",
+      "policy": "libtiff6:\n  Installed: 4.7.0-3+deb13u3\n  Candidate: 4.7.0-3+deb13u3\n  Version table:\n *** 4.7.0-3+deb13u3 500\n        500 http://deb.debian.org/debian trixie/main arm64 Packages\n        500 http://deb.debian.org/debian-security trixie-security/main arm64 Packages\n        100 /var/lib/dpkg/status\n"
+    },
+    {
+      "package": "libtinfo6:arm64",
+      "installed": "6.5+20250216-2",
+      "arch": "arm64",
+      "source_package": "ncurses",
+      "source_version": "6.5+20250216-2",
+      "candidate": "6.5+20250216-2",
+      "policy": "libtinfo6:\n  Installed: 6.5+20250216-2\n  Candidate: 6.5+20250216-2\n  Version table:\n *** 6.5+20250216-2 500\n        500 http://deb.debian.org/debian trixie/main arm64 Packages\n        100 /var/lib/dpkg/status\n"
+    },
+    {
+      "package": "libudev1:arm64",
+      "installed": "257.13-1~deb13u1",
+      "arch": "arm64",
+      "source_package": "systemd",
+      "source_version": "257.13-1~deb13u1",
+      "candidate": "257.13-1~deb13u1",
+      "policy": "libudev1:\n  Installed: 257.13-1~deb13u1\n  Candidate: 257.13-1~deb13u1\n  Version table:\n *** 257.13-1~deb13u1 500\n        500 http://deb.debian.org/debian trixie/main arm64 Packages\n        100 /var/lib/dpkg/status\n"
+    },
+    {
+      "package": "libuuid1:arm64",
+      "installed": "2.41.5-0+deb13u1",
+      "arch": "arm64",
+      "source_package": "util-linux",
+      "source_version": "2.41.5-0+deb13u1",
+      "candidate": "2.41.5-0+deb13u1",
+      "policy": "libuuid1:\n  Installed: 2.41.5-0+deb13u1\n  Candidate: 2.41.5-0+deb13u1\n  Version table:\n *** 2.41.5-0+deb13u1 500\n        500 http://deb.debian.org/debian trixie/main arm64 Packages\n        500 http://deb.debian.org/debian-security trixie-security/main arm64 Packages\n        100 /var/lib/dpkg/status\n"
+    },
+    {
+      "package": "libx11-6:arm64",
+      "installed": "2:1.8.12-1",
+      "arch": "arm64",
+      "source_package": "libx11",
+      "source_version": "2:1.8.12-1",
+      "candidate": "2:1.8.12-1",
+      "policy": "libx11-6:\n  Installed: 2:1.8.12-1\n  Candidate: 2:1.8.12-1\n  Version table:\n *** 2:1.8.12-1 500\n        500 http://deb.debian.org/debian trixie/main arm64 Packages\n        100 /var/lib/dpkg/status\n"
+    },
+    {
+      "package": "libx11-data",
+      "installed": "2:1.8.12-1",
+      "arch": "all",
+      "source_package": "libx11",
+      "source_version": "2:1.8.12-1",
+      "candidate": "2:1.8.12-1",
+      "policy": "libx11-data:\n  Installed: 2:1.8.12-1\n  Candidate: 2:1.8.12-1\n  Version table:\n *** 2:1.8.12-1 500\n        500 http://deb.debian.org/debian trixie/main arm64 Packages\n        100 /var/lib/dpkg/status\n"
+    },
+    {
+      "package": "libx11-xcb1:arm64",
+      "installed": "2:1.8.12-1",
+      "arch": "arm64",
+      "source_package": "libx11",
+      "source_version": "2:1.8.12-1",
+      "candidate": "2:1.8.12-1",
+      "policy": "libx11-xcb1:\n  Installed: 2:1.8.12-1\n  Candidate: 2:1.8.12-1\n  Version table:\n *** 2:1.8.12-1 500\n        500 http://deb.debian.org/debian trixie/main arm64 Packages\n        100 /var/lib/dpkg/status\n"
+    },
+    {
+      "package": "libxml2:arm64",
+      "installed": "2.12.7+dfsg+really2.9.14-2.1+deb13u3",
+      "arch": "arm64",
+      "source_package": "libxml2",
+      "source_version": "2.12.7+dfsg+really2.9.14-2.1+deb13u3",
+      "candidate": "2.12.7+dfsg+really2.9.14-2.1+deb13u3",
+      "policy": "libxml2:\n  Installed: 2.12.7+dfsg+really2.9.14-2.1+deb13u3\n  Candidate: 2.12.7+dfsg+really2.9.14-2.1+deb13u3\n  Version table:\n *** 2.12.7+dfsg+really2.9.14-2.1+deb13u3 500\n        500 http://deb.debian.org/debian trixie/main arm64 Packages\n        100 /var/lib/dpkg/status\n     2.12.7+dfsg+really2.9.14-2.1+deb13u1 500\n        500 http://deb.debian.org/debian-security trixie-security/main arm64 Packages\n"
+    },
+    {
+      "package": "libxrender1:arm64",
+      "installed": "1:0.9.12-1",
+      "arch": "arm64",
+      "source_package": "libxrender",
+      "source_version": "1:0.9.12-1",
+      "candidate": "1:0.9.12-1",
+      "policy": "libxrender1:\n  Installed: 1:0.9.12-1\n  Candidate: 1:0.9.12-1\n  Version table:\n *** 1:0.9.12-1 500\n        500 http://deb.debian.org/debian trixie/main arm64 Packages\n        100 /var/lib/dpkg/status\n"
+    },
+    {
+      "package": "libxtst6:arm64",
+      "installed": "2:1.2.5-1",
+      "arch": "arm64",
+      "source_package": "libxtst",
+      "source_version": "2:1.2.5-1",
+      "candidate": "2:1.2.5-1",
+      "policy": "libxtst6:\n  Installed: 2:1.2.5-1\n  Candidate: 2:1.2.5-1\n  Version table:\n *** 2:1.2.5-1 500\n        500 http://deb.debian.org/debian trixie/main arm64 Packages\n        100 /var/lib/dpkg/status\n"
+    },
+    {
+      "package": "linux-libc-dev",
+      "installed": "6.12.113-1",
+      "arch": "all",
+      "source_package": "linux",
+      "source_version": "6.12.113-1",
+      "candidate": "6.12.113-1",
+      "policy": "linux-libc-dev:\n  Installed: 6.12.113-1\n  Candidate: 6.12.113-1\n  Version table:\n *** 6.12.113-1 500\n        500 http://deb.debian.org/debian-security trixie-security/main arm64 Packages\n        100 /var/lib/dpkg/status\n     6.12.111-1 500\n        500 http://deb.debian.org/debian-security trixie-security/main arm64 Packages\n     6.12.107-1 500\n        500 http://deb.debian.org/debian trixie/main arm64 Packages\n        500 http://deb.debian.org/debian-security trixie-security/main arm64 Packages\n     6.12.94-1 500\n        500 http://deb.debian.org/debian trixie/main arm64 Packages\n"
+    },
+    {
+      "package": "login",
+      "installed": "1:4.16.0-2+really2.41.5-0+deb13u1",
+      "arch": "arm64",
+      "source_package": "util-linux",
+      "source_version": "2.41.5-0+deb13u1",
+      "candidate": "1:4.16.0-2+really2.41.5-0+deb13u1",
+      "policy": "login:\n  Installed: 1:4.16.0-2+really2.41.5-0+deb13u1\n  Candidate: 1:4.16.0-2+really2.41.5-0+deb13u1\n  Version table:\n *** 1:4.16.0-2+really2.41.5-0+deb13u1 500\n        500 http://deb.debian.org/debian trixie/main arm64 Packages\n        500 http://deb.debian.org/debian-security trixie-security/main arm64 Packages\n        100 /var/lib/dpkg/status\n"
+    },
+    {
+      "package": "mount",
+      "installed": "2.41.5-0+deb13u1",
+      "arch": "arm64",
+      "source_package": "util-linux",
+      "source_version": "2.41.5-0+deb13u1",
+      "candidate": "2.41.5-0+deb13u1",
+      "policy": "mount:\n  Installed: 2.41.5-0+deb13u1\n  Candidate: 2.41.5-0+deb13u1\n  Version table:\n *** 2.41.5-0+deb13u1 500\n        500 http://deb.debian.org/debian trixie/main arm64 Packages\n        500 http://deb.debian.org/debian-security trixie-security/main arm64 Packages\n        100 /var/lib/dpkg/status\n"
+    },
+    {
+      "package": "ncurses-base",
+      "installed": "6.5+20250216-2",
+      "arch": "all",
+      "source_package": "ncurses",
+      "source_version": "6.5+20250216-2",
+      "candidate": "6.5+20250216-2",
+      "policy": "ncurses-base:\n  Installed: 6.5+20250216-2\n  Candidate: 6.5+20250216-2\n  Version table:\n *** 6.5+20250216-2 500\n        500 http://deb.debian.org/debian trixie/main arm64 Packages\n        100 /var/lib/dpkg/status\n"
+    },
+    {
+      "package": "ncurses-bin",
+      "installed": "6.5+20250216-2",
+      "arch": "arm64",
+      "source_package": "ncurses",
+      "source_version": "6.5+20250216-2",
+      "candidate": "6.5+20250216-2",
+      "policy": "ncurses-bin:\n  Installed: 6.5+20250216-2\n  Candidate: 6.5+20250216-2\n  Version table:\n *** 6.5+20250216-2 500\n        500 http://deb.debian.org/debian trixie/main arm64 Packages\n        100 /var/lib/dpkg/status\n"
+    },
+    {
+      "package": "openssh-client",
+      "installed": "1:10.0p1-7+deb13u4",
+      "arch": "arm64",
+      "source_package": "openssh",
+      "source_version": "1:10.0p1-7+deb13u4",
+      "candidate": "1:10.0p1-7+deb13u4",
+      "policy": "openssh-client:\n  Installed: 1:10.0p1-7+deb13u4\n  Candidate: 1:10.0p1-7+deb13u4\n  Version table:\n *** 1:10.0p1-7+deb13u4 500\n        500 http://deb.debian.org/debian trixie/main arm64 Packages\n        100 /var/lib/dpkg/status\n     1:10.0p1-7+deb13u2 500\n        500 http://deb.debian.org/debian-security trixie-security/main arm64 Packages\n"
+    },
+    {
+      "package": "perl",
+      "installed": "5.40.1-6+deb13u1",
+      "arch": "arm64",
+      "source_package": "perl",
+      "source_version": "5.40.1-6+deb13u1",
+      "candidate": "5.40.1-6+deb13u1",
+      "policy": "perl:\n  Installed: 5.40.1-6+deb13u1\n  Candidate: 5.40.1-6+deb13u1\n  Version table:\n *** 5.40.1-6+deb13u1 500\n        500 http://deb.debian.org/debian trixie/main arm64 Packages\n        100 /var/lib/dpkg/status\n"
+    },
+    {
+      "package": "perl-base",
+      "installed": "5.40.1-6+deb13u1",
+      "arch": "arm64",
+      "source_package": "perl",
+      "source_version": "5.40.1-6+deb13u1",
+      "candidate": "5.40.1-6+deb13u1",
+      "policy": "perl-base:\n  Installed: 5.40.1-6+deb13u1\n  Candidate: 5.40.1-6+deb13u1\n  Version table:\n *** 5.40.1-6+deb13u1 500\n        500 http://deb.debian.org/debian trixie/main arm64 Packages\n        100 /var/lib/dpkg/status\n"
+    },
+    {
+      "package": "perl-modules-5.40",
+      "installed": "5.40.1-6+deb13u1",
+      "arch": "all",
+      "source_package": "perl",
+      "source_version": "5.40.1-6+deb13u1",
+      "candidate": "5.40.1-6+deb13u1",
+      "policy": "perl-modules-5.40:\n  Installed: 5.40.1-6+deb13u1\n  Candidate: 5.40.1-6+deb13u1\n  Version table:\n *** 5.40.1-6+deb13u1 500\n        500 http://deb.debian.org/debian trixie/main arm64 Packages\n        100 /var/lib/dpkg/status\n"
+    },
+    {
+      "package": "python3.13",
+      "installed": "3.13.5-2+deb13u5",
+      "arch": "arm64",
+      "source_package": "python3.13",
+      "source_version": "3.13.5-2+deb13u5",
+      "candidate": "3.13.5-2+deb13u5",
+      "policy": "python3.13:\n  Installed: 3.13.5-2+deb13u5\n  Candidate: 3.13.5-2+deb13u5\n  Version table:\n *** 3.13.5-2+deb13u5 500\n        500 http://deb.debian.org/debian trixie/main arm64 Packages\n        100 /var/lib/dpkg/status\n"
+    },
+    {
+      "package": "python3.13-dev",
+      "installed": "3.13.5-2+deb13u5",
+      "arch": "arm64",
+      "source_package": "python3.13",
+      "source_version": "3.13.5-2+deb13u5",
+      "candidate": "3.13.5-2+deb13u5",
+      "policy": "python3.13-dev:\n  Installed: 3.13.5-2+deb13u5\n  Candidate: 3.13.5-2+deb13u5\n  Version table:\n *** 3.13.5-2+deb13u5 500\n        500 http://deb.debian.org/debian trixie/main arm64 Packages\n        100 /var/lib/dpkg/status\n"
+    },
+    {
+      "package": "python3.13-minimal",
+      "installed": "3.13.5-2+deb13u5",
+      "arch": "arm64",
+      "source_package": "python3.13",
+      "source_version": "3.13.5-2+deb13u5",
+      "candidate": "3.13.5-2+deb13u5",
+      "policy": "python3.13-minimal:\n  Installed: 3.13.5-2+deb13u5\n  Candidate: 3.13.5-2+deb13u5\n  Version table:\n *** 3.13.5-2+deb13u5 500\n        500 http://deb.debian.org/debian trixie/main arm64 Packages\n        100 /var/lib/dpkg/status\n"
+    },
+    {
+      "package": "systemd",
+      "installed": "257.13-1~deb13u1",
+      "arch": "arm64",
+      "source_package": "systemd",
+      "source_version": "257.13-1~deb13u1",
+      "candidate": "257.13-1~deb13u1",
+      "policy": "systemd:\n  Installed: 257.13-1~deb13u1\n  Candidate: 257.13-1~deb13u1\n  Version table:\n *** 257.13-1~deb13u1 500\n        500 http://deb.debian.org/debian trixie/main arm64 Packages\n        100 /var/lib/dpkg/status\n"
+    },
+    {
+      "package": "systemd-cryptsetup",
+      "installed": "257.13-1~deb13u1",
+      "arch": "arm64",
+      "source_package": "systemd",
+      "source_version": "257.13-1~deb13u1",
+      "candidate": "257.13-1~deb13u1",
+      "policy": "systemd-cryptsetup:\n  Installed: 257.13-1~deb13u1\n  Candidate: 257.13-1~deb13u1\n  Version table:\n *** 257.13-1~deb13u1 500\n        500 http://deb.debian.org/debian trixie/main arm64 Packages\n        100 /var/lib/dpkg/status\n"
+    },
+    {
+      "package": "systemd-sysv",
+      "installed": "257.13-1~deb13u1",
+      "arch": "arm64",
+      "source_package": "systemd",
+      "source_version": "257.13-1~deb13u1",
+      "candidate": "257.13-1~deb13u1",
+      "policy": "systemd-sysv:\n  Installed: 257.13-1~deb13u1\n  Candidate: 257.13-1~deb13u1\n  Version table:\n *** 257.13-1~deb13u1 500\n        500 http://deb.debian.org/debian trixie/main arm64 Packages\n        100 /var/lib/dpkg/status\n"
+    },
+    {
+      "package": "systemd-timesyncd",
+      "installed": "257.13-1~deb13u1",
+      "arch": "arm64",
+      "source_package": "systemd",
+      "source_version": "257.13-1~deb13u1",
+      "candidate": "257.13-1~deb13u1",
+      "policy": "systemd-timesyncd:\n  Installed: 257.13-1~deb13u1\n  Candidate: 257.13-1~deb13u1\n  Version table:\n *** 257.13-1~deb13u1 500\n        500 http://deb.debian.org/debian trixie/main arm64 Packages\n        100 /var/lib/dpkg/status\n"
+    },
+    {
+      "package": "util-linux",
+      "installed": "2.41.5-0+deb13u1",
+      "arch": "arm64",
+      "source_package": "util-linux",
+      "source_version": "2.41.5-0+deb13u1",
+      "candidate": "2.41.5-0+deb13u1",
+      "policy": "util-linux:\n  Installed: 2.41.5-0+deb13u1\n  Candidate: 2.41.5-0+deb13u1\n  Version table:\n *** 2.41.5-0+deb13u1 500\n        500 http://deb.debian.org/debian trixie/main arm64 Packages\n        500 http://deb.debian.org/debian-security trixie-security/main arm64 Packages\n        100 /var/lib/dpkg/status\n"
+    }
+  ],
+  "sources": [
+    {
+      "path": "/etc/apt/sources.list.d/debian.sources",
+      "sha256": "731731938b163acb5e79d80fcfc79d2e72df9e05a59f4a994ccd7be7a52c12d9",
+      "content": "Types: deb\n# http://snapshot.debian.org/archive/debian/20261020T213255Z\nURIs: http://deb.debian.org/debian\nSuites: trixie trixie-updates\nComponents: main\nSigned-By: /usr/share/keyrings/debian-archive-keyring.pgp\n\nTypes: deb\n# http://snapshot.debian.org/archive/debian-security/20261020T213255Z\nURIs: http://deb.debian.org/debian-security\nSuites: trixie-security\nComponents: main\nSigned-By: /usr/share/keyrings/debian-archive-keyring.pgp\n"
+    }
+  ],
+  "candidate": {
+    "base": "ghcr.io/parkervcp/yolks:nodejs_26@sha256:7ef84d861620af3401e7dc945626ce53f9c5a49a58fe845e46544e0c24a99e70",
+    "manifest_digest": "sha256:08dcd00b6bfe8968f2bd5695bb138a68226a52dae1468407a23789cf6e008e00",
+    "build_reported_digest": "sha256:08dcd00b6bfe8968f2bd5695bb138a68226a52dae1468407a23789cf6e008e00",
+    "image_id": "sha256:1449926068fd0e7f1fdaf2fb87cb92e413dabf0bb6b97609e458df178ba02c34",
+    "arch": "arm64",
+    "expected_node": "26.12.1"
+  },
+  "observed_arch": "arm64",
+  "candidate_semantics": "APT candidate availability; not proof of fixed version"
+}

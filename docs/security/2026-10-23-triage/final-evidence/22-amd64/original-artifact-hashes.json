@@ -1,0 +1,131 @@
+{
+  "candidate": "nodejs_22-amd64",
+  "original_artifacts": [
+    {
+      "bytes": 743,
+      "file": "blocking-os-packages.txt",
+      "sha256": "2c438a8b888bc9efe0ad8bb97457dbe171d80c1f4bc8776a7f912928c518e29b"
+    },
+    {
+      "bytes": 5957,
+      "file": "brotli-consumers.txt",
+      "sha256": "99b3a243da0783887788952070c7269a147163a7a09f4979a95ec393ea612ac9"
+    },
+    {
+      "bytes": 2837,
+      "file": "brotli-linkage.txt",
+      "sha256": "bf5d621a68dd3c80d4fd2f3c3ec8ee7b7d361eae6c770c844810ee9dd967f590"
+    },
+    {
+      "bytes": 458,
+      "file": "candidate-metadata.json",
+      "sha256": "b89f1520d9f09e48ff8d203731d674feb7073c2edf2207df149dc175885f4e32"
+    },
+    {
+      "bytes": 2555,
+      "file": "candidate-oci-verification.json",
+      "sha256": "c0426c86eb44f70625aacd2dd579518fc317160ff48b213afab63b8f08db93f0"
+    },
+    {
+      "bytes": 1185412,
+      "file": "debian-triage.json",
+      "sha256": "6c1227a55b04b0783bb8c56b2d2fafb60c572715cf7cfb34fab2fc30b74fbceb"
+    },
+    {
+      "bytes": 2449722,
+      "file": "package-cve-audit.json",
+      "sha256": "120da32bdb884041a2d4ad5bb416ca36ba62648ddd0d2dfc067b389c93d3fd7d"
+    },
+    {
+      "bytes": 820508,
+      "file": "package-paths.json",
+      "sha256": "ab13cf2a46e108d67bbc36e295a3d79cea0472f2158b58a18c781f4d127dbb24"
+    },
+    {
+      "bytes": 16974,
+      "file": "package-provenance.txt",
+      "sha256": "2059ec1257377d7e471c29014702abac5329149f12f06ea1560d7c3cfc22e07d"
+    },
+    {
+      "bytes": 2303,
+      "file": "runtime-toolchain.json",
+      "sha256": "6b2213c3ecb9d911fbc315c1bf6c22e8134108f83667467ccbb76713b102fc08"
+    },
+    {
+      "bytes": 339,
+      "file": "scanner-metadata.json",
+      "sha256": "344b4a8afc97c844afe41c9ef4a60bd5f30d0a5f8f400c3efa9d74d93b1b5484"
+    },
+    {
+      "bytes": 10138483,
+      "file": "trivy-image-22-amd64.json",
+      "sha256": "1052e85852e7034ceb8707d966120a8ece768b64d5d6ab86db77efe6f8d238ef"
+    },
+    {
+      "bytes": 16642,
+      "file": "trivy-repo-22-amd64.json",
+      "sha256": "8030ea568fe1923f65e857ac759fe309b74c539c7fa772a8b1443b1d40d4838a"
+    },
+    {
+      "bytes": 5941058,
+      "file": "trivy-sbom-22-amd64.json",
+      "sha256": "213d46f3094dd3ef0b3cc9664977479aae9a8e9314d32da4a462f57bfdec75e9"
+    },
+    {
+      "bytes": 965,
+      "file": "typescript-go-buildinfo.txt",
+      "sha256": "59692df7f4f89cfe26acb032dbd2b1ed82b26c127790eeea04b207687f27641a"
+    },
+    {
+      "bytes": 956,
+      "file": "typescript-provenance/BUILD-PROVENANCE.json",
+      "sha256": "dc9302ac50ec0bde12dfea2c6b8c686fade6e3dac03775de4377f5e0672f0252"
+    },
+    {
+      "bytes": 13632,
+      "file": "typescript-provenance/SHA256SUMS",
+      "sha256": "55caa1383c8af36559a94fe4cd12d337dda013e8682c4a370b06fee541f0ced5"
+    },
+    {
+      "bytes": 788,
+      "file": "typescript-provenance/build.go.mod",
+      "sha256": "dfbf0e9ce94a7b18bca10e78b21dcd3659330afef4df03b25e88133d012aa3c8"
+    },
+    {
+      "bytes": 4356,
+      "file": "typescript-provenance/build.go.sum",
+      "sha256": "d89c94311a658ee4e51623386023ee7523ae15d22cf4682554b5f2533b95649e"
+    },
+    {
+      "bytes": 661536,
+      "file": "typescript-provenance/compiler-source-sha256sums.txt",
+      "sha256": "3a48356f61e14165a97360d8d319e6fafa9cea6699d6af3b9ef082cc424756ca"
+    },
+    {
+      "bytes": 3931,
+      "file": "typescript-provenance/dependency-diff.txt",
+      "sha256": "ca50d14e377260362744cfb2349152ebd95f09a3443079d784479cfd3ce047ef"
+    },
+    {
+      "bytes": 1009,
+      "file": "typescript-provenance/go-build-info.txt",
+      "sha256": "7ab9138d379de3558c3f5640b6526abac710f4651b54c1b5049bed7966407507"
+    },
+    {
+      "bytes": 1079,
+      "file": "typescript-provenance/help-baseline-analysis.json",
+      "sha256": "64bb2349ebf802448dcb65f6c2a795b8e13453b49b0f83a96386e9dc76e3a352"
+    },
+    {
+      "bytes": 508,
+      "file": "typescript-provenance/release-help-control.log",
+      "sha256": "f1d5da4de9145bffdbd77a5056575ed145ebe2e896eb4b0303348e8628f95beb"
+    },
+    {
+      "bytes": 32534,
+      "file": "vendor-package-candidates.json",
+      "sha256": "5534aa81e8f0356117c2df05c1ef5d6d82e9844c3df62401d8431195b4c19b5a"
+    }
+  ],
+  "source_report_dir": "/workspace/img-nodejs-triage-evidence-20261023/39915130063/artifacts/reports-22-amd64"
+}

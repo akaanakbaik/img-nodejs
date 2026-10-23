@@ -4,109 +4,420 @@ on:
   push:
     branches: [main]
     paths:
-      - "Dockerfile"
-      - ".github/workflows/publish.yml"
-      - "egg/docker_images.json"
-      - "scripts/**"
+      - Dockerfile
+      - .github/workflows/publish.yml
+      - egg/docker_images.json
+      - scripts/**
+      - versions.json
+      - security/**
+      - vendor/**
+  pull_request:
+    paths:
+      - Dockerfile
+      - .github/workflows/publish.yml
+      - egg/docker_images.json
+      - scripts/**
+      - versions.json
+      - security/**
+      - vendor/**
   workflow_dispatch:
+    inputs:
+      publish:
+        description: Publish tested images to the public registry
+        required: true
+        default: false
+        type: boolean
   schedule:
-    # Weekly; intentionally not scheduled at the top of the hour.
     - cron: "23 4 * * 1"
 
 permissions:
   contents: read
 
 concurrency:
-  group: publish-node-images
+  group: publish-node-images-${{ github.ref }}
   cancel-in-progress: false
+
+env:
+  REGISTRY: ghcr.io
+  IMAGE_NAME: ghcr.io/${{ github.repository_owner }}/img-nodejs
 
 jobs:
   validate-metadata:
-    name: Validate Egg image mapping
+    name: Validate metadata and resolve Node patches
     runs-on: ubuntu-24.04
-    timeout-minutes: 5
+    timeout-minutes: 10
+    outputs:
+      matrix: ${{ steps.matrix.outputs.matrix }}
+      publish_matrix: ${{ steps.matrix.outputs.publish_matrix }}
+      manifests: ${{ steps.matrix.outputs.manifests }}
+      db_sha256: ${{ steps.db.outputs.db_sha256 }}
+      db_snapshot_sha256: ${{ steps.db.outputs.db_snapshot_sha256 }}
+      db_artifact_name: ${{ steps.db.outputs.db_artifact_name }}
     steps:
       - name: Check out source
-        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1, Node 24
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           persist-credentials: false
-      - name: Validate JSON and smoke-test script syntax
+      - name: Validate JSON, scripts, and resolver
         run: |
+          set -euo pipefail
           python3 scripts/validate_egg.py
-          bash -n scripts/smoke_test_image.sh
+          bash -n scripts/smoke_test_image.sh scripts/install_trivy.sh
+          node scripts/test_verify_runtime.js
+          node --check scripts/update_supported_npm.js
+          python3 scripts/test_resolve_versions.py
+          python3 scripts/test_cve_gate.py
+          python3 scripts/test_os_update_policy.py
+          python3 scripts/test_verify_candidate.py
+          python3 scripts/test_audit_scan.py
+          python3 scripts/test_brotli_source.py
+          python3 scripts/test_vendor_package_inventory.py
+          python3 scripts/test_runtime_toolchain_inventory.py
+          python3 scripts/test_triage_groups.py
+          python3 scripts/test_verify_oci_layout.py
+          python3 scripts/test_typescript_source.py
+          python3 scripts/test_typescript_help_baseline.py
+          python3 scripts/test_verify_release_bundle.py
+          python3 scripts/test_ci_publish_policy.py
+          python3 scripts/resolve_versions.py --check --supported-only
+          test -s versions.json
+      - id: matrix
+        name: Resolve exact patch matrix
+        run: |
+          set -euo pipefail
+          resolved="$(python3 scripts/resolve_versions.py --ci-matrices)"
+          printf '%s\n' "$resolved" | jq -e '.verify.include | length == 18' >/dev/null
+          printf '%s\n' "$resolved" | jq -e '[.publish.include[] | [.major, .arch]] | sort == [["22","amd64"],["22","arm64"],["24","amd64"],["24","arm64"],["26","amd64"],["26","arm64"]]' >/dev/null
+          printf 'matrix=%s\n' "$(printf '%s' "$resolved" | jq -c '.verify')" >> "$GITHUB_OUTPUT"
+          printf 'publish_matrix=%s\n' "$(printf '%s' "$resolved" | jq -c '.publish')" >> "$GITHUB_OUTPUT"
+          printf 'manifests=%s\n' "$(printf '%s' "$resolved" | jq -c '.manifests')" >> "$GITHUB_OUTPUT"
 
-  smoke-test:
-    name: Smoke test Node.js ${{ matrix.node }} (${{ matrix.arch }})
+      - name: Install pinned Trivy for shared database
+        run: sudo TRIVY_BIN=/usr/local/bin/trivy bash scripts/install_trivy.sh
+      - name: Freeze and record vulnerability database snapshot
+        id: db
+        run: |
+          set -euo pipefail
+          export TRIVY_CACHE_DIR="$PWD/scanner-db-snapshot"
+          trivy image --download-db-only
+          trivy --version --format json > scanner-db-snapshot/scanner-metadata.json
+          (cd scanner-db-snapshot && sha256sum db/trivy.db db/metadata.json > scanner-db.sha256)
+          cp scanner-db-snapshot/db/metadata.json scanner-db-snapshot/scanner-db-metadata.json
+          printf 'db_sha256=%s\n' "$(sha256sum scanner-db-snapshot/db/trivy.db | cut -d' ' -f1)" >> "$GITHUB_OUTPUT"
+          printf 'db_snapshot_sha256=%s\n' "$(sha256sum scanner-db-snapshot/scanner-db.sha256 | cut -d' ' -f1)" >> "$GITHUB_OUTPUT"
+          printf 'db_artifact_name=trivy-db-%s-%s\n' "$GITHUB_RUN_ID" "$GITHUB_RUN_ATTEMPT" >> "$GITHUB_OUTPUT"
+      - name: Upload immutable shared vulnerability database
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: ${{ steps.db.outputs.db_artifact_name }}
+          path: scanner-db-snapshot/
+          if-no-files-found: error
+          compression-level: 1
+          retention-days: 7
+
+  verify:
+    name: Verify Node.js ${{ matrix.major }} (${{ matrix.arch }})
     needs: validate-metadata
     runs-on: ${{ matrix.arch == 'arm64' && 'ubuntu-24.04-arm' || 'ubuntu-24.04' }}
-    timeout-minutes: 30
+    timeout-minutes: 45
+    # EOL findings or audit errors are reported, never publication prerequisites.
+    continue-on-error: ${{ !matrix.publish }}
     strategy:
       fail-fast: false
-      matrix:
-        node: ["18", "19", "20", "21", "22", "23", "24", "25", "26"]
-        arch: ["amd64", "arm64"]
+      matrix: ${{ fromJSON(needs.validate-metadata.outputs.matrix) }}
     steps:
       - name: Check out source
-        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1, Node 24
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           persist-credentials: false
       - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@f87e5991a6d7451dcb8d9637bfbc97413f497069 # v4.4.1, Node 24
-      - name: Build candidate image without publishing
-        uses: docker/build-push-action@c3c9e263c25d99ce0380d002d59b67737d91b0dc # v7.4.0, Node 24
+        uses: docker/setup-buildx-action@f87e5991a6d7451dcb8d9637bfbc97413f497069 # v4.4.1
+      - name: Resolve immutable multi-arch base digest
+        id: base
+        run: |
+          set -euo pipefail
+          ref="ghcr.io/parkervcp/yolks:nodejs_${{ matrix.major }}"
+          # Consume the full output; early awk exit can break buildx under pipefail.
+          digest="$(docker buildx imagetools inspect "$ref" | awk '/^Digest:/ {print $2}')"
+          [[ "$digest" =~ ^sha256:[0-9a-f]{64}$ ]] || { echo "invalid base digest: $digest" >&2; exit 1; }
+          printf 'ref=%s@%s\n' "$ref" "$digest" >> "$GITHUB_OUTPUT"
+      - name: Build exact candidate (native architecture)
+        id: build
+        uses: docker/build-push-action@c3c9e263c25d99ce0380d002d59b67737d91b0dc # v7.4.0
         with:
           context: .
+          target: ${{ matrix.publish && 'supported' || 'eol-audit' }}
           platforms: linux/${{ matrix.arch }}
           load: true
+          outputs: ${{ matrix.publish && 'type=oci,dest=candidate.oci.tar' || '' }}
+          # A single runtime manifest can be copied without digest conversion.
+          provenance: false
+          sbom: false
           pull: true
-          tags: local/img-nodejs:nodejs_${{ matrix.node }}-${{ matrix.arch }}
+          tags: local/img-nodejs:nodejs_${{ matrix.major }}-${{ matrix.arch }}
           build-args: |
-            NODE_VERSION=${{ matrix.node }}
-          cache-from: type=gha,scope=node-${{ matrix.node }}-${{ matrix.arch }}
-          cache-to: type=gha,mode=max,scope=node-${{ matrix.node }}-${{ matrix.arch }}
-      - name: Test Pterodactyl container contract and Egg startup fixture
-        run: bash scripts/smoke_test_image.sh "${{ matrix.node }}" "${{ matrix.arch }}" "local/img-nodejs:nodejs_${{ matrix.node }}-${{ matrix.arch }}"
+            NODE_MAJOR=${{ matrix.major }}
+            NODE_PATCH=${{ matrix.patch }}
+            BASE_IMAGE=${{ steps.base.outputs.ref }}
+            APPLY_OS_UPDATES=${{ matrix.publish }}
+          cache-from: type=gha,scope=node-${{ matrix.major }}-${{ matrix.arch }}
+          cache-to: type=gha,mode=max,scope=node-${{ matrix.major }}-${{ matrix.arch }}
+      - name: Test runtime and Egg startup contract
+        run: bash scripts/smoke_test_image.sh "${{ matrix.major }}" "${{ matrix.arch }}" "local/img-nodejs:nodejs_${{ matrix.major }}-${{ matrix.arch }}" "${{ matrix.patch }}"
+      - name: Record exact candidate and Brotli linkage
+        env:
+          BASE_REF: ${{ steps.base.outputs.ref }}
+          BUILD_DIGEST: ${{ steps.build.outputs.digest }}
+          SOURCE_REVISION: ${{ github.sha }}
+          SOURCE_RUN: ${{ github.run_id }}
+        run: |
+          set -euo pipefail
+          image="local/img-nodejs:nodejs_${{ matrix.major }}-${{ matrix.arch }}"
+          read -r IMAGE_ID IMAGE_ARCH < <(docker inspect --format '{{.Id}} {{.Architecture}}' "$image")
+          test -n "$IMAGE_ID"
+          digest="$BUILD_DIGEST"
+          if test -f candidate.oci.tar; then
+            # Multiple exporters can report different manifest media types.
+            # Use the actual OCI root descriptor, then verify its config below.
+            digest="$(tar -xOf candidate.oci.tar index.json | jq -er '.manifests | if length == 1 then .[0].digest else error("ambiguous OCI roots") end')"
+          fi
+          jq -n --arg base "$BASE_REF" --arg digest "$digest" --arg builddigest "$BUILD_DIGEST" --arg imageid "$IMAGE_ID" --arg arch "$IMAGE_ARCH" --arg patch "${{ matrix.patch }}" --arg revision "$SOURCE_REVISION" --arg run "$SOURCE_RUN" '{base: $base, manifest_digest: $digest, build_reported_digest: $builddigest, image_id: $imageid, arch: $arch, expected_node: $patch, source_revision: $revision, source_run: $run}' > candidate-metadata.json
+          docker run --rm --entrypoint /bin/sh "$image" -ec 'node --version; sha256sum /usr/local/bin/node; ldd /usr/local/bin/node; readelf -d /usr/local/bin/node; node -p "JSON.stringify({node:process.versions.node,brotli:process.versions.brotli,sharedBrotli:process.config.variables.node_shared_brotli})"; dpkg-query -W libbrotli1; node -e '\''require("zlib").brotliCompressSync(Buffer.from("test"));console.log(process.report.getReport().sharedObjects.join("\n"))'\''' > brotli-linkage.txt
+      - name: Bind exported OCI digest to tested config and architecture
+        if: matrix.publish
+        run: |
+          set -euo pipefail
+          python3 scripts/verify_oci_layout.py --metadata candidate-metadata.json --oci candidate.oci.tar > candidate-oci-verification.json
+          test "$(jq -er .candidate.manifest_digest candidate-oci-verification.json)" = "$(jq -er .verified.runtime_manifest_digest candidate-oci-verification.json)"
+      - name: Install pinned Trivy
+        run: sudo TRIVY_BIN=/usr/local/bin/trivy bash scripts/install_trivy.sh
+      - name: Download immutable shared vulnerability database
+        uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4.3.0
+        with:
+          name: ${{ needs.validate-metadata.outputs.db_artifact_name }}
+          path: ${{ runner.temp }}/trivy-cache
+      - name: Verify shared vulnerability database snapshot
+        env:
+          EXPECTED_DB_SHA256: ${{ needs.validate-metadata.outputs.db_sha256 }}
+          EXPECTED_SNAPSHOT_SHA256: ${{ needs.validate-metadata.outputs.db_snapshot_sha256 }}
+        run: |
+          set -euo pipefail
+          export TRIVY_CACHE_DIR="$RUNNER_TEMP/trivy-cache"
+          printf 'TRIVY_CACHE_DIR=%s\n' "$TRIVY_CACHE_DIR" >> "$GITHUB_ENV"
+          test "$(sha256sum "$TRIVY_CACHE_DIR/scanner-db.sha256" | cut -d' ' -f1)" = "$EXPECTED_SNAPSHOT_SHA256"
+          (cd "$TRIVY_CACHE_DIR" && sha256sum --check scanner-db.sha256)
+          test "$(sha256sum "$TRIVY_CACHE_DIR/db/trivy.db" | cut -d' ' -f1)" = "$EXPECTED_DB_SHA256"
+          cmp "$TRIVY_CACHE_DIR/scanner-db-metadata.json" "$TRIVY_CACHE_DIR/db/metadata.json"
+          cp "$TRIVY_CACHE_DIR/scanner-db.sha256" scanner-db.sha256
+          cp "$TRIVY_CACHE_DIR/scanner-db-metadata.json" scanner-db-metadata.json
+          jq -n --arg db "$EXPECTED_DB_SHA256" --arg snapshot "$EXPECTED_SNAPSHOT_SHA256" '{db_sha256: $db, snapshot_sha256: $snapshot}' > scanner-db-identity.json
+          trivy --version --format json > scanner-metadata.json
+          test "$(jq -er .Version scanner-metadata.json)" = "$(jq -er .Version "$TRIVY_CACHE_DIR/scanner-metadata.json")"
+      - name: Scan image and repository
+        id: scan
+        run: |
+          set -euo pipefail
+          image="$(jq -er .image_id candidate-metadata.json)"
+          trivy image --skip-db-update --image-src docker --scanners vuln --severity UNKNOWN,LOW,MEDIUM,HIGH,CRITICAL --format json --output "trivy-image-${{ matrix.major }}-${{ matrix.arch }}.json" "$image"
+          trivy image --skip-db-update --image-src docker --scanners vuln --format cyclonedx --output "trivy-sbom-${{ matrix.major }}-${{ matrix.arch }}.json" "$image"
+          trivy fs --skip-db-update --skip-files candidate.oci.tar --scanners vuln,secret,misconfig --severity UNKNOWN,LOW,MEDIUM,HIGH,CRITICAL --format json --output "trivy-repo-${{ matrix.major }}-${{ matrix.arch }}.json" .
+          (cd "$TRIVY_CACHE_DIR" && sha256sum --check scanner-db.sha256)
+          trivy --version --format json > scanner-metadata-after.json
+          sha256sum trivy-*.json scanner-*.json > scan-evidence.sha256
+          python3 scripts/audit_scan.py candidate-metadata.json "trivy-image-${{ matrix.major }}-${{ matrix.arch }}.json" "trivy-sbom-${{ matrix.major }}-${{ matrix.arch }}.json" package-cve-audit.json
+          jq -r ' .findings[] | select(.type == "debian" and (.severity == "HIGH" or .severity == "CRITICAL" or .cve == "CVE-2026-111497")) | .package' package-cve-audit.json | sort -u > blocking-os-packages.txt
+          image="local/img-nodejs:nodejs_${{ matrix.major }}-${{ matrix.arch }}"
+          docker run --rm -i --entrypoint python3 --mount "type=bind,src=$PWD/scripts,dst=/audit,readonly" "$image" /audit/installed_package_paths.py < blocking-os-packages.txt > package-paths.json
+      - name: Record refreshed vendor package candidates without installing
+        if: matrix.publish
+        run: |
+          set -euo pipefail
+          image="$(jq -er .image_id candidate-metadata.json)"
+          docker run --rm -i --user root --entrypoint /bin/sh --mount "type=bind,src=$PWD/scripts,dst=/audit,readonly" --mount "type=bind,src=$PWD/candidate-metadata.json,dst=/candidate.json,readonly" "$image" -ec 'apt-get update --error-on=any >&2; python3 /audit/vendor_package_inventory.py --metadata /candidate.json' < blocking-os-packages.txt > vendor-package-candidates.json
+      - name: Triage every Debian blocker by source package path and SBOM
+        if: matrix.publish
+        run: |
+          set -euo pipefail
+          python3 scripts/triage_groups.py --audit package-cve-audit.json --paths package-paths.json --sbom "trivy-sbom-${{ matrix.major }}-${{ matrix.arch }}.json" --scan "trivy-image-${{ matrix.major }}-${{ matrix.arch }}.json" --apt-evidence vendor-package-candidates.json --candidate "nodejs_${{ matrix.major }}-${{ matrix.arch }}" --output debian-triage.json
+      - name: Verify candidate identity against scanner and Docker
+        id: identity
+        if: matrix.publish
+        run: |
+          set -euo pipefail
+          python3 scripts/verify_candidate.py --metadata candidate-metadata.json --scanner-report "trivy-image-${{ matrix.major }}-${{ matrix.arch }}.json" --image "local/img-nodejs:nodejs_${{ matrix.major }}-${{ matrix.arch }}" --expected-arch "${{ matrix.arch }}"
+      - name: Record installed native TypeScript and embedded Go dependencies
+        if: matrix.publish
+        run: |
+          set -euo pipefail
+          image="$(jq -er .image_id candidate-metadata.json)"
+          docker run --rm --entrypoint python3 --mount "type=bind,src=$PWD/scripts,dst=/audit,readonly" --mount "type=bind,src=$PWD/candidate-metadata.json,dst=/candidate.json,readonly" "$image" /audit/runtime_toolchain_inventory.py --metadata /candidate.json > runtime-toolchain.json
+          compiler="$(jq -er '.native_compilers[0].path' runtime-toolchain.json)"
+          container="$(docker create "$image")"
+          trap 'docker rm "$container" >/dev/null; rm -f native-tsc' EXIT
+          docker cp "$container:$compiler" native-tsc
+          docker cp "$container:/usr/local/share/image-security/typescript" typescript-provenance
+          test "$(sha256sum native-tsc | cut -d' ' -f1)" = "$(jq -er '.native_compilers[0].sha256' runtime-toolchain.json)"
+          go version -m native-tsc > typescript-go-buildinfo.txt
+      - name: Audit system Brotli consumers with benign input
+        id: consumers
+        if: matrix.publish
+        run: |
+          set -euo pipefail
+          docker run --rm --entrypoint /bin/bash --mount "type=bind,src=$PWD/scripts,dst=/audit,readonly" "local/img-nodejs:nodejs_${{ matrix.major }}-${{ matrix.arch }}" /audit/audit_brotli_consumers.sh > brotli-consumers.txt 2>&1
+          docker run --rm --entrypoint /bin/sh "local/img-nodejs:nodejs_${{ matrix.major }}-${{ matrix.arch }}" -ec 'cat /usr/local/share/image-security/brotli-provenance/*' > package-provenance.txt
+      - name: Upload scan reports
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: reports-${{ matrix.major }}-${{ matrix.arch }}
+          path: |
+            trivy-*.json
+            candidate-metadata.json
+            candidate-oci-verification.json
+            brotli-linkage.txt
+            brotli-consumers.txt
+            scanner-*.json
+            scanner-db.sha256
+            scan-evidence.sha256
+            package-cve-audit.json
+            package-provenance.txt
+            blocking-os-packages.txt
+            package-paths.json
+            vendor-package-candidates.json
+            runtime-toolchain.json
+            typescript-go-buildinfo.txt
+            typescript-provenance/
+            debian-triage.json
+          if-no-files-found: warn
+      - name: Block CVE-2026-111497 at every severity
+        if: matrix.publish
+        run: |
+          set -euo pipefail
+          report="trivy-image-${{ matrix.major }}-${{ matrix.arch }}.json"
+          test -s "$report"
+          jq -e 'type == "object" and (.Results | type == "array")' "$report" >/dev/null
+          jq -e '[.Results[]?.Vulnerabilities[]? | select(.VulnerabilityID == "CVE-2026-111497")] | length == 0' "$report" >/dev/null
+      - name: Enforce vulnerability and repository security gates
+        id: gate
+        # Evaluate this independently even when the priority-CVE gate rejects.
+        # A failed previous step still fails the job and prevents image export.
+        if: ${{ !cancelled() && matrix.publish && steps.scan.outcome == 'success' && steps.identity.outcome == 'success' && steps.consumers.outcome == 'success' }}
+        run: |
+          set -euo pipefail
+          image_report="trivy-image-${{ matrix.major }}-${{ matrix.arch }}.json"
+          repo_report="trivy-repo-${{ matrix.major }}-${{ matrix.arch }}.json"
+          test -s "$image_report"
+          test -s "$repo_report"
+          jq -e 'type == "object" and (.Results | type == "array")' "$image_report" >/dev/null
+          jq -e '[.Results[]?.Vulnerabilities[]? | select(.Severity == "HIGH" or .Severity == "CRITICAL")] | length == 0' "$image_report" >/dev/null
+          jq -e 'type == "object" and (.Results | type == "array")' "$repo_report" >/dev/null
+          jq -e '[.Results[]? | (.Vulnerabilities[]?, .Misconfigurations[]?, .Secrets[]?) | select(.Severity == "HIGH" or .Severity == "CRITICAL")] | length == 0' "$repo_report" >/dev/null
+      - name: Verify complete release bundle before export
+        id: bundle
+        if: success() && matrix.publish && steps.gate.outcome == 'success'
+        run: |
+          set -euo pipefail
+          python3 scripts/verify_release_bundle.py --metadata candidate-metadata.json --oci candidate.oci.tar --scanner-report "trivy-image-${{ matrix.major }}-${{ matrix.arch }}.json" --sbom "trivy-sbom-${{ matrix.major }}-${{ matrix.arch }}.json" --repo-report "trivy-repo-${{ matrix.major }}-${{ matrix.arch }}.json" --expected-arch "${{ matrix.arch }}"
+      - name: Save exact tested image
+        id: save
+        if: success() && steps.gate.outcome == 'success' && steps.bundle.outcome == 'success'
+        run: |
+          set -euo pipefail
+          gzip -1 -c candidate.oci.tar > "image-${{ matrix.major }}-${{ matrix.arch }}.tar.gz"
+          sha256sum "image-${{ matrix.major }}-${{ matrix.arch }}.tar.gz" > "image-${{ matrix.major }}-${{ matrix.arch }}.tar.gz.sha256"
+      - name: Upload exact tested image
+        if: steps.save.outcome == 'success'
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: tested-${{ matrix.major }}-${{ matrix.arch }}
+          path: |
+            image-${{ matrix.major }}-${{ matrix.arch }}.tar.gz
+            image-${{ matrix.major }}-${{ matrix.arch }}.tar.gz.sha256
+            candidate-metadata.json
+            trivy-*.json
+            scanner-*.json
+            scanner-db.sha256
+            scan-evidence.sha256
+          if-no-files-found: error
 
-  publish:
-    name: Publish multi-platform Node.js ${{ matrix.node }}
-    needs: smoke-test
+  publish-arch:
+    name: Publish tested arch Node.js ${{ matrix.major }} (${{ matrix.arch }})
+    needs: [validate-metadata, verify]
+    if: github.ref == 'refs/heads/main' && needs.verify.result == 'success' && github.event_name == 'workflow_dispatch' && inputs.publish == true
     runs-on: ubuntu-24.04
-    timeout-minutes: 30
     permissions:
       contents: read
       packages: write
     strategy:
       fail-fast: false
-      matrix:
-        node: ["18", "19", "20", "21", "22", "23", "24", "25", "26"]
+      matrix: ${{ fromJSON(needs.validate-metadata.outputs.publish_matrix) }}
     steps:
       - name: Check out source
-        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1, Node 24
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           persist-credentials: false
-      - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@f87e5991a6d7451dcb8d9637bfbc97413f497069 # v4.4.1, Node 24
-      - name: Log in to GitHub Container Registry
-        uses: docker/login-action@dbcb813823bdd20940b903addbd779551569679f # v4.6.0, Node 24
+      - name: Download exact tested image
+        if: matrix.publish
+        uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4.3.0
         with:
-          registry: ghcr.io
-          username: ${{ github.actor }}
-          password: ${{ secrets.GITHUB_TOKEN }}
-      - name: Build and publish tested image
-        uses: docker/build-push-action@c3c9e263c25d99ce0380d002d59b67737d91b0dc # v7.4.0, Node 24
+          name: tested-${{ matrix.major }}-${{ matrix.arch }}
+      - name: Install OCI registry transport
+        run: sudo apt-get update && sudo apt-get install --no-install-recommends -y skopeo
+      - name: Verify and push immutable OCI architecture candidate
+        id: push
+        if: matrix.publish
+        env:
+          IMAGE: ${{ env.IMAGE_NAME }}
+          STAGE: nodejs_${{ matrix.major }}-${{ matrix.arch }}-${{ github.sha }}
+          REGISTRY_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          EXPECTED_DB_SHA256: ${{ needs.validate-metadata.outputs.db_sha256 }}
+          EXPECTED_SNAPSHOT_SHA256: ${{ needs.validate-metadata.outputs.db_snapshot_sha256 }}
+        run: |
+          set -euo pipefail
+          python3 -c 'from pathlib import Path; from scripts.verify_candidate import verify_sha256; import sys; verify_sha256(Path(sys.argv[1]), Path(sys.argv[2]))' "image-${{ matrix.major }}-${{ matrix.arch }}.tar.gz" "image-${{ matrix.major }}-${{ matrix.arch }}.tar.gz.sha256"
+          sha256sum --check scan-evidence.sha256
+          test "$(jq -er .db_sha256 scanner-db-identity.json)" = "$EXPECTED_DB_SHA256"
+          test "$(sha256sum scanner-db.sha256 | cut -d' ' -f1)" = "$EXPECTED_SNAPSHOT_SHA256"
+          gunzip -c "image-${{ matrix.major }}-${{ matrix.arch }}.tar.gz" > candidate.oci.tar
+          digest="$(python3 scripts/verify_release_bundle.py --metadata candidate-metadata.json --oci candidate.oci.tar --scanner-report "trivy-image-${{ matrix.major }}-${{ matrix.arch }}.json" --sbom "trivy-sbom-${{ matrix.major }}-${{ matrix.arch }}.json" --repo-report "trivy-repo-${{ matrix.major }}-${{ matrix.arch }}.json" --expected-arch "${{ matrix.arch }}")"
+          echo "$REGISTRY_TOKEN" | skopeo login "$REGISTRY" -u "${{ github.actor }}" --password-stdin
+          skopeo copy --preserve-digests "oci-archive:candidate.oci.tar" "docker://$IMAGE:$STAGE"
+          remote="sha256:$(skopeo inspect --raw "docker://$IMAGE@$digest" | sha256sum | cut -d' ' -f1)"
+          test "$remote" = "$digest"
+          printf 'digest=%s@%s\n' "$IMAGE" "$digest" > "digest-${{ matrix.major }}-${{ matrix.arch }}.txt"
+      - name: Upload pushed digest record
+        if: steps.push.outcome == 'success'
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
         with:
-          context: .
-          platforms: linux/amd64,linux/arm64
-          push: true
-          pull: true
-          build-args: |
-            NODE_VERSION=${{ matrix.node }}
-          tags: ghcr.io/${{ github.repository_owner }}/img-nodejs:nodejs_${{ matrix.node }}
-          labels: |
-            org.opencontainers.image.source=https://github.com/${{ github.repository }}
-            org.opencontainers.image.title=Pterodactyl Node.js ${{ matrix.node }}
-            org.opencontainers.image.version=${{ matrix.node }}
-          sbom: true
-          provenance: mode=max
-          cache-from: type=gha,scope=node-${{ matrix.node }}-multiarch
-          cache-to: type=gha,mode=max,scope=node-${{ matrix.node }}-multiarch
+          name: pushed-${{ matrix.major }}-${{ matrix.arch }}
+          path: digest-${{ matrix.major }}-${{ matrix.arch }}.txt
+
+  publish-manifest:
+    name: Publish final multi-arch Node.js ${{ matrix.major }}
+    needs: [validate-metadata, publish-arch]
+    if: github.event_name == 'workflow_dispatch' && github.ref == 'refs/heads/main' && inputs.publish == true && needs.publish-arch.result == 'success'
+    runs-on: ubuntu-24.04
+    permissions:
+      contents: read
+      packages: write
+    strategy:
+      matrix: ${{ fromJSON(needs.validate-metadata.outputs.manifests) }}
+    steps:
+      - name: Download pushed digests
+        if: matrix.publish
+        uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4.3.0
+        with:
+          pattern: pushed-${{ matrix.major }}-*
+          merge-multiple: true
+      - name: Create final multi-arch tag from pushed digests
+        if: matrix.publish
+        env:
+          IMAGE: ${{ env.IMAGE_NAME }}
+        run: |
+          set -euo pipefail
+          amd="$(cut -d= -f2 "digest-${{ matrix.major }}-amd64.txt")"
+          arm="$(cut -d= -f2 "digest-${{ matrix.major }}-arm64.txt")"
+          [[ "$amd" =~ ^${IMAGE}@sha256:[0-9a-f]{64}$ ]] || { echo "invalid amd64 digest record" >&2; exit 1; }
+          [[ "$arm" =~ ^${IMAGE}@sha256:[0-9a-f]{64}$ ]] || { echo "invalid arm64 digest record" >&2; exit 1; }
+          echo "${{ secrets.GITHUB_TOKEN }}" | docker login "$REGISTRY" -u "${{ github.actor }}" --password-stdin
+          docker buildx imagetools create --tag "$IMAGE:nodejs_${{ matrix.major }}" "$amd" "$arm"

@@ -1,0 +1,50 @@
+{
+  "candidate": {
+    "base": "ghcr.io/parkervcp/yolks:nodejs_24@sha256:9e84c334572bf9c0310fbc4d0b0a789a909957d30bd7f2454a7af758ee842919",
+    "manifest_digest": "sha256:162c7218f5bedc5e3c4c459c770d3717f80fa20a5ae2524cfa37ef123f7e1f99",
+    "build_reported_digest": "sha256:162c7218f5bedc5e3c4c459c770d3717f80fa20a5ae2524cfa37ef123f7e1f99",
+    "image_id": "sha256:317535a11874028fd868d51b941f7148b6f103135c5801697ce36e8b0a9c9675",
+    "arch": "amd64",
+    "expected_node": "24.22.1"
+  },
+  "observed_arch": "amd64",
+  "package": {
+    "name": "typescript",
+    "version": "7.0.2",
+    "package_json_sha256": "3722b30210616a13a3213ded11575ba6b2dbab10c32a5ef67afca8513e27017e"
+  },
+  "entrypoint": {
+    "path": "/usr/local/bin/tsc",
+    "resolved": "/usr/local/lib/node_modules/typescript/bin/tsc",
+    "sha256": "2219f428a7e55aaf1f7ad85b9b0f0cf5078aeb76ccc9a7c6036c92d48f492ffd"
+  },
+  "native_compilers": [
+    {
+      "path": "/usr/local/lib/node_modules/typescript/node_modules/@typescript/typescript-linux-x64/lib/tsc",
+      "sha256": "679f8757f9ba34c5d25eb8a4382cdaa485143a3904bcf8a6453eef53ad95502f",
+      "package": "@typescript/typescript-linux-x64",
+      "version": "7.0.2"
+    }
+  ],
+  "custom_build_provenance": {
+    "kind": "custom-native-rebuild",
+    "upstream_version": "7.0.2",
+    "source_url": "https://github.com/microsoft/typescript-go/archive/refs/tags/typescript/v7.0.2.tar.gz",
+    "source_commit": "2bd066d87f5bafd315be9f40889d0a60b9e58e0b",
+    "source_tar_sha256": "25cca8ec9d89e4ceec5181a677ded2c6d690fa18b81e1277846303973eb71fcf",
+    "go_version": "1.26.10",
+    "x_text": "v0.41.0",
+    "main_package": "./cmd/tsgo",
+    "target": "linux/amd64",
+    "tests": "go test -p 2 -ldflags=-X=github.com/microsoft/typescript-go/internal/core.version=7.0.0-dev ./...",
+    "test_only_version": "7.0.0-dev",
+    "runtime_version": "7.0.2",
+    "baseline_modified": false,
+    "tests_skipped": false,
+    "official_upstream_binary": false,
+    "compiler_sources_modified": false,
+    "platform_package_url": "https://registry.npmjs.org/@typescript/typescript-linux-x64/-/typescript-linux-x64-7.0.2.tgz",
+    "platform_package_sha512": "EYdf2cNg7rgCWJnxCdJ+F3V39O8ihb37eHAu1LK8oAFizgTQbPOK7zHHXbPt8rX24COqODXeI3sIf0fCXG7H/A==",
+    "stale_upstream_signature_removed": true
+  }
+}

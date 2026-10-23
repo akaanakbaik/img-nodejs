@@ -1,0 +1,87 @@
+{
+  "apt_candidate_comparison": {
+    "all_installed_equal_candidate": true,
+    "changed": [],
+    "package_count": 0
+  },
+  "audit_scan_identity": {
+    "file": "package-cve-audit.json",
+    "sha256": "a4966b46aa6ec76247f9b159061d91ac6b0731f89f68e0d8b6cf749932ff5011"
+  },
+  "candidate": "nodejs_22-arm64",
+  "debian_triage_summary": {
+    "critical": 6,
+    "high": 333
+  },
+  "metadata": {
+    "arch": "arm64",
+    "base": "ghcr.io/parkervcp/yolks:nodejs_22@sha256:06f6429325dd5cf09443cd09dc5234caaf22daca71474cef22938f4092dd0579",
+    "build_reported_digest": "sha256:0c2e4396846f2911139a7891df9bb37f1b220d8aca4403c5ba7d281dc17e85be",
+    "expected_node": "22.23.4",
+    "image_id": "sha256:da7f1bc478e5873e0cbd6d3d0bec74c3e9ad28928624e2f2ac2d8339d2860d0c",
+    "manifest_digest": "sha256:0c2e4396846f2911139a7891df9bb37f1b220d8aca4403c5ba7d281dc17e85be"
+  },
+  "oci_verification": {
+    "archive": {
+      "path": "candidate.oci.tar",
+      "sha256": "96a70e85564cd548130f8ed68532d64c356af1ceb9d8a82b44f4ebe126c8724c"
+    },
+    "candidate": {
+      "arch": "arm64",
+      "image_id": "sha256:da7f1bc478e5873e0cbd6d3d0bec74c3e9ad28928624e2f2ac2d8339d2860d0c",
+      "manifest_digest": "sha256:0c2e4396846f2911139a7891df9bb37f1b220d8aca4403c5ba7d281dc17e85be"
+    },
+    "verified": {
+      "architecture": "arm64",
+      "config_digest": "sha256:da7f1bc478e5873e0cbd6d3d0bec74c3e9ad28928624e2f2ac2d8339d2860d0c",
+      "os": "linux",
+      "runtime_manifest_digest": "sha256:0c2e4396846f2911139a7891df9bb37f1b220d8aca4403c5ba7d281dc17e85be",
+      "traversed_digests": [
+        "sha256:00eaa487a1d7db523ff941c5877438df6cf5450a5039b62a3843b1b436081c35",
+        "sha256:0c2e4396846f2911139a7891df9bb37f1b220d8aca4403c5ba7d281dc17e85be",
+        "sha256:0eaab2c8ef4f3aea3688faf34d04ee717151370ef96e26679eac2b19db6774a4",
+        "sha256:110f2103a447890bef3b49a4383682b68725d077b6c87a0ebc791ce4dd701fbe",
+        "sha256:11a4a3ed35d5b33067b9a45c210e5f2a2391927bda2b4ed37cf77ef06f6a6e5b",
+        "sha256:2476cf82592c0c0332d1894736f02d83dc62ac5af7f97d4edfd977d06ca249aa",
+        "sha256:2677984b5b60bdb558be8e63433543cf697565357aa08d38c915a7eb650a83ce",
+        "sha256:2d5bb28bbbd5dee0f910f0b9d263feec8fccdac11dc00e5431786ec33e62b81a",
+        "sha256:364b518b59672a86f5692d357e80fcb719b239ef3a778f089a37b745425cec55",
+        "sha256:3ea0a596cf7a0eed85c774d706da3ee78e4de32ad1deaade440b80459ded0646",
+        "sha256:4096a907aebc21f009c0180ad2e0ed376d410126b41d3f1f500b8429a48192b4",
+        "sha256:4e47a31bdc647c9495478a824fb30e40811b609524d9deedb48c63f3cea9657a",
+        "sha256:4f4fb700ef54461cfa02571ae0db9a0dc1e0cdb5577484a6d75e68dc38e8acc1",
+        "sha256:6241f28de894f07777cf8935d9e8617937b592bc49b1bea8edb2e96d609df0df",
+        "sha256:6f23fbd6a491eccf1c64cb0aa2c009a0f699cfd26bdad4d724fa9969f5ac6f29",
+        "sha256:759ad1e73a1628f4263fab391becada1e07c7a7397f3a7b38412a0cf955faf32",
+        "sha256:77f7c0f8839f142bc8b0b71a8d2624826154284475c0567c0b430d8b90fe1470",
+        "sha256:8563170cecd0c8467727759fb8f773dedb0585721e4bcdc87e986ec26510deda",
+        "sha256:9c6aa284a03f445a94e8894985502734080eaa92f954cbd1671531867a4c977d",
+        "sha256:aa7c2c4790b7aef13adef6ccd70742b1de15adc9a160b3e0fdb8c74efebc7330",
+        "sha256:bac03218c15d8db8960cc4f1bd6ac917b726079b79d6da075dac139a6cf3d8e3",
+        "sha256:bd2d35d0503e2a3354aba38047fba2b9723c9914429c545aded2e859475d0491",
+        "sha256:da7f1bc478e5873e0cbd6d3d0bec74c3e9ad28928624e2f2ac2d8339d2860d0c",
+        "sha256:ddc0c1e36a6793411b6c8d48e1ddad2987405d377da92bcf532ed3181c2e4d62",
+        "sha256:eaf800d1567ab882bedfc8387c5f13428265fc996d82cac40154b288e3139fa7",
+        "sha256:f9f6567248f92f6dac0e6125e96b3fd31958d88f160e8e95522d48c01b873a62"
+      ]
+    }
+  },
+  "scan_counts": {
+    "CRITICAL": 6,
+    "HIGH": 333,
+    "all_trivy_vulnerabilities": 2619
+  },
+  "scanner_metadata": {
+    "CheckBundle": {
+      "Digest": "sha256:b591e9190cff4aa4e385b1a25bccfd9ecf178d3c77fd194e1410b7ce7e1df058",
+      "DownloadedAt": "2026-10-23T07:19:57.63896247Z"
+    },
+    "Version": "0.76.1",
+    "VulnerabilityDB": {
+      "DownloadedAt": "2026-10-23T07:19:43.888488731Z",
+      "NextUpdate": "2026-10-24T01:18:09.482141078Z",
+      "UpdatedAt": "2026-10-23T01:18:09.482141619Z",
+      "Version": 2
+    }
+  }
+}

@@ -1,0 +1,143 @@
+{
+  "scanner": {
+    "Version": "0.76.1",
+    "VulnerabilityDB": {
+      "Version": 2,
+      "NextUpdate": "2026-10-23T19:14:47.059491102Z",
+      "UpdatedAt": "2026-10-22T19:14:47.059491382Z",
+      "DownloadedAt": "2026-10-22T23:45:09.220772143Z"
+    },
+    "CheckBundle": {
+      "Digest": "sha256:b591e9190cff4aa4e385b1a25bccfd9ecf178d3c77fd194e1410b7ce7e1df058",
+      "DownloadedAt": "2026-10-22T23:45:58.094929235Z"
+    }
+  },
+  "images": [
+    {
+      "major": 18,
+      "scan_created_at": "2026-10-23T06:46:45.911908976+07:00",
+      "architecture": "amd64",
+      "base_manifest_digest": "sha256:5658d50a4ff05bbb531b3370d53e6a51cf4453b4fa1b49c17c05da738afb7661",
+      "counts": {
+        "LOW": 1968,
+        "HIGH": 1375,
+        "MEDIUM": 5259,
+        "UNKNOWN": 79,
+        "CRITICAL": 61
+      },
+      "unique_high_critical_cves": 943
+    },
+    {
+      "major": 19,
+      "scan_created_at": "2026-10-23T06:49:13.800392275+07:00",
+      "architecture": "amd64",
+      "base_manifest_digest": "sha256:d71a8b93c9bafa202787760420ffa6973dd035fe4a6934821d1979910f119b46",
+      "counts": {
+        "LOW": 2296,
+        "HIGH": 1468,
+        "MEDIUM": 5842,
+        "UNKNOWN": 60,
+        "CRITICAL": 68
+      },
+      "unique_high_critical_cves": 982
+    },
+    {
+      "major": 20,
+      "scan_created_at": "2026-10-23T06:49:38.36813476+07:00",
+      "architecture": "amd64",
+      "base_manifest_digest": "sha256:ba243b1487a454fecd2f2ae1b2c589c95d37db8756f1c09586db13b563a26e27",
+      "counts": {
+        "LOW": 1372,
+        "HIGH": 604,
+        "MEDIUM": 1951,
+        "UNKNOWN": 65,
+        "CRITICAL": 22
+      },
+      "unique_high_critical_cves": 349
+    },
+    {
+      "major": 21,
+      "scan_created_at": "2026-10-23T06:50:00.296841279+07:00",
+      "architecture": "amd64",
+      "base_manifest_digest": "sha256:b6a60124ec187dfb4bdd3b978a26bcbf5eda8944edc92dd0b9b37baeca1fae17",
+      "counts": {
+        "LOW": 1375,
+        "HIGH": 617,
+        "MEDIUM": 1963,
+        "UNKNOWN": 65,
+        "CRITICAL": 22
+      },
+      "unique_high_critical_cves": 356
+    },
+    {
+      "major": 22,
+      "scan_created_at": "2026-10-23T06:50:23.246791716+07:00",
+      "architecture": "amd64",
+      "base_manifest_digest": "sha256:06f6429325dd5cf09443cd09dc5234caaf22daca71474cef22938f4092dd0579",
+      "counts": {
+        "LOW": 1193,
+        "HIGH": 364,
+        "MEDIUM": 1080,
+        "UNKNOWN": 28,
+        "CRITICAL": 6
+      },
+      "unique_high_critical_cves": 152
+    },
+    {
+      "major": 23,
+      "scan_created_at": "2026-10-23T06:50:44.485584784+07:00",
+      "architecture": "amd64",
+      "base_manifest_digest": "sha256:81ad4c07b1f51dc1b484e4ca15de307a794c60c6125bb0ceeaa454a7afeb2991",
+      "counts": {
+        "LOW": 1373,
+        "HIGH": 610,
+        "MEDIUM": 1960,
+        "UNKNOWN": 65,
+        "CRITICAL": 22
+      },
+      "unique_high_critical_cves": 352
+    },
+    {
+      "major": 24,
+      "scan_created_at": "2026-10-23T06:45:31.330852194+07:00",
+      "architecture": "amd64",
+      "base_manifest_digest": "sha256:9e84c334572bf9c0310fbc4d0b0a789a909957d30bd7f2454a7af758ee842919",
+      "counts": {
+        "LOW": 1193,
+        "HIGH": 364,
+        "MEDIUM": 1080,
+        "UNKNOWN": 28,
+        "CRITICAL": 6
+      },
+      "unique_high_critical_cves": 152
+    },
+    {
+      "major": 25,
+      "scan_created_at": "2026-10-23T06:51:07.712100364+07:00",
+      "architecture": "amd64",
+      "base_manifest_digest": "sha256:a8848b2437d5e35a937710099d91385ddf0ef734b97a8f9b53a8b2efca671ef5",
+      "counts": {
+        "LOW": 1203,
+        "HIGH": 409,
+        "MEDIUM": 1107,
+        "UNKNOWN": 28,
+        "CRITICAL": 6
+      },
+      "unique_high_critical_cves": 165
+    },
+    {
+      "major": 26,
+      "scan_created_at": "2026-10-23T06:51:30.551288436+07:00",
+      "architecture": "amd64",
+      "base_manifest_digest": "sha256:7ef84d861620af3401e7dc945626ce53f9c5a49a58fe845e46544e0c24a99e70",
+      "counts": {
+        "LOW": 1193,
+        "HIGH": 364,
+        "MEDIUM": 1080,
+        "UNKNOWN": 28,
+        "CRITICAL": 6
+      },
+      "unique_high_critical_cves": 152
+    }
+  ]
+}

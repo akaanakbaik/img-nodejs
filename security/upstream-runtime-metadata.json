@@ -1,0 +1,146 @@
+[
+  {
+    "major": "18",
+    "arch": "amd64",
+    "digest": "sha256:3d57c1f415be7c6812a6d4d08e94cbc77eb6529a87c4a7a20e440926f0e21bc6",
+    "created": "2025-12-22T00:55:57.706690677Z",
+    "node_version_env": "18.20.8",
+    "user": "container"
+  },
+  {
+    "major": "18",
+    "arch": "arm64",
+    "digest": "sha256:1346506243ea82d344ddb1a54ac7ef11efebcbaa31a40ebb61d66d9fb0c7d11e",
+    "created": "2025-12-22T01:01:34.29734121Z",
+    "node_version_env": "18.20.8",
+    "user": "container"
+  },
+  {
+    "major": "19",
+    "arch": "amd64",
+    "digest": "sha256:8ec717b1b96a00dc58022d7882d41beae7725088be3ce386c32df9332e5cb3ca",
+    "created": "2025-12-22T00:55:54.357404164Z",
+    "node_version_env": "19.9.0",
+    "user": "container"
+  },
+  {
+    "major": "19",
+    "arch": "arm64",
+    "digest": "sha256:d6bc471326e8dca92858a1a0c9b997d77dcd43632c2f0630f24c2b3b467783cf",
+    "created": "2025-12-22T01:01:30.295136984Z",
+    "node_version_env": "19.9.0",
+    "user": "container"
+  },
+  {
+    "major": "20",
+    "arch": "amd64",
+    "digest": "sha256:eff96a084ffd3ca3a1eeac81f9cf605df400d5d556d0168755f85fc0157175b1",
+    "created": "2026-10-21T20:29:44.058163514Z",
+    "node_version_env": "20.20.2",
+    "user": "container"
+  },
+  {
+    "major": "20",
+    "arch": "arm64",
+    "digest": "sha256:7075dc59d0b6f4c4be22e7ca0e98e5f00239619faa4e2a2e48664526785b2ea0",
+    "created": "2026-10-21T20:35:20.165779305Z",
+    "node_version_env": "20.20.2",
+    "user": "container"
+  },
+  {
+    "major": "21",
+    "arch": "amd64",
+    "digest": "sha256:af5bbf5799e94a235676105a961ad569ae74b091d094e97192df91cdfca8e845",
+    "created": "2026-10-21T20:29:47.394278506Z",
+    "node_version_env": "21.7.3",
+    "user": "container"
+  },
+  {
+    "major": "21",
+    "arch": "arm64",
+    "digest": "sha256:18eecc0ab4986d9def372a414d002753be00228e9574c7823d3709d73a0e6553",
+    "created": "2026-10-21T20:35:21.259499958Z",
+    "node_version_env": "21.7.3",
+    "user": "container"
+  },
+  {
+    "major": "22",
+    "arch": "amd64",
+    "digest": "sha256:b534cc2fe89c25c8ed7f5a344584f5b3ed35d20eadb8147d92eb6d8ca6a06dc7",
+    "created": "2026-10-21T20:29:47.725477199Z",
+    "node_version_env": "22.23.4",
+    "user": "container"
+  },
+  {
+    "major": "22",
+    "arch": "arm64",
+    "digest": "sha256:13a7228355d1826626efd0dead669f9cece861a7abcc9d643aa832074820f6dc",
+    "created": "2026-10-21T20:36:35.182664482Z",
+    "node_version_env": "22.23.4",
+    "user": "container"
+  },
+  {
+    "major": "23",
+    "arch": "amd64",
+    "digest": "sha256:66b1efeed968cdd87759c5511db302da6468ec593024fd521f41ca242f594df1",
+    "created": "2026-10-21T20:29:44.21680538Z",
+    "node_version_env": "23.11.1",
+    "user": "container"
+  },
+  {
+    "major": "23",
+    "arch": "arm64",
+    "digest": "sha256:9e860688431c314854d3773eac6470986e1fd13785729906b967db410d5e798f",
+    "created": "2026-10-21T20:35:17.906942874Z",
+    "node_version_env": "23.11.1",
+    "user": "container"
+  },
+  {
+    "major": "24",
+    "arch": "amd64",
+    "digest": "sha256:f2ebd8d47e3b88eeb3cfccad9c51b80a0640de7708e2f4d53927020f6b492e6f",
+    "created": "2026-10-21T20:29:40.594730037Z",
+    "node_version_env": "24.22.1",
+    "user": "container"
+  },
+  {
+    "major": "24",
+    "arch": "arm64",
+    "digest": "sha256:93c2a0d39b7da40d1579784afeab7fb82774b013f05eae4fa5bdfe9e82d0fae7",
+    "created": "2026-10-21T20:36:33.050964828Z",
+    "node_version_env": "24.22.1",
+    "user": "container"
+  },
+  {
+    "major": "25",
+    "arch": "amd64",
+    "digest": "sha256:3c497d8d69f1f95df7863eb09d4ef327c543138ea813de565add220218bb11ae",
+    "created": "2026-10-21T20:29:48.742794589Z",
+    "node_version_env": "25.9.0",
+    "user": "container"
+  },
+  {
+    "major": "25",
+    "arch": "arm64",
+    "digest": "sha256:67219edcba3457cf57994eb4cf35294d85fe2b192803974bf7b7d73ffa877471",
+    "created": "2026-10-21T20:36:44.995840189Z",
+    "node_version_env": "25.9.0",
+    "user": "container"
+  },
+  {
+    "major": "26",
+    "arch": "amd64",
+    "digest": "sha256:cac109c3676728a55043e7cf313e71b012a2ac2953e695ca306459ff7ed4dfb5",
+    "created": "2026-10-21T20:29:40.544241167Z",
+    "node_version_env": "26.12.1",
+    "user": "container"
+  },
+  {
+    "major": "26",
+    "arch": "arm64",
+    "digest": "sha256:ad89a79219669365a35f33ad6a0b9e41a2020c194489bc39ada0ba88637b6a3f",
+    "created": "2026-10-21T20:36:38.657353593Z",
+    "node_version_env": "26.12.1",
+    "user": "container"
+  }
+]

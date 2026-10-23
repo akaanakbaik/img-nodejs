@@ -1,0 +1,6 @@
+--- FAIL: TestTscCommandline (0.00s)
+    --- FAIL: TestTscCommandline/tsc/show_help_with_ExitStatus.DiagnosticsPresent_OutputsSkipped (0.00s)
+        baseline.go:241: the baseline file /tmp/tmp.4fNaF9zCkG/src/typescript-go-typescript-v7.0.2/testdata/baselines/reference/tsc/commandLine/show-help-with-ExitStatus.DiagnosticsPresent_OutputsSkipped.js has changed. (Run `hereby baseline-accept` if the new baseline is correct.)
+FAIL
+FAIL	github.com/microsoft/typescript-go/internal/execute/tsctests	0.009s
+FAIL

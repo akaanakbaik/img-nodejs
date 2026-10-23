@@ -1,18 +1,32 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-if [[ $# -ne 3 ]]; then
-  echo "Usage: $0 <node-major> <amd64|arm64> <image>" >&2
+if [[ $# -lt 3 || $# -gt 4 ]]; then
+  echo "Usage: $0 <node-major> <amd64|arm64> <image> [expected-full-version]" >&2
   exit 2
 fi
 
 expected_major="$1"
 arch="$2"
 image="$3"
+expected_version="${4:-}"
 platform="linux/${arch}"
 
+engine="${CONTAINER_ENGINE:-docker}"
+command -v "$engine" >/dev/null || { echo "Container engine not found: $engine" >&2; exit 2; }
+run_args=()
+if [[ -n "${RUN_ARGS:-}" ]]; then read -r -a run_args <<<"$RUN_ARGS"; fi
+network_args=()
+if [[ -n "${CONTAINER_NETWORK:-}" ]]; then
+  network_args+=(--network "$CONTAINER_NETWORK")
+elif [[ "$engine" == "podman" ]]; then
+  # Podman in the CI sandbox needs host networking to reach the registry/runtime.
+  network_args+=(--network host)
+fi
+
 case "$arch" in
-  amd64|arm64) ;;
+  amd64) runtime_arch=x64 ;;
+  arm64) runtime_arch=arm64 ;;
   *) echo "Unsupported architecture: $arch" >&2; exit 2 ;;
 esac
 
@@ -22,10 +36,10 @@ fail() {
 }
 
 # These are the Pterodactyl Yolks runtime defaults that the Egg relies on.
-image_user="$(docker inspect --format '{{.Config.User}}' "$image")"
-workdir="$(docker inspect --format '{{.Config.WorkingDir}}' "$image")"
-entrypoint="$(docker inspect --format '{{json .Config.Entrypoint}}' "$image")"
-cmd="$(docker inspect --format '{{json .Config.Cmd}}' "$image")"
+image_user="$("$engine" inspect --format '{{.Config.User}}' "$image")"
+workdir="$("$engine" inspect --format '{{.Config.WorkingDir}}' "$image")"
+entrypoint="$("$engine" inspect --format '{{json .Config.Entrypoint}}' "$image")"
+cmd="$("$engine" inspect --format '{{json .Config.Cmd}}' "$image")"
 [[ "$image_user" == "container" ]] || fail "expected Config.User=container, got '$image_user'"
 [[ "$workdir" == "/home/container" ]] || fail "expected Config.WorkingDir=/home/container, got '$workdir'"
 [[ "$entrypoint" == '["/usr/bin/tini","-g","--"]' ]] || fail "unexpected entrypoint: $entrypoint"
@@ -41,17 +55,58 @@ STARTUP
 )"
 
 bash -n <<<"$startup_fixture" || fail "Egg startup fixture does not parse as Bash"
-docker run --rm --platform "$platform" \
+"$engine" run --rm "${run_args[@]}" "${network_args[@]}" --platform "$platform" \
   --env AUTO_UPDATE=0 \
   --env NODE_PACKAGES= \
   --env UNNODE_PACKAGES= \
   --env CUSTOM_ENVIRONMENT_VARIABLES= \
   --env CMD_RUN='node --version' \
   --env EXPECTED_NODE_MAJOR="$expected_major" \
+  ${expected_version:+--env EXPECTED_NODE_VERSION="$expected_version"} \
   "$image" /bin/bash -lc "$startup_fixture" > /tmp/img-nodejs-smoke.log
 
 # The container command above keeps the inherited Tini entrypoint and configured user/workdir.
 grep -Eq "^v${expected_major}\\." /tmp/img-nodejs-smoke.log || fail "Egg startup did not run the expected Node.js major"
-actual_major="$(docker run --rm --platform "$platform" --env EXPECTED_NODE_MAJOR="$expected_major" "$image" /bin/bash -lc 'test "$(id -un)" = container && test "$HOME" = /home/container && test "$PWD" = /home/container && node -e '\''const m=process.versions.node.split(".")[0]; if(m!==process.env.EXPECTED_NODE_MAJOR) process.exit(1)'\'' && npm --version >/dev/null && node --version')"
-[[ "$actual_major" == v"${expected_major}".* ]] || fail "runtime Node.js version mismatch: $actual_major"
+actual_version="$("$engine" run --rm "${run_args[@]}" "${network_args[@]}" --platform "$platform" --env EXPECTED_NODE_ARCH="$runtime_arch" --env EXPECTED_NODE_MAJOR="$expected_major" "$image" /bin/bash -lc 'test "$(id -un)" = container && test "$HOME" = /home/container && test "$PWD" = /home/container && node -e '\''const m=process.versions.node.split(".")[0]; if(m!==process.env.EXPECTED_NODE_MAJOR || process.arch!==process.env.EXPECTED_NODE_ARCH) process.exit(1)'\'' && npm --version >/dev/null && node --version')"
+if [[ -n "$expected_version" ]]; then
+  [[ "$actual_version" == "v${expected_version}" ]] || fail "runtime Node.js exact version mismatch: $actual_version (expected v$expected_version)"
+else
+  [[ "$actual_version" == v"${expected_major}".* ]] || fail "runtime Node.js version mismatch: $actual_version"
+fi
+
+# Keep inherited tooling usable after OS/package remediation. This installs only
+# a local benign fixture: no registry, credentials, application code or lifecycle scripts.
+"$engine" run --rm "${run_args[@]}" "${network_args[@]}" --platform "$platform" \
+  "$image" /bin/bash -ec '
+    temp="$(mktemp -d /tmp/egg-tooling.XXXXXX)"
+    trap '\''rm -rf "$temp"'\'' EXIT
+    cd "$temp"
+    mkdir dep
+    printf '\''{"name":"egg-smoke-local","version":"1.0.0","main":"index.js"}\n'\'' > dep/package.json
+    printf '\''module.exports = "egg-npm-ok";\n'\'' > dep/index.js
+    printf '\''{"name":"egg-smoke-app","version":"1.0.0","private":true,"dependencies":{"egg-smoke-local":"file:./dep"}}\n'\'' > package.json
+    npm install --offline --ignore-scripts --no-audit --no-fund
+    node -e '\''if(require("egg-smoke-local") !== "egg-npm-ok") process.exit(1)'\''
+    npm uninstall --offline --ignore-scripts --no-audit --no-fund egg-smoke-local
+    curl --version >/dev/null
+    git --version >/dev/null
+    ffmpeg -version >/dev/null
+    tsc --version
+    printf '\''const result: string = "egg-ts-ok"; console.log(result);\n'\'' > smoke.ts
+    tsc --target es2020 --module commonjs --outDir dist smoke.ts
+    node dist/smoke.js | grep -Fx egg-ts-ok
+    mkdir compiler-regression
+    printf '\''export interface Item { value: number }; export const item: Item = { value: 42 };\n'\'' > compiler-regression/dep.ts
+    printf '\''import { item } from "./dep"; async function run(): Promise<number> { return item.value; } run().then(value => console.log(`egg-ts-module-${value}`));\n'\'' > compiler-regression/main.ts
+    tsc --strict --declaration --target es2020 --module commonjs --outDir compiled compiler-regression/dep.ts compiler-regression/main.ts
+    test -s compiled/dep.d.ts
+    node compiled/main.js | grep -Fx egg-ts-module-42
+    printf '\''const mustFail: number = "not-a-number";\n'\'' > invalid.ts
+    if tsc --strict --noEmit invalid.ts > diagnostics.txt 2>&1; then
+      echo "Compiler accepted an invalid assignment" >&2
+      exit 1
+    fi
+    grep -F TS2322 diagnostics.txt
+  '
+printf 'PASS: %s offline npm install/uninstall, TypeScript compile, curl, git, ffmpeg.\n' "$platform"
 printf 'PASS: %s Node.js %s, npm, HOME, PWD, USER, inherited Tini entrypoint, and Egg startup fixture.\n' "$platform" "$expected_major"

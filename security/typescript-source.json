@@ -1,0 +1,122 @@
+{
+  "package": "typescript",
+  "current_release": {
+    "version": "7.0.2",
+    "registry_tarball": "https://registry.npmjs.org/typescript/-/typescript-7.0.2.tgz",
+    "sha512_integrity": "8FYau96o3NKOhbjKi/qNvG/W5jhzxkbdm5sj9AbZ/5T5sWqn3hJgLfGx27sRKZWTvyzCP8dLRBTf5tBTSRVUNA==",
+    "native_build": {
+      "linux_x64": {
+        "go": "1.26.10",
+        "x_text": "v0.41.0"
+      },
+      "linux_arm64": {
+        "go": "1.26.10",
+        "x_text": "v0.41.0"
+      }
+    }
+  },
+  "investigated_candidate": {
+    "version": "7.1.0-beta",
+    "status": "not_approved_for_image_upgrade",
+    "reason": "Not approved: prerelease compiler changes behavior; embedded Go 1.27.2 also does not meet the 1.27.3 fixed-version branch requirement for all reported Go CVEs. A same-series Go 1.26.10 stable-source rebuild is being validated instead.",
+    "registry_tarball": "https://registry.npmjs.org/typescript/-/typescript-7.1.0-beta.tgz",
+    "sha512_integrity": "cjWjZAJDsmZzsNC5GwHNlW0YPM65jZa5oR0KyQcYX3KSVIfTvtBq//vewISyatKk4OLi5grZjHhIVE9fdrw1UQ==",
+    "github_release": "https://github.com/microsoft/TypeScript/releases/tag/v7.1-beta",
+    "git_commit": "3e9236361fa97a9e6c685f4833ac457ae2d8c50a",
+    "platform_artifacts": {
+      "linux_x64": {
+        "registry_tarball": "https://registry.npmjs.org/@typescript/typescript-linux-x64/-/typescript-linux-x64-7.1.0-beta.tgz",
+        "sha512_integrity": "kcD51ihf+pnI5KT4uQQYG04OpwznaZYBlIQhDhl8fflFd27NktxXsUeguxZyvUMyWfum7IF2bBS6Jv7ox0AgFQ==",
+        "release_sha256": "7ecad6f67377e831856367ab062ef394f21506a611405bf8ac0ff039348637d3",
+        "go": "1.27.2",
+        "x_text": "v0.42.0"
+      },
+      "linux_arm64": {
+        "registry_tarball": "https://registry.npmjs.org/@typescript/typescript-linux-arm64/-/typescript-linux-arm64-7.1.0-beta.tgz",
+        "sha512_integrity": "hNqQBgQ5b5oGqN76QqbAU6CwYhJZ6iOcWc2kPTUs2OentgpxZktETziH6KIyRFJPaiBncognwn2ZLu3DNhHiWw==",
+        "release_sha256": "c83d931ac9dd7549cde6e71246aa9d6a9812843023df3e277fe3b5dcf41dd0ea",
+        "go": "1.27.2",
+        "x_text": "v0.42.0"
+      }
+    }
+  },
+  "decision": "stable_source_rebuild_pending_native_validation",
+  "sources_checked": [
+    "https://registry.npmjs.org/typescript",
+    "https://github.com/microsoft/TypeScript/releases",
+    "https://www.typescriptlang.org/download/"
+  ],
+  "required_floors": {
+    "go": "1.26.10",
+    "x_text": "v0.41.0"
+  },
+  "custom_rebuild": {
+    "status": "implemented_builder_not_upstream_release",
+    "source_url": "https://github.com/microsoft/typescript-go/archive/refs/tags/typescript/v7.0.2.tar.gz",
+    "source_commit": "2bd066d87f5bafd315be9f40889d0a60b9e58e0b",
+    "source_tar_sha256": "25cca8ec9d89e4ceec5181a677ded2c6d690fa18b81e1277846303973eb71fcf",
+    "go": "1.26.10",
+    "x_text": "v0.41.0",
+    "compiler_sources_modified": false,
+    "official_upstream_binary": false,
+    "build_script": "scripts/build_typescript.sh",
+    "regression_test": "scripts/test_typescript_source.py",
+    "official_instructions": {
+      "typescript": "https://github.com/microsoft/typescript-go/blob/main/CONTRIBUTING.md",
+      "go_source_build": "https://go.dev/doc/install/source",
+      "go_release_history": "https://go.dev/doc/devel/release"
+    },
+    "validation": [
+      "sha256 verify source archive",
+      "go mod edit golang.org/x/text@v0.41.0",
+      "go test -p 2 ./...",
+      "native linux amd64 and arm64 builds",
+      "tsc --version regression"
+    ],
+    "tests": "go test -p 2 ./...",
+    "native_only": true,
+    "main_package": "./cmd/tsgo",
+    "platform_packages": {
+      "linux_x64": {
+        "registry_tarball": "https://registry.npmjs.org/@typescript/typescript-linux-x64/-/typescript-linux-x64-7.0.2.tgz",
+        "sha512_integrity": "EYdf2cNg7rgCWJnxCdJ+F3V39O8ihb37eHAu1LK8oAFizgTQbPOK7zHHXbPt8rX24COqODXeI3sIf0fCXG7H/A==",
+        "cpu": [
+          "x64"
+        ],
+        "os": [
+          "linux"
+        ]
+      },
+      "linux_arm64": {
+        "registry_tarball": "https://registry.npmjs.org/@typescript/typescript-linux-arm64/-/typescript-linux-arm64-7.0.2.tgz",
+        "sha512_integrity": "Qh4eU4/y3yDjnfjjyPYihMj5/ODIlmt+Bzu17OI+fiSRDW57QmU5SiN63exPRNJPKUzcc1INa1NXdrJ+MqHjUQ==",
+        "cpu": [
+          "arm64"
+        ],
+        "os": [
+          "linux"
+        ]
+      }
+    },
+    "test_only_version_override": {
+      "version": "7.0.0-dev",
+      "reason": "Upstream release help baseline formats using development-version length before output sanitization; reference untouched; no skipped tests; runtime compiled without override as 7.0.2. Native CI validation required."
+    }
+  },
+  "go_download_manifest": {
+    "url": "https://go.dev/dl/?mode=json",
+    "version": "go1.26.10",
+    "files": {
+      "linux-amd64": {
+        "url": "https://go.dev/dl/go1.26.10.linux-amd64.tar.gz",
+        "sha256": "ccfe7ae822d2c2f41f4fe7c956199967a4dac22d0ee0d2b2bfdb440aab3b20c5",
+        "size": 66936659
+      },
+      "linux-arm64": {
+        "url": "https://go.dev/dl/go1.26.10.linux-arm64.tar.gz",
+        "sha256": "3f4227ce7b206a513e794f1393adb473a07b46e94d18bd15d1c684bbb7319797",
+        "size": 63827526
+      }
+    }
+  }
+}
