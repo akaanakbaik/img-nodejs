@@ -130,7 +130,7 @@ jobs:
           set -euo pipefail
           image="local/img-nodejs:nodejs_${{ matrix.major }}-${{ matrix.arch }}"
           jq -n --arg base "$BASE_REF" --arg digest "$BUILD_DIGEST" --arg imageid "$IMAGE_ID" --arg arch "${{ matrix.arch }}" --arg patch "${{ matrix.patch }}" '{base: $base, manifest_digest: $digest, image_id: $imageid, arch: $arch, expected_node: $patch}' > candidate-metadata.json
-          docker run --rm --entrypoint /bin/sh "$image" -c 'node --version; sha256sum /usr/local/bin/node; ldd /usr/local/bin/node; readelf -d /usr/local/bin/node; node -p "JSON.stringify({node:process.versions.node,brotli:process.versions.brotli,sharedBrotli:process.config.variables.node_shared_brotli})"; dpkg-query -W libbrotli1; node -e '\''require("zlib").brotliCompressSync(Buffer.from("test"));console.log(process.report.getReport().sharedObjects.join("\n"))'\''' > brotli-linkage.txt
+          docker run --rm --entrypoint /bin/sh "$image" -ec 'node --version; sha256sum /usr/local/bin/node; ldd /usr/local/bin/node; readelf -d /usr/local/bin/node; node -p "JSON.stringify({node:process.versions.node,brotli:process.versions.brotli,sharedBrotli:process.config.variables.node_shared_brotli})"; dpkg-query -W libbrotli1; node -e '\''require("zlib").brotliCompressSync(Buffer.from("test"));console.log(process.report.getReport().sharedObjects.join("\n"))'\''' > brotli-linkage.txt
       - name: Install pinned Trivy
         run: sudo TRIVY_BIN=/usr/local/bin/trivy bash scripts/install_trivy.sh
       - name: Scan image and repository
@@ -139,6 +139,7 @@ jobs:
           trivy image --scanners vuln --severity UNKNOWN,LOW,MEDIUM,HIGH,CRITICAL --format json --output "trivy-image-${{ matrix.major }}-${{ matrix.arch }}.json" "local/img-nodejs:nodejs_${{ matrix.major }}-${{ matrix.arch }}"
           trivy image --scanners vuln --format cyclonedx --output "trivy-sbom-${{ matrix.major }}-${{ matrix.arch }}.json" "local/img-nodejs:nodejs_${{ matrix.major }}-${{ matrix.arch }}"
           trivy fs --scanners vuln,secret,misconfig --severity UNKNOWN,LOW,MEDIUM,HIGH,CRITICAL --format json --output "trivy-repo-${{ matrix.major }}-${{ matrix.arch }}.json" .
+          trivy --version --format json > scanner-metadata.json
       - name: Upload scan reports
         if: always()
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
@@ -148,6 +149,7 @@ jobs:
             trivy-*.json
             candidate-metadata.json
             brotli-linkage.txt
+            scanner-metadata.json
           if-no-files-found: warn
       - name: Block CVE-2026-111497 at every severity
         run: |
