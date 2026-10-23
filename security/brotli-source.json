@@ -1,0 +1,26 @@
+{
+  "upstream": {
+    "project": "google/brotli",
+    "version": "1.1.1",
+    "commit": "db0631dfea829194206d269bc7b25d0908cdb97d",
+    "archive": "vendor/brotli-source/brotli-1.1.1.tar.gz",
+    "archive_sha256": "38f9c17ee36c2e930ce00975b50fcd246a8e5594c1bcf43cd56b14118786b82a",
+    "codeload_url": "https://codeload.github.com/google/brotli/tar.gz/db0631dfea829194206d269bc7b25d0908cdb97d"
+  },
+  "debian_packaging": {
+    "source_version": "1.1.0-2",
+    "rebuild_version": "1.1.1-0img1~deb13u1",
+    "source": "https://sources.debian.org/src/brotli/1.1.0-2/",
+    "files": {
+      "control": "vendor/brotli-debian/debian/control",
+      "rules": "vendor/brotli-debian/debian/rules",
+      "changelog": "vendor/brotli-debian/debian/changelog",
+      "symbols": "vendor/brotli-debian/debian/libbrotli1.symbols"
+    }
+  },
+  "abi_requirements": {
+    "sonames": ["libbrotlicommon.so.1", "libbrotlidec.so.1", "libbrotlienc.so.1"],
+    "packages": ["libbrotli1", "libbrotli-dev", "python3-brotli"],
+    "preserve_if_installed": true
+  }
+}

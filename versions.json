@@ -14,5 +14,5 @@
     {"major": 25, "version": "25.9.0", "supported": false},
     {"major": 26, "version": "26.12.1", "supported": true, "minimum_patch": "26.12.1"}
   ],
-  "support_policy": "All Node.js majors 18-26 are verified for compatibility; only 22, 24 and 26 are publication candidates by default. EOL is report-only unless explicitly requested and passing the same scan gate. Supported branches must meet their CVE minimum patch. No image is published on a failed security gate."
+  "support_policy": "All Node.js majors 18-26 are verified for compatibility; only 22, 24 and 26 are publication candidates by default. EOL is permanently report-only and is excluded from publication matrices; there is no EOL publication override. Supported branches must meet their CVE minimum patch. No image is published on a failed security gate."
 }

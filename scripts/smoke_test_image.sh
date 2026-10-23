@@ -73,4 +73,28 @@ if [[ -n "$expected_version" ]]; then
 else
   [[ "$actual_version" == v"${expected_major}".* ]] || fail "runtime Node.js version mismatch: $actual_version"
 fi
+
+# Keep inherited tooling usable after OS/package remediation. This installs only
+# a local benign fixture: no registry, credentials, application code or lifecycle scripts.
+"$engine" run --rm "${run_args[@]}" "${network_args[@]}" --platform "$platform" \
+  "$image" /bin/bash -ec '
+    temp="$(mktemp -d /tmp/egg-tooling.XXXXXX)"
+    trap '\''rm -rf "$temp"'\'' EXIT
+    cd "$temp"
+    mkdir dep
+    printf '\''{"name":"egg-smoke-local","version":"1.0.0","main":"index.js"}\n'\'' > dep/package.json
+    printf '\''module.exports = "egg-npm-ok";\n'\'' > dep/index.js
+    printf '\''{"name":"egg-smoke-app","version":"1.0.0","private":true,"dependencies":{"egg-smoke-local":"file:./dep"}}\n'\'' > package.json
+    npm install --offline --ignore-scripts --no-audit --no-fund
+    node -e '\''if(require("egg-smoke-local") !== "egg-npm-ok") process.exit(1)'\''
+    npm uninstall --offline --ignore-scripts --no-audit --no-fund egg-smoke-local
+    curl --version >/dev/null
+    git --version >/dev/null
+    ffmpeg -version >/dev/null
+    tsc --version
+    printf '\''const result: string = "egg-ts-ok"; console.log(result);\n'\'' > smoke.ts
+    tsc --target es2020 --module commonjs --outDir dist smoke.ts
+    node dist/smoke.js | grep -Fx egg-ts-ok
+  '
+printf 'PASS: %s offline npm install/uninstall, TypeScript compile, curl, git, ffmpeg.\n' "$platform"
 printf 'PASS: %s Node.js %s, npm, HOME, PWD, USER, inherited Tini entrypoint, and Egg startup fixture.\n' "$platform" "$expected_major"

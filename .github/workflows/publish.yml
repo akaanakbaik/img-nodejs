@@ -9,6 +9,8 @@ on:
       - egg/docker_images.json
       - scripts/**
       - versions.json
+      - security/**
+      - vendor/**
   pull_request:
     paths:
       - Dockerfile
@@ -16,7 +18,15 @@ on:
       - egg/docker_images.json
       - scripts/**
       - versions.json
+      - security/**
+      - vendor/**
   workflow_dispatch:
+    inputs:
+      publish:
+        description: Publish tested images to the public registry
+        required: true
+        default: false
+        type: boolean
   schedule:
     - cron: "23 4 * * 1"
 
@@ -55,6 +65,8 @@ jobs:
           python3 scripts/test_resolve_versions.py
           python3 scripts/test_cve_gate.py
           python3 scripts/test_os_update_policy.py
+          python3 scripts/test_verify_candidate.py
+          python3 scripts/test_audit_scan.py
           python3 scripts/resolve_versions.py --check
           test -s versions.json
       - id: matrix
@@ -115,11 +127,12 @@ jobs:
         env:
           BASE_REF: ${{ steps.base.outputs.ref }}
           BUILD_DIGEST: ${{ steps.build.outputs.digest }}
-          IMAGE_ID: ${{ steps.build.outputs.imageid }}
         run: |
           set -euo pipefail
           image="local/img-nodejs:nodejs_${{ matrix.major }}-${{ matrix.arch }}"
-          jq -n --arg base "$BASE_REF" --arg digest "$BUILD_DIGEST" --arg imageid "$IMAGE_ID" --arg arch "${{ matrix.arch }}" --arg patch "${{ matrix.patch }}" '{base: $base, manifest_digest: $digest, image_id: $imageid, arch: $arch, expected_node: $patch}' > candidate-metadata.json
+          read -r IMAGE_ID IMAGE_ARCH < <(docker inspect --format '{{.Id}} {{.Architecture}}' "$image")
+          test -n "$IMAGE_ID"
+          jq -n --arg base "$BASE_REF" --arg digest "$BUILD_DIGEST" --arg imageid "$IMAGE_ID" --arg arch "$IMAGE_ARCH" --arg patch "${{ matrix.patch }}" '{base: $base, manifest_digest: $digest, image_id: $imageid, arch: $arch, expected_node: $patch}' > candidate-metadata.json
           docker run --rm --entrypoint /bin/sh "$image" -ec 'node --version; sha256sum /usr/local/bin/node; ldd /usr/local/bin/node; readelf -d /usr/local/bin/node; node -p "JSON.stringify({node:process.versions.node,brotli:process.versions.brotli,sharedBrotli:process.config.variables.node_shared_brotli})"; dpkg-query -W libbrotli1; node -e '\''require("zlib").brotliCompressSync(Buffer.from("test"));console.log(process.report.getReport().sharedObjects.join("\n"))'\''' > brotli-linkage.txt
       - name: Install pinned Trivy
         run: sudo TRIVY_BIN=/usr/local/bin/trivy bash scripts/install_trivy.sh
@@ -130,11 +143,21 @@ jobs:
           trivy image --scanners vuln --format cyclonedx --output "trivy-sbom-${{ matrix.major }}-${{ matrix.arch }}.json" "local/img-nodejs:nodejs_${{ matrix.major }}-${{ matrix.arch }}"
           trivy fs --scanners vuln,secret,misconfig --severity UNKNOWN,LOW,MEDIUM,HIGH,CRITICAL --format json --output "trivy-repo-${{ matrix.major }}-${{ matrix.arch }}.json" .
           trivy --version --format json > scanner-metadata.json
+          python3 scripts/audit_scan.py candidate-metadata.json "trivy-image-${{ matrix.major }}-${{ matrix.arch }}.json" "trivy-sbom-${{ matrix.major }}-${{ matrix.arch }}.json" package-cve-audit.json
+          jq -r ' .findings[] | select(.type == "debian" and (.severity == "HIGH" or .severity == "CRITICAL" or .cve == "CVE-2026-111497")) | .package' package-cve-audit.json | sort -u > blocking-os-packages.txt
+          image="local/img-nodejs:nodejs_${{ matrix.major }}-${{ matrix.arch }}"
+          docker run --rm -i --entrypoint python3 --mount "type=bind,src=$PWD/scripts,dst=/audit,readonly" "$image" /audit/installed_package_paths.py < blocking-os-packages.txt > package-paths.json
+      - name: Verify candidate identity against scanner and Docker
+        if: matrix.publish
+        run: |
+          set -euo pipefail
+          python3 scripts/verify_candidate.py --metadata candidate-metadata.json --scanner-report "trivy-image-${{ matrix.major }}-${{ matrix.arch }}.json" --image "local/img-nodejs:nodejs_${{ matrix.major }}-${{ matrix.arch }}" --expected-arch "${{ matrix.arch }}"
       - name: Audit system Brotli consumers with benign input
         if: matrix.publish
         run: |
           set -euo pipefail
           docker run --rm --entrypoint /bin/bash --mount "type=bind,src=$PWD/scripts,dst=/audit,readonly" "local/img-nodejs:nodejs_${{ matrix.major }}-${{ matrix.arch }}" /audit/audit_brotli_consumers.sh > brotli-consumers.txt 2>&1
+          docker run --rm --entrypoint /bin/sh "local/img-nodejs:nodejs_${{ matrix.major }}-${{ matrix.arch }}" -ec 'cat /usr/local/share/image-security/brotli-provenance/*' > package-provenance.txt
       - name: Upload scan reports
         if: always()
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
@@ -146,6 +169,10 @@ jobs:
             brotli-linkage.txt
             brotli-consumers.txt
             scanner-metadata.json
+            package-cve-audit.json
+            package-provenance.txt
+            blocking-os-packages.txt
+            package-paths.json
           if-no-files-found: warn
       - name: Block CVE-2026-111497 at every severity
         if: matrix.publish
@@ -171,19 +198,25 @@ jobs:
       - name: Save exact tested image
         id: save
         if: steps.gate.outcome == 'success'
-        run: docker save "local/img-nodejs:nodejs_${{ matrix.major }}-${{ matrix.arch }}" | gzip -1 > "image-${{ matrix.major }}-${{ matrix.arch }}.tar.gz"
+        run: |
+          set -euo pipefail
+          docker save "local/img-nodejs:nodejs_${{ matrix.major }}-${{ matrix.arch }}" | gzip -1 > "image-${{ matrix.major }}-${{ matrix.arch }}.tar.gz"
+          sha256sum "image-${{ matrix.major }}-${{ matrix.arch }}.tar.gz" > "image-${{ matrix.major }}-${{ matrix.arch }}.tar.gz.sha256"
       - name: Upload exact tested image
         if: steps.save.outcome == 'success'
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
         with:
           name: tested-${{ matrix.major }}-${{ matrix.arch }}
-          path: image-${{ matrix.major }}-${{ matrix.arch }}.tar.gz
+          path: |
+            image-${{ matrix.major }}-${{ matrix.arch }}.tar.gz
+            image-${{ matrix.major }}-${{ matrix.arch }}.tar.gz.sha256
+            candidate-metadata.json
           if-no-files-found: error
 
   publish-arch:
     name: Publish tested arch Node.js ${{ matrix.major }} (${{ matrix.arch }})
     needs: [validate-metadata, verify]
-    if: github.ref == 'refs/heads/main' && needs.verify.result == 'success'
+    if: github.ref == 'refs/heads/main' && needs.verify.result == 'success' && github.event_name == 'workflow_dispatch' && inputs.publish == true
     runs-on: ubuntu-24.04
     permissions:
       contents: read
@@ -192,6 +225,10 @@ jobs:
       fail-fast: false
       matrix: ${{ fromJSON(needs.validate-metadata.outputs.publish_matrix) }}
     steps:
+      - name: Check out source
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
       - name: Download exact tested image
         if: matrix.publish
         uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4.3.0
@@ -206,10 +243,13 @@ jobs:
         run: |
           set -euo pipefail
           gunzip -c "image-${{ matrix.major }}-${{ matrix.arch }}.tar.gz" | docker load
+          python3 scripts/verify_candidate.py --metadata candidate-metadata.json --image "local/img-nodejs:nodejs_${{ matrix.major }}-${{ matrix.arch }}" --expected-arch "${{ matrix.arch }}" --artifact "image-${{ matrix.major }}-${{ matrix.arch }}.tar.gz" --sha256 "image-${{ matrix.major }}-${{ matrix.arch }}.tar.gz.sha256"
           echo "${{ secrets.GITHUB_TOKEN }}" | docker login "$REGISTRY" -u "${{ github.actor }}" --password-stdin
           docker tag "local/img-nodejs:nodejs_${{ matrix.major }}-${{ matrix.arch }}" "$IMAGE:$STAGE"
           docker push "$IMAGE:$STAGE"
-          docker inspect --format='digest={{index .RepoDigests 0}}' "$IMAGE:$STAGE" > "digest-${{ matrix.major }}-${{ matrix.arch }}.txt"
+          digest_record="$(docker inspect --format='{{index .RepoDigests 0}}' "$IMAGE:$STAGE")"
+          [[ "$digest_record" =~ ^${IMAGE}@sha256:[0-9a-f]{64}$ ]] || { echo "invalid pushed digest or repository: $digest_record" >&2; exit 1; }
+          printf 'digest=%s\n' "$digest_record" > "digest-${{ matrix.major }}-${{ matrix.arch }}.txt"
       - name: Upload pushed digest record
         if: steps.push.outcome == 'success'
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
@@ -220,7 +260,7 @@ jobs:
   publish-manifest:
     name: Publish final multi-arch Node.js ${{ matrix.major }}
     needs: [validate-metadata, publish-arch]
-    if: github.ref == 'refs/heads/main' && needs.publish-arch.result == 'success'
+    if: github.event_name == 'workflow_dispatch' && github.ref == 'refs/heads/main' && inputs.publish == true && needs.publish-arch.result == 'success'
     runs-on: ubuntu-24.04
     permissions:
       contents: read
