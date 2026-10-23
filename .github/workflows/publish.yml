@@ -105,6 +105,7 @@ jobs:
           [[ "$digest" =~ ^sha256:[0-9a-f]{64}$ ]] || { echo "invalid base digest: $digest" >&2; exit 1; }
           printf 'ref=%s@%s\n' "$ref" "$digest" >> "$GITHUB_OUTPUT"
       - name: Build exact candidate (native architecture)
+        id: build
         uses: docker/build-push-action@c3c9e263c25d99ce0380d002d59b67737d91b0dc # v7.4.0
         with:
           context: .
@@ -120,6 +121,16 @@ jobs:
           cache-to: type=gha,mode=max,scope=node-${{ matrix.major }}-${{ matrix.arch }}
       - name: Test runtime and Egg startup contract
         run: bash scripts/smoke_test_image.sh "${{ matrix.major }}" "${{ matrix.arch }}" "local/img-nodejs:nodejs_${{ matrix.major }}-${{ matrix.arch }}" "${{ matrix.patch }}"
+      - name: Record exact candidate and Brotli linkage
+        env:
+          BASE_REF: ${{ steps.base.outputs.ref }}
+          BUILD_DIGEST: ${{ steps.build.outputs.digest }}
+          IMAGE_ID: ${{ steps.build.outputs.imageid }}
+        run: |
+          set -euo pipefail
+          image="local/img-nodejs:nodejs_${{ matrix.major }}-${{ matrix.arch }}"
+          jq -n --arg base "$BASE_REF" --arg digest "$BUILD_DIGEST" --arg imageid "$IMAGE_ID" --arg arch "${{ matrix.arch }}" --arg patch "${{ matrix.patch }}" '{base: $base, manifest_digest: $digest, image_id: $imageid, arch: $arch, expected_node: $patch}' > candidate-metadata.json
+          docker run --rm --entrypoint /bin/sh "$image" -c 'node --version; sha256sum /usr/local/bin/node; ldd /usr/local/bin/node; readelf -d /usr/local/bin/node; node -p "JSON.stringify({node:process.versions.node,brotli:process.versions.brotli,sharedBrotli:process.config.variables.node_shared_brotli})"; dpkg-query -W libbrotli1; node -e '\''require("zlib").brotliCompressSync(Buffer.from("test"));console.log(process.report.getReport().sharedObjects.join("\n"))'\''' > brotli-linkage.txt
       - name: Install pinned Trivy
         run: sudo TRIVY_BIN=/usr/local/bin/trivy bash scripts/install_trivy.sh
       - name: Scan image and repository
@@ -133,8 +144,18 @@ jobs:
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
         with:
           name: reports-${{ matrix.major }}-${{ matrix.arch }}
-          path: trivy-*.json
+          path: |
+            trivy-*.json
+            candidate-metadata.json
+            brotli-linkage.txt
           if-no-files-found: warn
+      - name: Block CVE-2026-111497 at every severity
+        run: |
+          set -euo pipefail
+          report="trivy-image-${{ matrix.major }}-${{ matrix.arch }}.json"
+          test -s "$report"
+          jq -e 'type == "object" and (.Results | type == "array")' "$report" >/dev/null
+          jq -e '[.Results[]?.Vulnerabilities[]? | select(.VulnerabilityID == "CVE-2026-111497")] | length == 0' "$report" >/dev/null
       - name: Enforce vulnerability and repository security gates
         id: gate
         if: matrix.publish
