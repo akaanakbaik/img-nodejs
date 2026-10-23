@@ -24,7 +24,7 @@ def test_metadata():
 
 def test_builder_contract():
     text = (ROOT / "scripts/build_typescript.sh").read_text()
-    for needle in ("sha256sum -c", "base64.b64encode(hashlib.sha512", "go mod edit", "go test -p 2 ./...", "go mod verify", "compiler_sources_modified", "official_upstream_binary", "dependency-diff.txt", "go-sources.after-tests"):
+    for needle in ("sha256sum -c", "base64.b64encode(hashlib.sha512", "go mod edit", "go test -p 2 -ldflags=", "go mod verify", "compiler_sources_modified", "official_upstream_binary", "dependency-diff.txt", "go-sources.after-tests"):
         if needle not in text:
             fail(f"builder lacks {needle}")
     if "go mod tidy" in text:

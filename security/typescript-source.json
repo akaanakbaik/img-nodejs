@@ -97,6 +97,10 @@
           "linux"
         ]
       }
+    },
+    "test_only_version_override": {
+      "version": "7.0.0-dev",
+      "reason": "Upstream release help baseline formats using development-version length before output sanitization; reference untouched; no skipped tests; runtime compiled without override as 7.0.2. Native CI validation required."
     }
   },
   "go_download_manifest": {

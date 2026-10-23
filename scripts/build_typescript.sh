@@ -48,7 +48,16 @@ GOTOOLCHAIN=local GOPROXY=https://proxy.golang.org GOSUMDB=sum.golang.org go mod
 find . -type f -name '*.go' -print0 | sort -z | xargs -0 sha256sum > "$WORK_DIR/go-sources.after"
 cmp "$WORK_DIR/go-sources.before" "$WORK_DIR/go-sources.after"
 GOTOOLCHAIN=local GOPROXY=https://proxy.golang.org GOSUMDB=sum.golang.org go mod verify
-GOTOOLCHAIN=local GOPROXY=https://proxy.golang.org GOSUMDB=sum.golang.org go test -p 2 ./...
+# The release tag changes core.version to 7.0.2, but its help baseline was
+# formatted with the nine-character development version before sanitization.
+# Set that version ONLY in test executables; never accept/skip a baseline.
+if ! go test -p 2 -ldflags='-X github.com/microsoft/typescript-go/internal/core.version=7.0.0-dev' ./...; then
+  find testdata/baselines/local -type f -name '*.js' -print | sed -n '1,20p'
+  reference=testdata/baselines/reference/tsc/commandLine/show-help-with-ExitStatus.DiagnosticsPresent_OutputsSkipped.js
+  local=testdata/baselines/local/tsc/commandLine/show-help-with-ExitStatus.DiagnosticsPresent_OutputsSkipped.js
+  if test -f "$local"; then diff -u "$reference" "$local" || true; fi
+  exit 1
+fi
 find . -type f -name '*.go' -print0 | sort -z | xargs -0 sha256sum > "$WORK_DIR/go-sources.after-tests"
 cmp "$WORK_DIR/go-sources.before" "$WORK_DIR/go-sources.after-tests"
 
@@ -80,7 +89,7 @@ import json, pathlib, sys
 p=pathlib.Path(sys.argv[1]); d=json.loads(p.read_text()); d['x-image-build']={'kind':'custom-native-rebuild','official_upstream_binary':False,'compiler_sources_modified':False,'source_commit':'2bd066d87f5bafd315be9f40889d0a60b9e58e0b','source_tar_sha256':'25cca8ec9d89e4ceec5181a677ded2c6d690fa18b81e1277846303973eb71fcf','go_version':'1.26.10','x_text':'v0.41.0','platform_package_sha512':sys.argv[4]}; p.write_text(json.dumps(d,indent=2)+'\n')
 PY
 cat > "$pkg/BUILD-PROVENANCE.json" <<EOF
-{"kind":"custom-native-rebuild","upstream_version":"$VERSION","source_url":"$SOURCE_URL","source_commit":"$SOURCE_COMMIT","source_tar_sha256":"$SOURCE_SHA256","go_version":"$GO_VERSION","x_text":"$XTEXT_VERSION","main_package":"./cmd/tsgo","target":"linux/$actual_arch","tests":"go test -p 2 ./...","official_upstream_binary":false,"compiler_sources_modified":false,"platform_package_url":"$platform_url","platform_package_sha512":"$platform_sha512","stale_upstream_signature_removed":true}
+{"kind":"custom-native-rebuild","upstream_version":"$VERSION","source_url":"$SOURCE_URL","source_commit":"$SOURCE_COMMIT","source_tar_sha256":"$SOURCE_SHA256","go_version":"$GO_VERSION","x_text":"$XTEXT_VERSION","main_package":"./cmd/tsgo","target":"linux/$actual_arch","tests":"go test -p 2 -ldflags=-X=github.com/microsoft/typescript-go/internal/core.version=7.0.0-dev ./...","test_only_version":"7.0.0-dev","runtime_version":"7.0.2","baseline_modified":false,"tests_skipped":false,"official_upstream_binary":false,"compiler_sources_modified":false,"platform_package_url":"$platform_url","platform_package_sha512":"$platform_sha512","stale_upstream_signature_removed":true}
 EOF
 go version -m "$pkg/lib/tsc" > "$pkg/go-build-info.txt"
 grep -F 'go1.26.10' "$pkg/go-build-info.txt"
