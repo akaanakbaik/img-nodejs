@@ -53,6 +53,7 @@ jobs:
           node scripts/test_verify_runtime.js
           python3 scripts/test_resolve_versions.py
           python3 scripts/test_cve_gate.py
+          python3 scripts/test_os_update_policy.py
           python3 scripts/resolve_versions.py --check
           test -s versions.json
       - id: matrix
@@ -104,6 +105,7 @@ jobs:
             NODE_MAJOR=${{ matrix.major }}
             NODE_PATCH=${{ matrix.patch }}
             BASE_IMAGE=${{ steps.base.outputs.ref }}
+            APPLY_OS_UPDATES=${{ matrix.publish }}
           cache-from: type=gha,scope=node-${{ matrix.major }}-${{ matrix.arch }}
           cache-to: type=gha,mode=max,scope=node-${{ matrix.major }}-${{ matrix.arch }}
       - name: Test runtime and Egg startup contract
