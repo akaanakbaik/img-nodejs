@@ -1,0 +1,12 @@
+{
+  "status": "verified_version_header_padding_only",
+  "changed_line": 9,
+  "padding_delta": 4,
+  "reference_sha256": "99b311dd1c9803a0749171557be6cab1fd9057c121f8f5af9bf2e01d2d131918",
+  "actual_sha256": "9fa4b58a45fe921cb9eda771717569cfe94f5f46f71fbacfc0cfa9c8beded0ff",
+  "reference_modified": false,
+  "tests_skipped": false,
+  "runtime_version": "7.0.2",
+  "test_only_version": "7.0.0-dev",
+  "diff": "--- upstream-reference\n+++ stable-release-test-actual\n@@ -6,7 +6,7 @@\n ExitStatus:: DiagnosticsPresent_OutputsSkipped\n Output::\n Version FakeTSVersion\n-tsc: The TypeScript Compiler - Version FakeTSVersion                                                                   \u001b[44m     \u001b[39;49m\n+tsc: The TypeScript Compiler - Version FakeTSVersion                                                                       \u001b[44m     \u001b[39;49m\n                                                                                                                    \u001b[44m\u001b[97m  TS \u001b[39m\u001b[39;49m\n \u001b[1mCOMMON COMMANDS\u001b[22m\n \n"
+}

@@ -1,28 +1,36 @@
-# Triage Debian HIGH/CRITICAL — 2026-10-23
+# Triage Debian final — 2026-10-23
 
-## Cakupan dan hasil
+## Hasil final dan baseline
 
-Triage ini memakai `package-cve-audit.json`, `package-paths.json`, raw Trivy image report, dan Trivy CycloneDX SBOM dari `/workspace/img-nodejs-final-evidence`. **Setiap pasangan binary-package/CVE dipertahankan sebagai satu record**; tidak ada threshold yang diturunkan, suppression, penghapusan paket, atau perubahan base image. Semua enam kandidat (Node 22/24/26 × amd64/arm64) memiliki **339/339 pasangan**: **333 HIGH + 6 CRITICAL**, 59 binary packages. Inventory dpkg memuat **60 paket** (59 paket yang memiliki finding + Brotli); suffix multiarch `:amd64`/`:arm64` dinormalisasi hanya untuk pemetaan, sedangkan nama dan arsitektur asli tetap disimpan. Status scanner: **190 affected**, **148 fix_deferred**, **1 will_not_fix**; **0** record memiliki `fixed_version`.
+Enam kandidat immutable Node 22/24/26 untuk amd64/arm64 dibuktikan melalui metadata kandidat, audit paket, raw Trivy, SBOM, serta verifikasi OCI. Baseline adalah **348 HIGH + 6 CRITICAL**; hasil final adalah **339 pasangan: 333 HIGH + 6 CRITICAL**, dengan **19 source group, 59 binary package**, dan inventory APT **60 paket**. Penurunan 15 HIGH bukan bukti seluruh isu telah fixed; pasangan tetap dipertahankan dan tidak ada VEX, ignore, penghapusan finding, atau pelonggaran gate.
 
-| Kandidat | Pasangan | HIGH | CRITICAL | affected | fix_deferred | will_not_fix | paket inventory | paket path terpetakan | punya SBOM ref |
-|---|---:|---:|---:|---:|---:|---:|---:|---:|---:|
-| nodejs_22-amd64 | 339 | 333 | 6 | 190 | 148 | 1 | 60 | 59 | 339 |
-| nodejs_22-arm64 | 339 | 333 | 6 | 190 | 148 | 1 | 60 | 59 | 339 |
-| nodejs_24-amd64 | 339 | 333 | 6 | 190 | 148 | 1 | 60 | 59 | 339 |
-| nodejs_24-arm64 | 339 | 333 | 6 | 190 | 148 | 1 | 60 | 59 | 339 |
-| nodejs_26-amd64 | 339 | 333 | 6 | 190 | 148 | 1 | 60 | 59 | 339 |
-| nodejs_26-arm64 | 339 | 333 | 6 | 190 | 148 | 1 | 60 | 59 | 339 |
+| Perbandingan | Baseline | Final |
+|---|---:|---:|
+| HIGH | 348 | 333 |
+| CRITICAL | 6 | 6 |
+| pasangan audit | — | 339 |
+| source group | — | 19 |
+| binary package | — | 59 |
+| inventory APT | — | 60 |
 
-`sbom_refs` adalah identitas komponen; SBOM Trivy tidak menyediakan path file. Path diambil dari bukti dpkg `package-paths.json`; 339 pasangan kini terpetakan karena nama evidence memakai suffix arsitektur dpkg. `source_package`/`source_version` diambil dari `Packages[].SrcName`/`SrcVersion` raw scan, bukan fallback nama binary. Mapping audit, SBOM, candidate image ID, versi path, dan raw scan divalidasi fail-closed; setiap output menyimpan SHA-256 evidence. Candidate APT, bila diberikan melalui inventory vendor, dilabeli `apt_candidate` dan **bukan bukti bahwa versi tersebut sudah fixed**.
+## Identitas dan toolchain
 
-## Rekomendasi aman
+`candidates.json` memuat enam digest manifest, config/image ID, base digest, arsitektur, Node expected, hash scan+SBOM, serta tautan audit. `final-evidence/<major>-<arch>/` hanya memuat bukti ringkas dan `original-artifact-hashes.json`, yang meng-hash **semua file artefak asli** tanpa menyalin raw report/SBOM besar. `candidate-oci-verification.json` menunjukkan imageID/config, manifest runtime, OS Linux, dan arsitektur yang diamati; hasilnya dicocokkan fail-closed dengan candidate metadata.
 
-1. **Tidak ada vendor fix yang dapat dinyatakan tersedia dari evidence ini**: semua `fixed_version` kosong dan evidence tidak memuat apt candidate. Jangan mengganti base Debian secara luas, menghapus paket/tool, menurunkan threshold, atau men-suppress findings.
-2. Untuk setiap package yang kemudian memiliki versi Debian resmi, lakukan hanya upgrade terarah dari repositori Debian 13 yang ditandatangani: `apt-get update` lalu `apt-get install --only-upgrade <semua binary package dari source package terkait>`, kemudian rebuild dan rescan kedua arsitektur. Verifikasi versi terpasang terhadap versi fix DSA/Tracker dan jalankan smoke/runtime tests.
-3. Untuk `fix_deferred`/`affected` tanpa versi fix, pertahankan sebagai **open/blocking** dan pantau Debian Security Tracker/DSA. `will_not_fix` bukan alasan untuk mengabaikan; minta penilaian exposure dan mitigasi runtime terukur secara terpisah.
-4. Karena findings mencakup kelompok besar (mis. `linux-libc-dev`, FFmpeg/libav*, Python 3.13, systemd/util-linux), jangan melakukan source rebuild atau upgrade upstream besar sebagai “fix”; Debian sendiri menganjurkan backport minimal dan menjaga ABI/API. Candidate fix harus dibuktikan dari apt metadata/DSA, bukan dari asumsi versi terbaru.
+Toolchain native yang diamati: **Go 1.26.10**, **x/text v0.41.0**, native compiler SHA-256, dan custom provenance (source commit/tarball, target, test, serta status baseline/compiler). Hash dan metadata scanner Trivy disimpan per kandidat.
+
+## Debian/APT
+
+Enam `debian-<major>-<arch>.json` adalah dokumen triage final aktual dari CI yang disalin byte-for-byte tanpa perubahan. Perbandingan APT memakai nilai `installed` dan `candidate` exact dpkg (bukan perbandingan string naif atau pengabaian epoch); perubahan yang ada, bila ada, dilist di `final-evidence/*/identity-summary.json`. Tidak boleh menyimpulkan candidate APT sudah memperbaiki CVE tanpa versi fixed/advisory vendor.
+
+## Status CI dan keputusan
+
+Run [39915130063](https://github.com/akaanakbaik/img-nodejs/actions/runs/39915130063) pada commit `96cf3edcac7b140df617220637914c3a63971843` selesai `failure` hanya karena dua security gates: CVE-2026-111497 pada severity apa pun, dan 339 temuan HIGH/CRITICAL Debian; seluruh stage build native, runtime/Egg, scan, audit, kandidat, OCI identity, toolchain, Brotli, dan upload evidence yang dieksekusi tercatat sukses. Publish/merge tidak dilakukan.
+
+Pada keenam kandidat, seluruh 60 versi APT kandidat sama dengan versi terpasang. Seluruh 339 finding Debian masih tidak memiliki fixed version dalam snapshot scanner; statusnya 190 affected, 148 fix_deferred, dan satu will_not_fix. Semuanya tetap open/blocking.
 
 ## Keputusan per kelompok source
+
 
 Seluruh **19 kelompok** berikut tetap **open/blocking**, bukan diterima atau diabaikan. Jumlah adalah pasangan paket/CVE per image, bukan CVE unik. Path adalah ownership, bukan bukti fungsi rentan terpanggil. Untuk setiap perbaikan vendor berikutnya, semua binary package terkait harus di-upgrade bersama, lalu diuji pada kedua arsitektur.
 
@@ -57,19 +65,3 @@ Schema JSON v3 menyimpan seluruh path/hash ELF sekali pada `path_inventory`; set
 - [Debian trixie package index](https://packages.debian.org/stable/) — indeks resmi suite stable/trixie dan `trixie-security`/`trixie-updates` links.
 
 Tanggal, versi scanner, dan digest tetap dapat diaudit melalui `scanner-metadata.json` serta `source`/`evidence_sha256` pada tiap JSON.
-
-## Reproduksi CI
-
-Utility reusable ada di `scripts/triage_groups.py`; inventory vendor ada di `scripts/vendor_package_inventory.py`; test di `scripts/test_triage_groups.py` dan `scripts/test_vendor_package_inventory.py`. Contoh per candidate (nama SBOM mengikuti evidence):
-
-```sh
-python3 scripts/triage_groups.py \
-  --audit /workspace/img-nodejs-final-evidence/reports-22-amd64/package-cve-audit.json \
-  --paths /workspace/img-nodejs-final-evidence/reports-22-amd64/package-paths.json \
-  --sbom /workspace/img-nodejs-final-evidence/reports-22-amd64/trivy-sbom-22-amd64.json \
-  --scan /workspace/img-nodejs-final-evidence/reports-22-amd64/trivy-image-22-amd64.json \
-  --candidate nodejs_22-amd64 \
-  --output docs/security/2026-10-23-triage/debian-22-amd64.json
-```
-
-CI dapat mengulang command tersebut untuk enam direktori `reports-{22,24,26}-{amd64,arm64}` dan, bila tersedia, menambahkan `--apt-evidence <JSON>` dalam schema `{"packages":[{"package":"...","source_package":"...","candidate":"..."}],"candidate":{...}}`. Utility tidak mengubah audit atau kebijakan gate. Jalankan test dengan `PYTHONPATH=scripts python3 -m unittest discover -s scripts -p 'test_*triage*.py'` dan `PYTHONPATH=scripts python3 -m unittest discover -s scripts -p 'test_vendor*.py'`.

@@ -1,0 +1,17 @@
+native-tsc: go1.26.10
+	path	github.com/microsoft/typescript-go/cmd/tsgo
+	mod	github.com/microsoft/typescript-go	(devel)	
+	dep	github.com/go-json-experiment/json	v0.0.0-20260623181947-01eb4420fa68	h1:KZaTBSyshWX3MP5jukJcNSuXDQTO+rNpt0J564dX/eg=
+	dep	github.com/mackerelio/go-osstat	v0.2.7	h1:TCavZi10wF49bT6iQZ9eT2keGZQpC69MTDfdJej5e94=
+	dep	github.com/zeebo/xxh3	v1.1.0	h1:s7DLGDK45Dyfg7++yxI0khrfwq9661w9EN78eP/UZVs=
+	dep	golang.org/x/sync	v0.22.0	h1:SZjpbeLmrCk4xhRSZFNZW5gFUeCeFgjekvI/+gfScek=
+	dep	golang.org/x/sys	v0.47.0	h1:o7XGOvZQCADBQQ4Y7VNq2dRWQR7JmOUW8Kxx4ZsNgWs=
+	dep	golang.org/x/term	v0.44.0	h1:0rLvDRCtNj0gZkyIXhCyOb2OAzEhLVqc4B+hrsBhrmc=
+	dep	golang.org/x/text	v0.41.0	h1:vz/seA0lnX87Othu2f/0L24RcgrXD9/YFTSuGjj3rH8=
+	build	-buildmode=exe
+	build	-compiler=gc
+	build	-trimpath=true
+	build	CGO_ENABLED=0
+	build	GOARCH=arm64
+	build	GOOS=linux
+	build	GOARM64=v8.0

@@ -1,0 +1,372 @@
+{
+  "baseline_vs_final": {
+    "apt_inventory_packages": 60,
+    "baseline_critical": 6,
+    "baseline_high": 348,
+    "final_critical": 6,
+    "final_high": 333,
+    "final_pairs": 339,
+    "final_source_groups": 19,
+    "final_source_packages": 59,
+    "interpretation": "HIGH turun 15; CRITICAL tetap 6. Semua pasangan tetap tercatat; ini bukan klaim fixed. Candidate APT dibandingkan memakai versi Debian dpkg yang sama persis, termasuk epoch."
+  },
+  "candidates": [
+    {
+      "apt_candidate": {
+        "all_installed_equal_candidate": true,
+        "changes": [],
+        "package_count": 0
+      },
+      "arch": "amd64",
+      "audit_file": "package-cve-audit.json",
+      "audit_scan_file": "package-cve-audit.json",
+      "audit_sha256": "120da32bdb884041a2d4ad5bb416ca36ba62648ddd0d2dfc067b389c93d3fd7d",
+      "base": "ghcr.io/parkervcp/yolks:nodejs_22@sha256:06f6429325dd5cf09443cd09dc5234caaf22daca71474cef22938f4092dd0579",
+      "build_reported_digest": "sha256:b87ba9113ac3388e17958cd7162b02f4165e320bf81a43b6336b0e6712d2711a",
+      "candidate": "nodejs_22-amd64",
+      "config_or_image_id": "sha256:c16146c45e03b8148467eefee32f37638a1ac14ae6dddd2d847967b42ce5815c",
+      "expected_node": "22.23.4",
+      "major": 22,
+      "manifest_digest": "sha256:b87ba9113ac3388e17958cd7162b02f4165e320bf81a43b6336b0e6712d2711a",
+      "oci_archive_sha256": "a43c292f88badb82c5a4fd9d88acc0e707812ab2e7ab1cb11472a7ca6eaeab61",
+      "oci_verified": true,
+      "runtime_toolchain": {
+        "custom_provenance": {
+          "baseline_modified": false,
+          "compiler_sources_modified": false,
+          "go_version": "1.26.10",
+          "kind": "custom-native-rebuild",
+          "main_package": "./cmd/tsgo",
+          "official_upstream_binary": false,
+          "platform_package_sha512": "EYdf2cNg7rgCWJnxCdJ+F3V39O8ihb37eHAu1LK8oAFizgTQbPOK7zHHXbPt8rX24COqODXeI3sIf0fCXG7H/A==",
+          "platform_package_url": "https://registry.npmjs.org/@typescript/typescript-linux-x64/-/typescript-linux-x64-7.0.2.tgz",
+          "runtime_version": "7.0.2",
+          "source_commit": "2bd066d87f5bafd315be9f40889d0a60b9e58e0b",
+          "source_tar_sha256": "25cca8ec9d89e4ceec5181a677ded2c6d690fa18b81e1277846303973eb71fcf",
+          "source_url": "https://github.com/microsoft/typescript-go/archive/refs/tags/typescript/v7.0.2.tar.gz",
+          "stale_upstream_signature_removed": true,
+          "target": "linux/amd64",
+          "test_only_version": "7.0.0-dev",
+          "tests": "go test -p 2 -ldflags=-X=github.com/microsoft/typescript-go/internal/core.version=7.0.0-dev ./...",
+          "tests_skipped": false,
+          "upstream_version": "7.0.2",
+          "x_text": "v0.41.0"
+        },
+        "go": "1.26.10",
+        "native_sha256": [
+          [
+            "/usr/local/lib/node_modules/typescript/node_modules/@typescript/typescript-linux-x64/lib/tsc",
+            "679f8757f9ba34c5d25eb8a4382cdaa485143a3904bcf8a6453eef53ad95502f"
+          ]
+        ],
+        "x_text": "v0.41.0"
+      },
+      "sbom_file": "trivy-sbom-22-amd64.json",
+      "sbom_sha256": "213d46f3094dd3ef0b3cc9664977479aae9a8e9314d32da4a462f57bfdec75e9",
+      "scan_critical": 6,
+      "scan_high": 333,
+      "scan_sha256": "1052e85852e7034ceb8707d966120a8ece768b64d5d6ab86db77efe6f8d238ef",
+      "scanner_metadata_sha256": "344b4a8afc97c844afe41c9ef4a60bd5f30d0a5f8f400c3efa9d74d93b1b5484"
+    },
+    {
+      "apt_candidate": {
+        "all_installed_equal_candidate": true,
+        "changes": [],
+        "package_count": 0
+      },
+      "arch": "arm64",
+      "audit_file": "package-cve-audit.json",
+      "audit_scan_file": "package-cve-audit.json",
+      "audit_sha256": "a4966b46aa6ec76247f9b159061d91ac6b0731f89f68e0d8b6cf749932ff5011",
+      "base": "ghcr.io/parkervcp/yolks:nodejs_22@sha256:06f6429325dd5cf09443cd09dc5234caaf22daca71474cef22938f4092dd0579",
+      "build_reported_digest": "sha256:0c2e4396846f2911139a7891df9bb37f1b220d8aca4403c5ba7d281dc17e85be",
+      "candidate": "nodejs_22-arm64",
+      "config_or_image_id": "sha256:da7f1bc478e5873e0cbd6d3d0bec74c3e9ad28928624e2f2ac2d8339d2860d0c",
+      "expected_node": "22.23.4",
+      "major": 22,
+      "manifest_digest": "sha256:0c2e4396846f2911139a7891df9bb37f1b220d8aca4403c5ba7d281dc17e85be",
+      "oci_archive_sha256": "96a70e85564cd548130f8ed68532d64c356af1ceb9d8a82b44f4ebe126c8724c",
+      "oci_verified": true,
+      "runtime_toolchain": {
+        "custom_provenance": {
+          "baseline_modified": false,
+          "compiler_sources_modified": false,
+          "go_version": "1.26.10",
+          "kind": "custom-native-rebuild",
+          "main_package": "./cmd/tsgo",
+          "official_upstream_binary": false,
+          "platform_package_sha512": "Qh4eU4/y3yDjnfjjyPYihMj5/ODIlmt+Bzu17OI+fiSRDW57QmU5SiN63exPRNJPKUzcc1INa1NXdrJ+MqHjUQ==",
+          "platform_package_url": "https://registry.npmjs.org/@typescript/typescript-linux-arm64/-/typescript-linux-arm64-7.0.2.tgz",
+          "runtime_version": "7.0.2",
+          "source_commit": "2bd066d87f5bafd315be9f40889d0a60b9e58e0b",
+          "source_tar_sha256": "25cca8ec9d89e4ceec5181a677ded2c6d690fa18b81e1277846303973eb71fcf",
+          "source_url": "https://github.com/microsoft/typescript-go/archive/refs/tags/typescript/v7.0.2.tar.gz",
+          "stale_upstream_signature_removed": true,
+          "target": "linux/arm64",
+          "test_only_version": "7.0.0-dev",
+          "tests": "go test -p 2 -ldflags=-X=github.com/microsoft/typescript-go/internal/core.version=7.0.0-dev ./...",
+          "tests_skipped": false,
+          "upstream_version": "7.0.2",
+          "x_text": "v0.41.0"
+        },
+        "go": "1.26.10",
+        "native_sha256": [
+          [
+            "/usr/local/lib/node_modules/typescript/node_modules/@typescript/typescript-linux-arm64/lib/tsc",
+            "7712eb68e26218c64a2bec2608cf6c49325a89418630beea5b4ebc9fa6b93c78"
+          ]
+        ],
+        "x_text": "v0.41.0"
+      },
+      "sbom_file": "trivy-sbom-22-arm64.json",
+      "sbom_sha256": "687f6b02792d2dae2daf395c5c3315cdaf0be2e09cece98946af10d2cda897b6",
+      "scan_critical": 6,
+      "scan_high": 333,
+      "scan_sha256": "21d32e412d0e63fb4ff6471064906ec9049d894f12e74bfd7df7e0211e0f4c3b",
+      "scanner_metadata_sha256": "6e4cceadb8bf6418b4924ab71d2d1ea933d8fff17f878a0d09d7fb1826c92276"
+    },
+    {
+      "apt_candidate": {
+        "all_installed_equal_candidate": true,
+        "changes": [],
+        "package_count": 0
+      },
+      "arch": "amd64",
+      "audit_file": "package-cve-audit.json",
+      "audit_scan_file": "package-cve-audit.json",
+      "audit_sha256": "19dfb34a88d6789b0ad94bad2ff2d2b90bed2a933ef5fc42113c3d57bcdb3610",
+      "base": "ghcr.io/parkervcp/yolks:nodejs_24@sha256:9e84c334572bf9c0310fbc4d0b0a789a909957d30bd7f2454a7af758ee842919",
+      "build_reported_digest": "sha256:162c7218f5bedc5e3c4c459c770d3717f80fa20a5ae2524cfa37ef123f7e1f99",
+      "candidate": "nodejs_24-amd64",
+      "config_or_image_id": "sha256:317535a11874028fd868d51b941f7148b6f103135c5801697ce36e8b0a9c9675",
+      "expected_node": "24.22.1",
+      "major": 24,
+      "manifest_digest": "sha256:162c7218f5bedc5e3c4c459c770d3717f80fa20a5ae2524cfa37ef123f7e1f99",
+      "oci_archive_sha256": "388f7ed46bbad3458ac79ce57f2d040d9a264775765d8772f55589e7fbc28a2e",
+      "oci_verified": true,
+      "runtime_toolchain": {
+        "custom_provenance": {
+          "baseline_modified": false,
+          "compiler_sources_modified": false,
+          "go_version": "1.26.10",
+          "kind": "custom-native-rebuild",
+          "main_package": "./cmd/tsgo",
+          "official_upstream_binary": false,
+          "platform_package_sha512": "EYdf2cNg7rgCWJnxCdJ+F3V39O8ihb37eHAu1LK8oAFizgTQbPOK7zHHXbPt8rX24COqODXeI3sIf0fCXG7H/A==",
+          "platform_package_url": "https://registry.npmjs.org/@typescript/typescript-linux-x64/-/typescript-linux-x64-7.0.2.tgz",
+          "runtime_version": "7.0.2",
+          "source_commit": "2bd066d87f5bafd315be9f40889d0a60b9e58e0b",
+          "source_tar_sha256": "25cca8ec9d89e4ceec5181a677ded2c6d690fa18b81e1277846303973eb71fcf",
+          "source_url": "https://github.com/microsoft/typescript-go/archive/refs/tags/typescript/v7.0.2.tar.gz",
+          "stale_upstream_signature_removed": true,
+          "target": "linux/amd64",
+          "test_only_version": "7.0.0-dev",
+          "tests": "go test -p 2 -ldflags=-X=github.com/microsoft/typescript-go/internal/core.version=7.0.0-dev ./...",
+          "tests_skipped": false,
+          "upstream_version": "7.0.2",
+          "x_text": "v0.41.0"
+        },
+        "go": "1.26.10",
+        "native_sha256": [
+          [
+            "/usr/local/lib/node_modules/typescript/node_modules/@typescript/typescript-linux-x64/lib/tsc",
+            "679f8757f9ba34c5d25eb8a4382cdaa485143a3904bcf8a6453eef53ad95502f"
+          ]
+        ],
+        "x_text": "v0.41.0"
+      },
+      "sbom_file": "trivy-sbom-24-amd64.json",
+      "sbom_sha256": "96d5bc2acd4302af06055bb3c120f701838a98b27c2aed48cb5ba07c85dc5fd3",
+      "scan_critical": 6,
+      "scan_high": 333,
+      "scan_sha256": "7f7f9530b0478285c97182b5dc04f498623e41e93ced0a8b8c34d5b5f96ee3d1",
+      "scanner_metadata_sha256": "e06142c9190f1ca0bbfe6fcb35412f9daced5ef871184e8ce1440cd8f423d941"
+    },
+    {
+      "apt_candidate": {
+        "all_installed_equal_candidate": true,
+        "changes": [],
+        "package_count": 0
+      },
+      "arch": "arm64",
+      "audit_file": "package-cve-audit.json",
+      "audit_scan_file": "package-cve-audit.json",
+      "audit_sha256": "5dfa7870849fa867a77fd5f71a60c8198ddca63a293de268bf95800e15dbb29d",
+      "base": "ghcr.io/parkervcp/yolks:nodejs_24@sha256:9e84c334572bf9c0310fbc4d0b0a789a909957d30bd7f2454a7af758ee842919",
+      "build_reported_digest": "sha256:e46f3319fd279f5aef0e008bfd1d9ca685fe1d838e8ec67c6384a0b604342925",
+      "candidate": "nodejs_24-arm64",
+      "config_or_image_id": "sha256:b8221ec02351ffb4d2cf3088ebb740fe46645ec3c333c63beb39fb058eacba03",
+      "expected_node": "24.22.1",
+      "major": 24,
+      "manifest_digest": "sha256:e46f3319fd279f5aef0e008bfd1d9ca685fe1d838e8ec67c6384a0b604342925",
+      "oci_archive_sha256": "bc1effcbb404a8cc954dba2ddc7c534065c6b9b98282afe8ad7faf5a37bbffe2",
+      "oci_verified": true,
+      "runtime_toolchain": {
+        "custom_provenance": {
+          "baseline_modified": false,
+          "compiler_sources_modified": false,
+          "go_version": "1.26.10",
+          "kind": "custom-native-rebuild",
+          "main_package": "./cmd/tsgo",
+          "official_upstream_binary": false,
+          "platform_package_sha512": "Qh4eU4/y3yDjnfjjyPYihMj5/ODIlmt+Bzu17OI+fiSRDW57QmU5SiN63exPRNJPKUzcc1INa1NXdrJ+MqHjUQ==",
+          "platform_package_url": "https://registry.npmjs.org/@typescript/typescript-linux-arm64/-/typescript-linux-arm64-7.0.2.tgz",
+          "runtime_version": "7.0.2",
+          "source_commit": "2bd066d87f5bafd315be9f40889d0a60b9e58e0b",
+          "source_tar_sha256": "25cca8ec9d89e4ceec5181a677ded2c6d690fa18b81e1277846303973eb71fcf",
+          "source_url": "https://github.com/microsoft/typescript-go/archive/refs/tags/typescript/v7.0.2.tar.gz",
+          "stale_upstream_signature_removed": true,
+          "target": "linux/arm64",
+          "test_only_version": "7.0.0-dev",
+          "tests": "go test -p 2 -ldflags=-X=github.com/microsoft/typescript-go/internal/core.version=7.0.0-dev ./...",
+          "tests_skipped": false,
+          "upstream_version": "7.0.2",
+          "x_text": "v0.41.0"
+        },
+        "go": "1.26.10",
+        "native_sha256": [
+          [
+            "/usr/local/lib/node_modules/typescript/node_modules/@typescript/typescript-linux-arm64/lib/tsc",
+            "7712eb68e26218c64a2bec2608cf6c49325a89418630beea5b4ebc9fa6b93c78"
+          ]
+        ],
+        "x_text": "v0.41.0"
+      },
+      "sbom_file": "trivy-sbom-24-arm64.json",
+      "sbom_sha256": "83b4d2b6b2382fff330a202bef1b6fa328dea22df9add2950a4de72084128c85",
+      "scan_critical": 6,
+      "scan_high": 333,
+      "scan_sha256": "409a8859a41bfef9dd495f89820ed617f638ac8d05a319be5ed8d46fb8292da3",
+      "scanner_metadata_sha256": "dca3e70acf9c7f7671f8b71f9e792b198a314a13ed39fa8c4b79c34498b2d637"
+    },
+    {
+      "apt_candidate": {
+        "all_installed_equal_candidate": true,
+        "changes": [],
+        "package_count": 0
+      },
+      "arch": "amd64",
+      "audit_file": "package-cve-audit.json",
+      "audit_scan_file": "package-cve-audit.json",
+      "audit_sha256": "842739a2b97fc920bd10a5855a3375975418ba2478bab68f100b5dd6a663ae4a",
+      "base": "ghcr.io/parkervcp/yolks:nodejs_26@sha256:7ef84d861620af3401e7dc945626ce53f9c5a49a58fe845e46544e0c24a99e70",
+      "build_reported_digest": "sha256:ec0e40b426338f6071476f456e4f6946b5cf3892e679afa4e656b1c5729418c8",
+      "candidate": "nodejs_26-amd64",
+      "config_or_image_id": "sha256:af10b059699fdb43bd50033ba1eb0450bb2dd80b1df02b6241c0433e69cdf97f",
+      "expected_node": "26.12.1",
+      "major": 26,
+      "manifest_digest": "sha256:ec0e40b426338f6071476f456e4f6946b5cf3892e679afa4e656b1c5729418c8",
+      "oci_archive_sha256": "942f8580b8eedf7e7be17280e3051091ddda74247338ed668f2300dda1b424f8",
+      "oci_verified": true,
+      "runtime_toolchain": {
+        "custom_provenance": {
+          "baseline_modified": false,
+          "compiler_sources_modified": false,
+          "go_version": "1.26.10",
+          "kind": "custom-native-rebuild",
+          "main_package": "./cmd/tsgo",
+          "official_upstream_binary": false,
+          "platform_package_sha512": "EYdf2cNg7rgCWJnxCdJ+F3V39O8ihb37eHAu1LK8oAFizgTQbPOK7zHHXbPt8rX24COqODXeI3sIf0fCXG7H/A==",
+          "platform_package_url": "https://registry.npmjs.org/@typescript/typescript-linux-x64/-/typescript-linux-x64-7.0.2.tgz",
+          "runtime_version": "7.0.2",
+          "source_commit": "2bd066d87f5bafd315be9f40889d0a60b9e58e0b",
+          "source_tar_sha256": "25cca8ec9d89e4ceec5181a677ded2c6d690fa18b81e1277846303973eb71fcf",
+          "source_url": "https://github.com/microsoft/typescript-go/archive/refs/tags/typescript/v7.0.2.tar.gz",
+          "stale_upstream_signature_removed": true,
+          "target": "linux/amd64",
+          "test_only_version": "7.0.0-dev",
+          "tests": "go test -p 2 -ldflags=-X=github.com/microsoft/typescript-go/internal/core.version=7.0.0-dev ./...",
+          "tests_skipped": false,
+          "upstream_version": "7.0.2",
+          "x_text": "v0.41.0"
+        },
+        "go": "1.26.10",
+        "native_sha256": [
+          [
+            "/usr/local/lib/node_modules/typescript/node_modules/@typescript/typescript-linux-x64/lib/tsc",
+            "679f8757f9ba34c5d25eb8a4382cdaa485143a3904bcf8a6453eef53ad95502f"
+          ]
+        ],
+        "x_text": "v0.41.0"
+      },
+      "sbom_file": "trivy-sbom-26-amd64.json",
+      "sbom_sha256": "8aaa079e574d6d4b31a9c51d9597fd6b60a1c85678d3459c18f9ae80de65d8e5",
+      "scan_critical": 6,
+      "scan_high": 333,
+      "scan_sha256": "d64d5085d621ffdf01f94a82ca9d6ea116b6b3bd090d2e2b06a3f015eeb7937b",
+      "scanner_metadata_sha256": "2a223c24cbce900303ccc7bafdc689b17671c65a34bc0944a69647716a0d702a"
+    },
+    {
+      "apt_candidate": {
+        "all_installed_equal_candidate": true,
+        "changes": [],
+        "package_count": 0
+      },
+      "arch": "arm64",
+      "audit_file": "package-cve-audit.json",
+      "audit_scan_file": "package-cve-audit.json",
+      "audit_sha256": "4ab505a61630ab29f2df67d89bde00acf27778bc09636305e918fe975c3afc4f",
+      "base": "ghcr.io/parkervcp/yolks:nodejs_26@sha256:7ef84d861620af3401e7dc945626ce53f9c5a49a58fe845e46544e0c24a99e70",
+      "build_reported_digest": "sha256:08dcd00b6bfe8968f2bd5695bb138a68226a52dae1468407a23789cf6e008e00",
+      "candidate": "nodejs_26-arm64",
+      "config_or_image_id": "sha256:1449926068fd0e7f1fdaf2fb87cb92e413dabf0bb6b97609e458df178ba02c34",
+      "expected_node": "26.12.1",
+      "major": 26,
+      "manifest_digest": "sha256:08dcd00b6bfe8968f2bd5695bb138a68226a52dae1468407a23789cf6e008e00",
+      "oci_archive_sha256": "16fe57ca67c9b66b7cbb10db3704f4ea8ed8d9bba1fa2a4dac80a9b718c9d4c1",
+      "oci_verified": true,
+      "runtime_toolchain": {
+        "custom_provenance": {
+          "baseline_modified": false,
+          "compiler_sources_modified": false,
+          "go_version": "1.26.10",
+          "kind": "custom-native-rebuild",
+          "main_package": "./cmd/tsgo",
+          "official_upstream_binary": false,
+          "platform_package_sha512": "Qh4eU4/y3yDjnfjjyPYihMj5/ODIlmt+Bzu17OI+fiSRDW57QmU5SiN63exPRNJPKUzcc1INa1NXdrJ+MqHjUQ==",
+          "platform_package_url": "https://registry.npmjs.org/@typescript/typescript-linux-arm64/-/typescript-linux-arm64-7.0.2.tgz",
+          "runtime_version": "7.0.2",
+          "source_commit": "2bd066d87f5bafd315be9f40889d0a60b9e58e0b",
+          "source_tar_sha256": "25cca8ec9d89e4ceec5181a677ded2c6d690fa18b81e1277846303973eb71fcf",
+          "source_url": "https://github.com/microsoft/typescript-go/archive/refs/tags/typescript/v7.0.2.tar.gz",
+          "stale_upstream_signature_removed": true,
+          "target": "linux/arm64",
+          "test_only_version": "7.0.0-dev",
+          "tests": "go test -p 2 -ldflags=-X=github.com/microsoft/typescript-go/internal/core.version=7.0.0-dev ./...",
+          "tests_skipped": false,
+          "upstream_version": "7.0.2",
+          "x_text": "v0.41.0"
+        },
+        "go": "1.26.10",
+        "native_sha256": [
+          [
+            "/usr/local/lib/node_modules/typescript/node_modules/@typescript/typescript-linux-arm64/lib/tsc",
+            "7712eb68e26218c64a2bec2608cf6c49325a89418630beea5b4ebc9fa6b93c78"
+          ]
+        ],
+        "x_text": "v0.41.0"
+      },
+      "sbom_file": "trivy-sbom-26-arm64.json",
+      "sbom_sha256": "e0b5367ee9449fdd1ebd4d57b9a26bc3b2b12cea39aba9cf76ca62670f653063",
+      "scan_critical": 6,
+      "scan_high": 333,
+      "scan_sha256": "a70a11f137b8556c613d17c659546a349951f114461315c7665a946236994cd1",
+      "scanner_metadata_sha256": "b94e87bf3bcf0e3cf4988493ae653ce9d21623c078cc39bac5ec3bd14d585da3"
+    }
+  ],
+  "ci": {
+    "conclusion": "failure",
+    "failure_scope": "dua security gates untuk CVE-2026-111497; seluruh build/runtime/scan/identity/evidence stages sukses sesuai current-status",
+    "head_sha": "96cf3edcac7b140df617220637914c3a63971843",
+    "run_id": 39915130063,
+    "status_file": "/workspace/img-nodejs-triage-evidence-20261023/39915130063/current-status.json"
+  },
+  "language": "id",
+  "policy": {
+    "no_gate_relaxation": true,
+    "no_ignores": true,
+    "no_publish_or_merge": true,
+    "no_vex": true
+  },
+  "schema": "final-triage-candidates-v1"
+}
