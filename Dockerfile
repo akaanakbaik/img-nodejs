@@ -1,5 +1,16 @@
 # Reviewed multi-platform Node.js 24 default; CI passes an immutable digest per major.
 ARG BASE_IMAGE=ghcr.io/parkervcp/yolks@sha256:9e84c334572bf9c0310fbc4d0b0a789a909957d30bd7f2454a7af758ee842919
+
+# EOL is an unmodified-base compatibility/security report, never a release.
+# BuildKit skips the supported-only package builder for this explicit target.
+FROM ${BASE_IMAGE} AS eol-audit
+ARG NODE_MAJOR
+ARG NODE_PATCH
+COPY --chown=container:container scripts/verify_runtime.js /usr/local/share/image-security/verify_runtime.js
+COPY --chown=container:container versions.json /usr/local/share/versions.json
+USER container
+RUN EXPECTED_NODE_VERSION="${NODE_PATCH}" EXPECTED_NODE_MAJOR="${NODE_MAJOR}" node /usr/local/share/image-security/verify_runtime.js
+
 FROM ${BASE_IMAGE} AS brotli-build
 
 USER root
@@ -18,7 +29,7 @@ RUN chmod 0755 /work/scripts/*.sh \
  && /work/scripts/build_brotli_packages.sh \
  && rm -rf /var/lib/apt/lists/*
 
-FROM ${BASE_IMAGE}
+FROM ${BASE_IMAGE} AS supported
 USER root
 COPY --from=brotli-build /work/packages /tmp/brotli-packages
 COPY scripts/verify_brotli_package.sh /usr/local/sbin/verify_brotli_package

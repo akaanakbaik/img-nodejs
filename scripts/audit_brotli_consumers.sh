@@ -20,6 +20,22 @@ if command -v dpkg-query >/dev/null 2>&1; then
 else
   say "dpkg-query unavailable"
 fi
+say "-- patched package ownership, loaded decoder version, and library hashes --"
+[[ "$(dpkg-query -W -f='${Version}' libbrotli1)" == '1.1.1-0img1~deb13u1' ]] || fail "expected source-built Brotli package not installed"
+while IFS= read -r library; do
+  real="$(readlink -f "$library")"
+  say "LIBRARY $library -> $real"
+  dpkg-query -S "$real"
+  sha256sum "$real"
+done < <(ldconfig -p | awk '$1 ~ /^libbrotli(common|dec|enc)\.so\.1$/ {print $NF}' | sort -u)
+python3 - <<'PY'
+import ctypes
+decoder = ctypes.CDLL('libbrotlidec.so.1')
+decoder.BrotliDecoderVersion.restype = ctypes.c_uint32
+version = decoder.BrotliDecoderVersion()
+print('loaded_BrotliDecoderVersion=' + hex(version))
+assert version == ((1 << 24) | (1 << 12) | 1), 'runtime loader did not resolve Brotli 1.1.1'
+PY
 if command -v apt-cache >/dev/null 2>&1; then
   apt-cache rdepends --installed libbrotli1 2>/dev/null || true
   apt-cache rdepends --installed libbrotli-dev 2>/dev/null || true
