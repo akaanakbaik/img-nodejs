@@ -12,6 +12,8 @@ for name in "${required[@]}"; do
   test "$(dpkg-deb -f "$deb" Architecture)" = "$(dpkg --print-architecture)"
   # Debian omits the source version when it equals the binary version.
   source_field="$(dpkg-deb -f "$deb" Source)"
+  # If source and binary package names also match, Source is omitted entirely.
+  source_field="${source_field:-$name}"
   [[ "$source_field" == brotli || "$source_field" == "brotli ($EXPECTED_VERSION)" ]]
 done
 lib="$(find "$PKG_DIR" -maxdepth 1 -type f -name 'libbrotli1_*.deb' -print)"

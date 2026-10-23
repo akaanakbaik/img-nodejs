@@ -23,6 +23,7 @@ USER root
 COPY --from=brotli-build /work/packages /tmp/brotli-packages
 COPY scripts/verify_brotli_package.sh /usr/local/sbin/verify_brotli_package
 RUN chmod 0755 /usr/local/sbin/verify_brotli_package \
+ && cd /tmp/brotli-packages && sha256sum -c SHA256SUMS \
  && apt-get update --error-on=any \
  && packages="$(find /tmp/brotli-packages -name 'libbrotli1_*.deb')" \
  && for name in libbrotli-dev python3-brotli brotli; do \

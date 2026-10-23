@@ -67,6 +67,7 @@ jobs:
           python3 scripts/test_os_update_policy.py
           python3 scripts/test_verify_candidate.py
           python3 scripts/test_audit_scan.py
+          python3 scripts/test_brotli_source.py
           python3 scripts/resolve_versions.py --check
           test -s versions.json
       - id: matrix

@@ -16,11 +16,30 @@
       "rules": "vendor/brotli-debian/debian/rules",
       "changelog": "vendor/brotli-debian/debian/changelog",
       "symbols": "vendor/brotli-debian/debian/libbrotli1.symbols"
-    }
+    },
+    "local_changes": [
+      "changelog version and security rebuild rationale",
+      "replace removed distutils test command with CMake suite; Python suite explicitly run after Debian build"
+    ],
+    "checksums": "security/brotli-debian-packaging.sha256"
   },
   "abi_requirements": {
-    "sonames": ["libbrotlicommon.so.1", "libbrotlidec.so.1", "libbrotlienc.so.1"],
-    "packages": ["libbrotli1", "libbrotli-dev", "python3-brotli"],
+    "sonames": [
+      "libbrotlicommon.so.1",
+      "libbrotlidec.so.1",
+      "libbrotlienc.so.1"
+    ],
+    "packages": [
+      "libbrotli1",
+      "libbrotli-dev",
+      "python3-brotli"
+    ],
     "preserve_if_installed": true
+  },
+  "security": {
+    "cve": "CVE-2026-111497",
+    "vendor_tracker": "https://security-tracker.debian.org/tracker/CVE-2026-111497",
+    "fixed_upstream_commit": "da9806362874b9bd4b552a3af360b5d6347beb12",
+    "scanner_policy": "No suppression; Debian unfixed status may continue to block patched local package."
   }
 }

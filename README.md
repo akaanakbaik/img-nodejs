@@ -1,6 +1,6 @@
 # img-nodejs
 
-Runtime Node.js berbasis [Parkervcp Yolks](https://github.com/parkervcp/yolks) untuk Egg Pterodactyl, dengan pemeriksaan patch exact dan pemindaian sebelum publikasi. Target: Linux `amd64` dan `arm64`; bukan Windows container atau ARM 32-bit. Repo ini tidak mengompilasi atau mem-backport Node.js.
+Runtime Node.js berbasis [Parkervcp Yolks](https://github.com/parkervcp/yolks) untuk Egg Pterodactyl, dengan pemeriksaan patch exact dan pemindaian sebelum publikasi. Target: Linux `amd64` dan `arm64`; bukan Windows container atau ARM 32-bit. Repo ini tidak mengompilasi atau mem-backport Node.js. Library Brotli OS dibangun sebagai paket Debian lokal dari source upstream fixed; ini bukan paket keamanan resmi Debian.
 
 ## Patch keamanan Oktober 2026
 
@@ -22,18 +22,20 @@ Versi bersumber dari [indeks rilis resmi](https://nodejs.org/dist/index.json) da
 
 **Patch RCE bukan berarti seluruh image bebas kerentanan.** Pemindaian upstream saat pembaruan ini menemukan HIGH/CRITICAL pada paket OS/tool tambahan. Gerbang publikasi sengaja gagal selama temuan itu masih ada; tidak ada pengecualian diam-diam atau `--ignore-unfixed`. Hasil scanner adalah temuan paket, bukan bukti setiap CVE dapat dieksploitasi pada aplikasi Anda. Uji Brotli adalah uji fungsional dan penolakan input invalid, bukan pembuktian bahwa exploit RCE mustahil.
 
-Pemindaian kandidat juga masih menemukan **CVE-2026-111497 pada Debian `libbrotli1 1.1.0-2+b7`**, status `affected`, severity `UNKNOWN`, tanpa fixed version. [Debian tracker](https://security-tracker.debian.org/tracker/CVE-2026-111497) menandai library ini vulnerable; catatan Debian `nodejs` memakai Brotli sistem berlaku pada packaging Debian, bukan otomatis pada binary upstream `/usr/local/bin/node`. Artifact CI mencatat `ldd`, `readelf -d`, `node_shared_brotli`, versi internal Brotli dan shared objects runtime untuk setiap kandidat. **CVE ini diblokir tanpa memandang severity**, walaupun binary Node yang diuji tidak memuat Brotli sistem. Konsumen library OS lainnya belum dibuktikan aman; tidak ada pengecualian dibuat.
+Baseline lama menemukan **CVE-2026-111497 pada Debian `libbrotli1 1.1.0-2+b7`**, severity `UNKNOWN`, dan probe HTTP aman membuktikan `curl --compressed` mencapai decoder sistem. Dockerfile remediasi membangun **Brotli upstream 1.1.1** sebagai paket Debian asli `1.1.1-0img1~deb13u1`, dengan source/checksum dipin, pengujian CMake/Python, serta pemeriksaan SONAME dan simbol ABI. Paket dan metadata dpkg tidak disamarkan atau ditimpa manual. Source dan packaging dapat diperiksa di [`security/brotli-source.json`](security/brotli-source.json).
+
+[Debian tracker](https://security-tracker.debian.org/tracker/CVE-2026-111497) masih mencatat status vendor unfixed. Scanner dapat tetap menandai paket custom meskipun source fixed; **tidak ada pengecualian dibuat dan gate CVE tetap menolak semua severity**. Node upstream menggunakan Brotli bundled yang berbeda dari library OS. Hasil final dan blocker aktual ada pada [review keamanan](SECURITY-REVIEW.md); jangan menganggap keberhasilan build sebagai izin rilis.
 
 ## Verifikasi dan publikasi
 
-Workflow [`.github/workflows/publish.yml`](.github/workflows/publish.yml) mempertahankan jadwal Senin 04:23 UTC, juga berjalan pada PR/perubahan source dan dapat dijalankan manual. Tidak ada akses tulis registry dari PR atau branch selain `main`.
+Workflow [`.github/workflows/publish.yml`](.github/workflows/publish.yml) mempertahankan jadwal Senin 04:23 UTC, juga berjalan pada PR/perubahan source dan dapat dijalankan manual. Tidak ada akses tulis registry dari PR atau branch selain `main`. Push dan jadwal hanya melakukan audit: publikasi mensyaratkan `workflow_dispatch` pada `main`, input boolean `publish=true`, persetujuan pemilik, dan seluruh gate supported lulus.
 
 1. Validasi pemetaan Egg, unit test, dan kecocokan seluruh patch terhadap indeks resmi.
 2. Resolve digest immutable image dasar, lalu build kandidat pada runner native `amd64` dan `arm64`.
 3. Build-time verifier menolak patch/major yang salah atau di bawah minimum CVE; jalankan Brotli synchronous/streaming round-trip dan input invalid yang aman.
-4. Smoke test user non-root `container`, `/home/container`, `HOME`, npm, entrypoint Tini dan fixture startup Egg. Ini bukan uji integrasi Panel/Wings live.
-5. Trivy versi tetap dengan verifikasi checksum memindai kerentanan OS/library, secret dan misconfiguration repo, dan menghasilkan SBOM CycloneDX. Laporan, snapshot database scanner, digest kandidat dan bukti linkage tetap diunggah jika gerbang gagal. CVE-2026-111497 pada severity apa pun, temuan HIGH/CRITICAL atau kegagalan scanner menahan publikasi.
-6. Hanya image kandidat yang sudah diuji dan lolos gerbang yang disimpan, dipush, dan digabung menjadi manifest multi-platform berdasarkan digest, tanpa rebuild setelah pengujian. SBOM tersedia sebagai artifact; workflow ini tidak mengklaim signature keyless atau provenance attestation yang belum dibuat.
+4. Smoke test user non-root `container`, `/home/container`, `HOME`, entrypoint Tini, fixture startup Egg, instalasi/uninstall paket npm lokal tanpa jaringan, kompilasi TypeScript, serta tersedianya curl/git/ffmpeg. Ini bukan uji integrasi Panel/Wings live.
+5. Trivy versi tetap dengan verifikasi checksum memindai kerentanan OS/library, secret dan misconfiguration repo, dan menghasilkan SBOM CycloneDX. Laporan, snapshot database scanner, digest kandidat, bukti linkage/consumer, korelasi paket/path/CVE/SBOM dan hash ELF paket OS tetap diunggah jika gerbang gagal. CVE-2026-111497 pada severity apa pun, temuan HIGH/CRITICAL atau kegagalan scanner menahan publikasi.
+6. Hanya image kandidat yang sudah diuji dan lolos gerbang yang disimpan, dipush, dan digabung menjadi manifest multi-platform berdasarkan digest, tanpa rebuild setelah pengujian. Image ID dan arsitektur scanner/SBOM harus cocok dengan kandidat; checksum tar dan image ID dicek ulang setelah artifact dimuat kembali. SBOM tersedia sebagai artifact; workflow ini tidak mengklaim signature keyless atau provenance attestation yang belum dibuat.
 
 Semua major tetap tercatat untuk kompatibilitas dan audit. Publikasi EOL dinonaktifkan tanpa opsi override; matrix publikasi hanya memuat 22/24/26 untuk kedua arsitektur. Temuan atau error audit EOL tetap terlihat di job/artifact, tetapi tidak menjadi prasyarat publikasi supported (`continue-on-error` hanya untuk EOL). Semua gerbang keamanan kandidat supported tetap hard-fail. Untuk produksi, migrasikan ke line LTS yang didukung; jangan memilih EOL hanya karena versi terakhirnya cocok.
 
