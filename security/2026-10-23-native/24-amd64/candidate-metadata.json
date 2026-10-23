@@ -1,0 +1,7 @@
+{
+  "base": "ghcr.io/parkervcp/yolks:nodejs_24@sha256:9e84c334572bf9c0310fbc4d0b0a789a909957d30bd7f2454a7af758ee842919",
+  "manifest_digest": "sha256:f089e2feba64fbb6f3a6d18c836ae4631eb4a88af2dce32229aece6c3e203905",
+  "image_id": "sha256:39aa96c6bbaca60b0bdd88a78ac973f71b6574cc79d6f1551d447320e05dbc77",
+  "arch": "amd64",
+  "expected_node": "24.22.1"
+}

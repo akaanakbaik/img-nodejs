@@ -1,0 +1,55 @@
+v22.23.4
+94efd062ed066c1a0b332e18249859c905e920eeada5df55d24c99b919629a90  /usr/local/bin/node
+	linux-vdso.so.1 (0x00007f5b6cd07000)
+	libdl.so.2 => /lib/x86_64-linux-gnu/libdl.so.2 (0x00007f5b6ccf3000)
+	libstdc++.so.6 => /lib/x86_64-linux-gnu/libstdc++.so.6 (0x00007f5b6ca8d000)
+	libm.so.6 => /lib/x86_64-linux-gnu/libm.so.6 (0x00007f5b6c99d000)
+	libgcc_s.so.1 => /lib/x86_64-linux-gnu/libgcc_s.so.1 (0x00007f5b6c970000)
+	libpthread.so.0 => /lib/x86_64-linux-gnu/libpthread.so.0 (0x00007f5b6c969000)
+	libc.so.6 => /lib/x86_64-linux-gnu/libc.so.6 (0x00007f5b6c775000)
+	/lib64/ld-linux-x86-64.so.2 (0x00007f5b6cd09000)
+
+Dynamic section at offset 0x6718c80 contains 32 entries:
+  Tag        Type                         Name/Value
+ 0x0000000000000001 (NEEDED)             Shared library: [libdl.so.2]
+ 0x0000000000000001 (NEEDED)             Shared library: [libstdc++.so.6]
+ 0x0000000000000001 (NEEDED)             Shared library: [libm.so.6]
+ 0x0000000000000001 (NEEDED)             Shared library: [libgcc_s.so.1]
+ 0x0000000000000001 (NEEDED)             Shared library: [libpthread.so.0]
+ 0x0000000000000001 (NEEDED)             Shared library: [libc.so.6]
+ 0x0000000000000001 (NEEDED)             Shared library: [ld-linux-x86-64.so.2]
+ 0x000000000000000c (INIT)               0xe38000
+ 0x000000000000000d (FINI)               0x3400444
+ 0x0000000000000019 (INIT_ARRAY)         0x6b178e8
+ 0x000000000000001b (INIT_ARRAYSZ)       7112 (bytes)
+ 0x000000000000001a (FINI_ARRAY)         0x6b194b0
+ 0x000000000000001c (FINI_ARRAYSZ)       16 (bytes)
+ 0x000000006ffffef5 (GNU_HASH)           0x4003b0
+ 0x0000000000000005 (STRTAB)             0x698860
+ 0x0000000000000006 (SYMTAB)             0x487db0
+ 0x000000000000000a (STRSZ)              7793552 (bytes)
+ 0x000000000000000b (SYMENT)             24 (bytes)
+ 0x0000000000000015 (DEBUG)              0x0
+ 0x0000000000000003 (PLTGOT)             0x6b19ed0
+ 0x0000000000000002 (PLTRELSZ)           12360 (bytes)
+ 0x0000000000000014 (PLTREL)             RELA
+ 0x0000000000000017 (JMPREL)             0xe34348
+ 0x0000000000000007 (RELA)               0xe337d8
+ 0x0000000000000008 (RELASZ)             2928 (bytes)
+ 0x0000000000000009 (RELAENT)            24 (bytes)
+ 0x0000000000000018 (BIND_NOW)           
+ 0x000000006ffffffb (FLAGS_1)            Flags: NOW
+ 0x000000006ffffffe (VERNEED)            0xe334d8
+ 0x000000006fffffff (VERNEEDNUM)         7
+ 0x000000006ffffff0 (VERSYM)             0xe073f0
+ 0x0000000000000000 (NULL)               0x0
+{"node":"22.23.4","brotli":"1.1.0","sharedBrotli":false}
+libbrotli1:amd64	1.1.0-2+b7
+linux-vdso.so.1
+/lib/x86_64-linux-gnu/libdl.so.2
+/lib/x86_64-linux-gnu/libstdc++.so.6
+/lib/x86_64-linux-gnu/libm.so.6
+/lib/x86_64-linux-gnu/libgcc_s.so.1
+/lib/x86_64-linux-gnu/libpthread.so.0
+/lib/x86_64-linux-gnu/libc.so.6
+/lib64/ld-linux-x86-64.so.2

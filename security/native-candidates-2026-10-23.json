@@ -1,0 +1,475 @@
+{
+  "run": "39876738576",
+  "production_published": false,
+  "candidates": [
+    {
+      "major": 22,
+      "arch": "amd64",
+      "run": "39876738576",
+      "created_at": "2026-10-23T00:14:25.752649042Z",
+      "scanner": {
+        "Version": "0.76.1"
+      },
+      "scanner_database_snapshot": {
+        "Version": "0.76.1",
+        "VulnerabilityDB": {
+          "Version": 2,
+          "NextUpdate": "2026-10-23T19:14:47.059491102Z",
+          "UpdatedAt": "2026-10-22T19:14:47.059491382Z",
+          "DownloadedAt": "2026-10-23T00:14:16.349410197Z"
+        },
+        "CheckBundle": {
+          "Digest": "sha256:b591e9190cff4aa4e385b1a25bccfd9ecf178d3c77fd194e1410b7ce7e1df058",
+          "DownloadedAt": "2026-10-23T00:14:27.600400723Z"
+        }
+      },
+      "candidate": {
+        "base": "ghcr.io/parkervcp/yolks:nodejs_22@sha256:06f6429325dd5cf09443cd09dc5234caaf22daca71474cef22938f4092dd0579",
+        "manifest_digest": "sha256:0d43349155b93513536224f0d05cbc40e72807ca926caffc3c2b6c7cb9ff9a92",
+        "image_id": "sha256:2c1fc6c1ff37bcbac1dc3667ba6da91acd128617847b2774291b48569fe608d5",
+        "arch": "amd64",
+        "expected_node": "22.23.4"
+      },
+      "image_id": "sha256:2c1fc6c1ff37bcbac1dc3667ba6da91acd128617847b2774291b48569fe608d5",
+      "counts": {
+        "LOW": 1193,
+        "HIGH": 364,
+        "MEDIUM": 1080,
+        "UNKNOWN": 28,
+        "CRITICAL": 6
+      },
+      "priority_cve": [
+        {
+          "cve": "CVE-2026-111497",
+          "package": "libbrotli1",
+          "installed": "1.1.0-2+b7",
+          "severity": "UNKNOWN",
+          "status": "affected",
+          "fixed": null
+        }
+      ],
+      "node_runtime": {
+        "node": "22.23.4",
+        "brotli": "1.1.0",
+        "sharedBrotli": false
+      },
+      "node_binary_sha256": "94efd062ed066c1a0b332e18249859c905e920eeada5df55d24c99b919629a90",
+      "node_dt_needed_brotli": false,
+      "curl_system_decoder_called_with_benign_http": true,
+      "consumer_audit_passed": true,
+      "linkage_artifact": "security/2026-10-23-native/22-amd64/brotli-linkage.txt",
+      "consumer_artifact": "security/2026-10-23-native/22-amd64/brotli-consumers.txt"
+    },
+    {
+      "major": 22,
+      "arch": "arm64",
+      "run": "39876738576",
+      "created_at": "2026-10-23T00:14:04.985393235Z",
+      "scanner": {
+        "Version": "0.76.1"
+      },
+      "scanner_database_snapshot": {
+        "Version": "0.76.1",
+        "VulnerabilityDB": {
+          "Version": 2,
+          "NextUpdate": "2026-10-23T19:14:47.059491102Z",
+          "UpdatedAt": "2026-10-22T19:14:47.059491382Z",
+          "DownloadedAt": "2026-10-23T00:13:53.190712077Z"
+        },
+        "CheckBundle": {
+          "Digest": "sha256:b591e9190cff4aa4e385b1a25bccfd9ecf178d3c77fd194e1410b7ce7e1df058",
+          "DownloadedAt": "2026-10-23T00:14:05.943019507Z"
+        }
+      },
+      "candidate": {
+        "base": "ghcr.io/parkervcp/yolks:nodejs_22@sha256:06f6429325dd5cf09443cd09dc5234caaf22daca71474cef22938f4092dd0579",
+        "manifest_digest": "sha256:5842d62af0d09524f9103b5a6ae3663b6e3817939975d645d980d37906441568",
+        "image_id": "sha256:1e65ac60f750974d0784fd7f0aa68a71afdb7816f0485ac0cac3613cbbc4bc9d",
+        "arch": "arm64",
+        "expected_node": "22.23.4"
+      },
+      "image_id": "sha256:1e65ac60f750974d0784fd7f0aa68a71afdb7816f0485ac0cac3613cbbc4bc9d",
+      "counts": {
+        "LOW": 1193,
+        "HIGH": 364,
+        "MEDIUM": 1078,
+        "UNKNOWN": 28,
+        "CRITICAL": 6
+      },
+      "priority_cve": [
+        {
+          "cve": "CVE-2026-111497",
+          "package": "libbrotli1",
+          "installed": "1.1.0-2+b7",
+          "severity": "UNKNOWN",
+          "status": "affected",
+          "fixed": null
+        }
+      ],
+      "node_runtime": {
+        "node": "22.23.4",
+        "brotli": "1.1.0",
+        "sharedBrotli": false
+      },
+      "node_binary_sha256": "7e48183361053f039294fbbc3ba586722fe756bf296d6cb8195356d10819cd16",
+      "node_dt_needed_brotli": false,
+      "curl_system_decoder_called_with_benign_http": true,
+      "consumer_audit_passed": true,
+      "linkage_artifact": "security/2026-10-23-native/22-arm64/brotli-linkage.txt",
+      "consumer_artifact": "security/2026-10-23-native/22-arm64/brotli-consumers.txt"
+    },
+    {
+      "major": 24,
+      "arch": "amd64",
+      "run": "39876738576",
+      "created_at": "2026-10-23T00:14:21.970908629Z",
+      "scanner": {
+        "Version": "0.76.1"
+      },
+      "scanner_database_snapshot": {
+        "Version": "0.76.1",
+        "VulnerabilityDB": {
+          "Version": 2,
+          "NextUpdate": "2026-10-23T19:14:47.059491102Z",
+          "UpdatedAt": "2026-10-22T19:14:47.059491382Z",
+          "DownloadedAt": "2026-10-23T00:14:12.374003188Z"
+        },
+        "CheckBundle": {
+          "Digest": "sha256:b591e9190cff4aa4e385b1a25bccfd9ecf178d3c77fd194e1410b7ce7e1df058",
+          "DownloadedAt": "2026-10-23T00:14:24.435448104Z"
+        }
+      },
+      "candidate": {
+        "base": "ghcr.io/parkervcp/yolks:nodejs_24@sha256:9e84c334572bf9c0310fbc4d0b0a789a909957d30bd7f2454a7af758ee842919",
+        "manifest_digest": "sha256:f089e2feba64fbb6f3a6d18c836ae4631eb4a88af2dce32229aece6c3e203905",
+        "image_id": "sha256:39aa96c6bbaca60b0bdd88a78ac973f71b6574cc79d6f1551d447320e05dbc77",
+        "arch": "amd64",
+        "expected_node": "24.22.1"
+      },
+      "image_id": "sha256:39aa96c6bbaca60b0bdd88a78ac973f71b6574cc79d6f1551d447320e05dbc77",
+      "counts": {
+        "LOW": 1193,
+        "HIGH": 364,
+        "MEDIUM": 1080,
+        "UNKNOWN": 28,
+        "CRITICAL": 6
+      },
+      "priority_cve": [
+        {
+          "cve": "CVE-2026-111497",
+          "package": "libbrotli1",
+          "installed": "1.1.0-2+b7",
+          "severity": "UNKNOWN",
+          "status": "affected",
+          "fixed": null
+        }
+      ],
+      "node_runtime": {
+        "node": "24.22.1",
+        "brotli": "1.2.0",
+        "sharedBrotli": false
+      },
+      "node_binary_sha256": "e32e2d16081cf644f88392934288086e7662529d0d43277c34f7aad2207cfafb",
+      "node_dt_needed_brotli": false,
+      "curl_system_decoder_called_with_benign_http": true,
+      "consumer_audit_passed": true,
+      "linkage_artifact": "security/2026-10-23-native/24-amd64/brotli-linkage.txt",
+      "consumer_artifact": "security/2026-10-23-native/24-amd64/brotli-consumers.txt"
+    },
+    {
+      "major": 24,
+      "arch": "arm64",
+      "run": "39876738576",
+      "created_at": "2026-10-23T00:14:11.105199496Z",
+      "scanner": {
+        "Version": "0.76.1"
+      },
+      "scanner_database_snapshot": {
+        "Version": "0.76.1",
+        "VulnerabilityDB": {
+          "Version": 2,
+          "NextUpdate": "2026-10-23T19:14:47.059491102Z",
+          "UpdatedAt": "2026-10-22T19:14:47.059491382Z",
+          "DownloadedAt": "2026-10-23T00:14:00.112406836Z"
+        },
+        "CheckBundle": {
+          "Digest": "sha256:b591e9190cff4aa4e385b1a25bccfd9ecf178d3c77fd194e1410b7ce7e1df058",
+          "DownloadedAt": "2026-10-23T00:14:12.493314482Z"
+        }
+      },
+      "candidate": {
+        "base": "ghcr.io/parkervcp/yolks:nodejs_24@sha256:9e84c334572bf9c0310fbc4d0b0a789a909957d30bd7f2454a7af758ee842919",
+        "manifest_digest": "sha256:0a9e37cb3b64ed55464a38d303a8fd1e681518a2f98cfb5b9a5951557b3b4c55",
+        "image_id": "sha256:ce8d468903e537027bcf1f15c2349c23001c621572de9ae679fddf10fd9d73f0",
+        "arch": "arm64",
+        "expected_node": "24.22.1"
+      },
+      "image_id": "sha256:ce8d468903e537027bcf1f15c2349c23001c621572de9ae679fddf10fd9d73f0",
+      "counts": {
+        "LOW": 1193,
+        "HIGH": 364,
+        "MEDIUM": 1078,
+        "UNKNOWN": 28,
+        "CRITICAL": 6
+      },
+      "priority_cve": [
+        {
+          "cve": "CVE-2026-111497",
+          "package": "libbrotli1",
+          "installed": "1.1.0-2+b7",
+          "severity": "UNKNOWN",
+          "status": "affected",
+          "fixed": null
+        }
+      ],
+      "node_runtime": {
+        "node": "24.22.1",
+        "brotli": "1.2.0",
+        "sharedBrotli": false
+      },
+      "node_binary_sha256": "c8c5721679d8d1a09e9987e345d5f9a64899bb85f7a384783ba8a93e6e62348a",
+      "node_dt_needed_brotli": false,
+      "curl_system_decoder_called_with_benign_http": true,
+      "consumer_audit_passed": true,
+      "linkage_artifact": "security/2026-10-23-native/24-arm64/brotli-linkage.txt",
+      "consumer_artifact": "security/2026-10-23-native/24-arm64/brotli-consumers.txt"
+    },
+    {
+      "major": 26,
+      "arch": "amd64",
+      "run": "39876738576",
+      "created_at": "2026-10-23T00:14:06.738957391Z",
+      "scanner": {
+        "Version": "0.76.1"
+      },
+      "scanner_database_snapshot": {
+        "Version": "0.76.1",
+        "VulnerabilityDB": {
+          "Version": 2,
+          "NextUpdate": "2026-10-23T19:14:47.059491102Z",
+          "UpdatedAt": "2026-10-22T19:14:47.059491382Z",
+          "DownloadedAt": "2026-10-23T00:13:57.431444618Z"
+        },
+        "CheckBundle": {
+          "Digest": "sha256:b591e9190cff4aa4e385b1a25bccfd9ecf178d3c77fd194e1410b7ce7e1df058",
+          "DownloadedAt": "2026-10-23T00:14:08.632441983Z"
+        }
+      },
+      "candidate": {
+        "base": "ghcr.io/parkervcp/yolks:nodejs_26@sha256:7ef84d861620af3401e7dc945626ce53f9c5a49a58fe845e46544e0c24a99e70",
+        "manifest_digest": "sha256:12ad3bb185571508b4355684abca78a6fdf3b051529985cc2712f6ea0a077f06",
+        "image_id": "sha256:fb444380dca1ee8dea51273f458059ab089d0db69b7e6bc9588a67b61814b122",
+        "arch": "amd64",
+        "expected_node": "26.12.1"
+      },
+      "image_id": "sha256:fb444380dca1ee8dea51273f458059ab089d0db69b7e6bc9588a67b61814b122",
+      "counts": {
+        "LOW": 1193,
+        "HIGH": 364,
+        "MEDIUM": 1080,
+        "UNKNOWN": 28,
+        "CRITICAL": 6
+      },
+      "priority_cve": [
+        {
+          "cve": "CVE-2026-111497",
+          "package": "libbrotli1",
+          "installed": "1.1.0-2+b7",
+          "severity": "UNKNOWN",
+          "status": "affected",
+          "fixed": null
+        }
+      ],
+      "node_runtime": {
+        "node": "26.12.1",
+        "brotli": "1.2.0",
+        "sharedBrotli": false
+      },
+      "node_binary_sha256": "08f12d42fb304468e8ee86247fe686aae5b225836ea65e9d6566c11ae6ba2e8e",
+      "node_dt_needed_brotli": false,
+      "curl_system_decoder_called_with_benign_http": true,
+      "consumer_audit_passed": true,
+      "linkage_artifact": "security/2026-10-23-native/26-amd64/brotli-linkage.txt",
+      "consumer_artifact": "security/2026-10-23-native/26-amd64/brotli-consumers.txt"
+    },
+    {
+      "major": 26,
+      "arch": "arm64",
+      "run": "39876738576",
+      "created_at": "2026-10-23T00:14:04.256825548Z",
+      "scanner": {
+        "Version": "0.76.1"
+      },
+      "scanner_database_snapshot": {
+        "Version": "0.76.1",
+        "VulnerabilityDB": {
+          "Version": 2,
+          "NextUpdate": "2026-10-23T19:14:47.059491102Z",
+          "UpdatedAt": "2026-10-22T19:14:47.059491382Z",
+          "DownloadedAt": "2026-10-23T00:13:53.070775805Z"
+        },
+        "CheckBundle": {
+          "Digest": "sha256:b591e9190cff4aa4e385b1a25bccfd9ecf178d3c77fd194e1410b7ce7e1df058",
+          "DownloadedAt": "2026-10-23T00:14:05.179125476Z"
+        }
+      },
+      "candidate": {
+        "base": "ghcr.io/parkervcp/yolks:nodejs_26@sha256:7ef84d861620af3401e7dc945626ce53f9c5a49a58fe845e46544e0c24a99e70",
+        "manifest_digest": "sha256:109527928c7b9bae92b276505e5a90c675a65241019c9fb3a167ec10ccf1bfa3",
+        "image_id": "sha256:897b2c6d0161369fe859dd3bc8aae99b7c32196cb164ec0202572099ecaad4b8",
+        "arch": "arm64",
+        "expected_node": "26.12.1"
+      },
+      "image_id": "sha256:897b2c6d0161369fe859dd3bc8aae99b7c32196cb164ec0202572099ecaad4b8",
+      "counts": {
+        "LOW": 1193,
+        "HIGH": 364,
+        "MEDIUM": 1078,
+        "UNKNOWN": 28,
+        "CRITICAL": 6
+      },
+      "priority_cve": [
+        {
+          "cve": "CVE-2026-111497",
+          "package": "libbrotli1",
+          "installed": "1.1.0-2+b7",
+          "severity": "UNKNOWN",
+          "status": "affected",
+          "fixed": null
+        }
+      ],
+      "node_runtime": {
+        "node": "26.12.1",
+        "brotli": "1.2.0",
+        "sharedBrotli": false
+      },
+      "node_binary_sha256": "7d32bda549eb24395c1d9830731470a0045781b15797d5943591c333a085b2da",
+      "node_dt_needed_brotli": false,
+      "curl_system_decoder_called_with_benign_http": true,
+      "consumer_audit_passed": true,
+      "linkage_artifact": "security/2026-10-23-native/26-arm64/brotli-linkage.txt",
+      "consumer_artifact": "security/2026-10-23-native/26-arm64/brotli-consumers.txt"
+    }
+  ],
+  "source_commit": "dc5855c8da3a8946e9ba9aa1dfde8443ddbf2714",
+  "ci_url": "https://github.com/akaanakbaik/img-nodejs/actions/runs/39876738576",
+  "job_results": [
+    {
+      "name": "Validate metadata and resolve Node patches",
+      "conclusion": "success",
+      "failed_steps": []
+    },
+    {
+      "name": "Verify Node.js 19 (arm64)",
+      "conclusion": "success",
+      "failed_steps": []
+    },
+    {
+      "name": "Verify Node.js 20 (amd64)",
+      "conclusion": "success",
+      "failed_steps": []
+    },
+    {
+      "name": "Verify Node.js 23 (amd64)",
+      "conclusion": "success",
+      "failed_steps": []
+    },
+    {
+      "name": "Verify Node.js 26 (arm64)",
+      "conclusion": "failure",
+      "failed_steps": [
+        "Block CVE-2026-111497 at every severity"
+      ]
+    },
+    {
+      "name": "Verify Node.js 26 (amd64)",
+      "conclusion": "failure",
+      "failed_steps": [
+        "Block CVE-2026-111497 at every severity"
+      ]
+    },
+    {
+      "name": "Verify Node.js 18 (amd64)",
+      "conclusion": "success",
+      "failed_steps": []
+    },
+    {
+      "name": "Verify Node.js 24 (arm64)",
+      "conclusion": "failure",
+      "failed_steps": [
+        "Block CVE-2026-111497 at every severity"
+      ]
+    },
+    {
+      "name": "Verify Node.js 18 (arm64)",
+      "conclusion": "success",
+      "failed_steps": []
+    },
+    {
+      "name": "Verify Node.js 22 (arm64)",
+      "conclusion": "failure",
+      "failed_steps": [
+        "Block CVE-2026-111497 at every severity"
+      ]
+    },
+    {
+      "name": "Verify Node.js 25 (amd64)",
+      "conclusion": "success",
+      "failed_steps": []
+    },
+    {
+      "name": "Verify Node.js 21 (arm64)",
+      "conclusion": "success",
+      "failed_steps": []
+    },
+    {
+      "name": "Verify Node.js 25 (arm64)",
+      "conclusion": "success",
+      "failed_steps": []
+    },
+    {
+      "name": "Verify Node.js 23 (arm64)",
+      "conclusion": "success",
+      "failed_steps": []
+    },
+    {
+      "name": "Verify Node.js 20 (arm64)",
+      "conclusion": "success",
+      "failed_steps": []
+    },
+    {
+      "name": "Verify Node.js 19 (amd64)",
+      "conclusion": "success",
+      "failed_steps": []
+    },
+    {
+      "name": "Verify Node.js 21 (amd64)",
+      "conclusion": "success",
+      "failed_steps": []
+    },
+    {
+      "name": "Verify Node.js 24 (amd64)",
+      "conclusion": "failure",
+      "failed_steps": [
+        "Block CVE-2026-111497 at every severity"
+      ]
+    },
+    {
+      "name": "Verify Node.js 22 (amd64)",
+      "conclusion": "failure",
+      "failed_steps": [
+        "Block CVE-2026-111497 at every severity"
+      ]
+    },
+    {
+      "name": "Publish tested arch Node.js ${{ matrix.major }} (${{ matrix.arch }})",
+      "conclusion": "skipped",
+      "failed_steps": []
+    },
+    {
+      "name": "Publish final multi-arch Node.js ${{ matrix.major }}",
+      "conclusion": "skipped",
+      "failed_steps": []
+    }
+  ]
+}
