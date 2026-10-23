@@ -73,6 +73,7 @@ jobs:
           python3 scripts/test_triage_groups.py
           python3 scripts/test_verify_oci_layout.py
           python3 scripts/test_typescript_source.py
+          python3 scripts/test_typescript_help_baseline.py
           python3 scripts/resolve_versions.py --check
           test -s versions.json
       - id: matrix
@@ -195,6 +196,7 @@ jobs:
           container="$(docker create "$image")"
           trap 'docker rm "$container" >/dev/null; rm -f native-tsc' EXIT
           docker cp "$container:$compiler" native-tsc
+          docker cp "$container:/usr/local/share/image-security/typescript" typescript-provenance
           test "$(sha256sum native-tsc | cut -d' ' -f1)" = "$(jq -er '.native_compilers[0].sha256' runtime-toolchain.json)"
           go version -m native-tsc > typescript-go-buildinfo.txt
       - name: Audit system Brotli consumers with benign input
@@ -223,6 +225,7 @@ jobs:
             vendor-package-candidates.json
             runtime-toolchain.json
             typescript-go-buildinfo.txt
+            typescript-provenance/
             debian-triage.json
           if-no-files-found: warn
       - name: Block CVE-2026-111497 at every severity

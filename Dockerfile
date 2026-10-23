@@ -31,7 +31,7 @@ RUN chmod 0755 /work/scripts/*.sh \
 
 FROM ${BASE_IMAGE} AS typescript-build
 USER root
-COPY scripts/install_go_toolchain.sh scripts/build_typescript.sh scripts/test_typescript_source.py /work/scripts/
+COPY scripts/install_go_toolchain.sh scripts/build_typescript.sh scripts/test_typescript_source.py scripts/verify_typescript_help_baseline.py /work/scripts/
 COPY security/typescript-source.json /work/security/typescript-source.json
 ENV PATH="/opt/go/bin:${PATH}" \
     GOTOOLCHAIN=local \

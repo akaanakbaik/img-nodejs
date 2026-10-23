@@ -10,6 +10,7 @@ readonly SOURCE_SHA256='25cca8ec9d89e4ceec5181a677ded2c6d690fa18b81e127784630397
 readonly SOURCE_COMMIT='2bd066d87f5bafd315be9f40889d0a60b9e58e0b'
 readonly XTEXT_VERSION='v0.41.0'
 readonly GO_VERSION='1.26.10'
+readonly SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 readonly OUT_DIR="${OUT_DIR:-$PWD/typescript-rebuild-output}"
 readonly WORK_DIR="${WORK_DIR:-$(mktemp -d)}"
 readonly KEEP_WORK="${KEEP_WORK:-0}"
@@ -48,6 +49,17 @@ GOTOOLCHAIN=local GOPROXY=https://proxy.golang.org GOSUMDB=sum.golang.org go mod
 find . -type f -name '*.go' -print0 | sort -z | xargs -0 sha256sum > "$WORK_DIR/go-sources.after"
 cmp "$WORK_DIR/go-sources.before" "$WORK_DIR/go-sources.after"
 GOTOOLCHAIN=local GOPROXY=https://proxy.golang.org GOSUMDB=sum.golang.org go mod verify
+# First reproduce the exact stable-version failure. A test-only version override
+# is allowed only when the actual diff is exactly the known header padding.
+reference=testdata/baselines/reference/tsc/commandLine/show-help-with-ExitStatus.DiagnosticsPresent_OutputsSkipped.js
+local=testdata/baselines/local/tsc/commandLine/show-help-with-ExitStatus.DiagnosticsPresent_OutputsSkipped.js
+if go test -p 2 -run '^TestTscCommandline$/^tsc$/^show_help_with_ExitStatus.DiagnosticsPresent_OutputsSkipped$' ./internal/execute/tsctests > "$WORK_DIR/release-help-control.log" 2>&1; then
+  echo 'Expected release-baseline mismatch did not reproduce; review test override' >&2
+  exit 1
+fi
+cat "$WORK_DIR/release-help-control.log"
+python3 "$SCRIPT_DIR/verify_typescript_help_baseline.py" "$reference" "$local" > "$WORK_DIR/help-baseline-analysis.json"
+cat "$WORK_DIR/help-baseline-analysis.json"
 # The release tag changes core.version to 7.0.2, but its help baseline was
 # formatted with the nine-character development version before sanitization.
 # Set that version ONLY in test executables; never accept/skip a baseline.
@@ -94,6 +106,7 @@ EOF
 go version -m "$pkg/lib/tsc" > "$pkg/go-build-info.txt"
 grep -F 'go1.26.10' "$pkg/go-build-info.txt"
 grep -E 'dep[[:space:]]+golang.org/x/text[[:space:]]+v0\.41\.0[[:space:]]' "$pkg/go-build-info.txt"
+cp "$WORK_DIR/help-baseline-analysis.json" "$WORK_DIR/release-help-control.log" "$pkg/"
 cp go.mod "$pkg/build.go.mod"
 cp go.sum "$pkg/build.go.sum"
 cp "$WORK_DIR/go-sources.before" "$pkg/compiler-source-sha256sums.txt"

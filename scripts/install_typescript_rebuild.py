@@ -40,6 +40,9 @@ def main():
         raise ValueError('package file inventory mismatch')
     metadata = json.loads((package / 'package.json').read_text())
     provenance = json.loads((package / 'BUILD-PROVENANCE.json').read_text())
+    baseline = json.loads((package / 'help-baseline-analysis.json').read_text())
+    if baseline.get('status') != 'verified_version_header_padding_only' or baseline.get('reference_modified') is not False or baseline.get('tests_skipped') is not False:
+        raise ValueError('unverified upstream help baseline discrepancy')
     inherited = json.loads((DEST_ROOT / 'package.json').read_text())
     if inherited.get('version') != '7.0.2' or metadata.get('version') != inherited['version']:
         raise ValueError('upstream/compiler release mismatch')
@@ -59,7 +62,7 @@ def main():
     shutil.copytree(package, installed)
     evidence_dir = Path('/usr/local/share/image-security/typescript')
     evidence_dir.mkdir(parents=True, exist_ok=True)
-    for name in ('BUILD-PROVENANCE.json', 'go-build-info.txt', 'build.go.mod', 'build.go.sum', 'compiler-source-sha256sums.txt', 'dependency-diff.txt'):
+    for name in ('BUILD-PROVENANCE.json', 'go-build-info.txt', 'build.go.mod', 'build.go.sum', 'compiler-source-sha256sums.txt', 'dependency-diff.txt', 'help-baseline-analysis.json', 'release-help-control.log'):
         shutil.copyfile(package / name, evidence_dir / name)
     shutil.copyfile(ROOT / 'SHA256SUMS', evidence_dir / 'SHA256SUMS')
     shutil.copyfile(package / 'BUILD-PROVENANCE.json', evidence_dir.parent / 'typescript-provenance.json')
