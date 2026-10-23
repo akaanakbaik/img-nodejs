@@ -74,7 +74,9 @@ jobs:
           python3 scripts/test_verify_oci_layout.py
           python3 scripts/test_typescript_source.py
           python3 scripts/test_typescript_help_baseline.py
-          python3 scripts/resolve_versions.py --check
+          python3 scripts/test_verify_release_bundle.py
+          python3 scripts/test_ci_publish_policy.py
+          python3 scripts/resolve_versions.py --check --supported-only
           test -s versions.json
       - id: matrix
         name: Resolve exact patch matrix
@@ -82,6 +84,7 @@ jobs:
           set -euo pipefail
           resolved="$(python3 scripts/resolve_versions.py --ci-matrices)"
           printf '%s\n' "$resolved" | jq -e '.verify.include | length == 18' >/dev/null
+          printf '%s\n' "$resolved" | jq -e '[.publish.include[] | [.major, .arch]] | sort == [["22","amd64"],["22","arm64"],["24","amd64"],["24","arm64"],["26","amd64"],["26","arm64"]]' >/dev/null
           printf 'matrix=%s\n' "$(printf '%s' "$resolved" | jq -c '.verify')" >> "$GITHUB_OUTPUT"
           printf 'publish_matrix=%s\n' "$(printf '%s' "$resolved" | jq -c '.publish')" >> "$GITHUB_OUTPUT"
           printf 'manifests=%s\n' "$(printf '%s' "$resolved" | jq -c '.manifests')" >> "$GITHUB_OUTPUT"
@@ -121,6 +124,9 @@ jobs:
           platforms: linux/${{ matrix.arch }}
           load: true
           outputs: ${{ matrix.publish && 'type=oci,dest=candidate.oci.tar' || '' }}
+          # A single runtime manifest can be copied without digest conversion.
+          provenance: false
+          sbom: false
           pull: true
           tags: local/img-nodejs:nodejs_${{ matrix.major }}-${{ matrix.arch }}
           build-args: |
@@ -136,6 +142,8 @@ jobs:
         env:
           BASE_REF: ${{ steps.base.outputs.ref }}
           BUILD_DIGEST: ${{ steps.build.outputs.digest }}
+          SOURCE_REVISION: ${{ github.sha }}
+          SOURCE_RUN: ${{ github.run_id }}
         run: |
           set -euo pipefail
           image="local/img-nodejs:nodejs_${{ matrix.major }}-${{ matrix.arch }}"
@@ -147,24 +155,36 @@ jobs:
             # Use the actual OCI root descriptor, then verify its config below.
             digest="$(tar -xOf candidate.oci.tar index.json | jq -er '.manifests | if length == 1 then .[0].digest else error("ambiguous OCI roots") end')"
           fi
-          jq -n --arg base "$BASE_REF" --arg digest "$digest" --arg builddigest "$BUILD_DIGEST" --arg imageid "$IMAGE_ID" --arg arch "$IMAGE_ARCH" --arg patch "${{ matrix.patch }}" '{base: $base, manifest_digest: $digest, build_reported_digest: $builddigest, image_id: $imageid, arch: $arch, expected_node: $patch}' > candidate-metadata.json
+          jq -n --arg base "$BASE_REF" --arg digest "$digest" --arg builddigest "$BUILD_DIGEST" --arg imageid "$IMAGE_ID" --arg arch "$IMAGE_ARCH" --arg patch "${{ matrix.patch }}" --arg revision "$SOURCE_REVISION" --arg run "$SOURCE_RUN" '{base: $base, manifest_digest: $digest, build_reported_digest: $builddigest, image_id: $imageid, arch: $arch, expected_node: $patch, source_revision: $revision, source_run: $run}' > candidate-metadata.json
           docker run --rm --entrypoint /bin/sh "$image" -ec 'node --version; sha256sum /usr/local/bin/node; ldd /usr/local/bin/node; readelf -d /usr/local/bin/node; node -p "JSON.stringify({node:process.versions.node,brotli:process.versions.brotli,sharedBrotli:process.config.variables.node_shared_brotli})"; dpkg-query -W libbrotli1; node -e '\''require("zlib").brotliCompressSync(Buffer.from("test"));console.log(process.report.getReport().sharedObjects.join("\n"))'\''' > brotli-linkage.txt
       - name: Bind exported OCI digest to tested config and architecture
         if: matrix.publish
         run: |
           set -euo pipefail
           python3 scripts/verify_oci_layout.py --metadata candidate-metadata.json --oci candidate.oci.tar > candidate-oci-verification.json
-          rm candidate.oci.tar
+          test "$(jq -er .candidate.manifest_digest candidate-oci-verification.json)" = "$(jq -er .verified.runtime_manifest_digest candidate-oci-verification.json)"
       - name: Install pinned Trivy
         run: sudo TRIVY_BIN=/usr/local/bin/trivy bash scripts/install_trivy.sh
+      - name: Freeze and record vulnerability database snapshot
+        run: |
+          set -euo pipefail
+          export TRIVY_CACHE_DIR="$RUNNER_TEMP/trivy-cache"
+          printf 'TRIVY_CACHE_DIR=%s\n' "$TRIVY_CACHE_DIR" >> "$GITHUB_ENV"
+          trivy image --download-db-only
+          trivy --version --format json > scanner-metadata.json
+          sha256sum "$TRIVY_CACHE_DIR/db/trivy.db" "$TRIVY_CACHE_DIR/db/metadata.json" > scanner-db.sha256
+          cp "$TRIVY_CACHE_DIR/db/metadata.json" scanner-db-metadata.json
       - name: Scan image and repository
         id: scan
         run: |
           set -euo pipefail
-          trivy image --scanners vuln --severity UNKNOWN,LOW,MEDIUM,HIGH,CRITICAL --format json --output "trivy-image-${{ matrix.major }}-${{ matrix.arch }}.json" "local/img-nodejs:nodejs_${{ matrix.major }}-${{ matrix.arch }}"
-          trivy image --scanners vuln --format cyclonedx --output "trivy-sbom-${{ matrix.major }}-${{ matrix.arch }}.json" "local/img-nodejs:nodejs_${{ matrix.major }}-${{ matrix.arch }}"
-          trivy fs --scanners vuln,secret,misconfig --severity UNKNOWN,LOW,MEDIUM,HIGH,CRITICAL --format json --output "trivy-repo-${{ matrix.major }}-${{ matrix.arch }}.json" .
-          trivy --version --format json > scanner-metadata.json
+          image="$(jq -er .image_id candidate-metadata.json)"
+          trivy image --skip-db-update --image-src docker --scanners vuln --severity UNKNOWN,LOW,MEDIUM,HIGH,CRITICAL --format json --output "trivy-image-${{ matrix.major }}-${{ matrix.arch }}.json" "$image"
+          trivy image --skip-db-update --image-src docker --scanners vuln --format cyclonedx --output "trivy-sbom-${{ matrix.major }}-${{ matrix.arch }}.json" "$image"
+          trivy fs --skip-db-update --skip-files candidate.oci.tar --scanners vuln,secret,misconfig --severity UNKNOWN,LOW,MEDIUM,HIGH,CRITICAL --format json --output "trivy-repo-${{ matrix.major }}-${{ matrix.arch }}.json" .
+          sha256sum --check scanner-db.sha256
+          trivy --version --format json > scanner-metadata-after.json
+          sha256sum trivy-*.json scanner-*.json > scan-evidence.sha256
           python3 scripts/audit_scan.py candidate-metadata.json "trivy-image-${{ matrix.major }}-${{ matrix.arch }}.json" "trivy-sbom-${{ matrix.major }}-${{ matrix.arch }}.json" package-cve-audit.json
           jq -r ' .findings[] | select(.type == "debian" and (.severity == "HIGH" or .severity == "CRITICAL" or .cve == "CVE-2026-111497")) | .package' package-cve-audit.json | sort -u > blocking-os-packages.txt
           image="local/img-nodejs:nodejs_${{ matrix.major }}-${{ matrix.arch }}"
@@ -217,7 +237,9 @@ jobs:
             candidate-oci-verification.json
             brotli-linkage.txt
             brotli-consumers.txt
-            scanner-metadata.json
+            scanner-*.json
+            scanner-db.sha256
+            scan-evidence.sha256
             package-cve-audit.json
             package-provenance.txt
             blocking-os-packages.txt
@@ -251,12 +273,18 @@ jobs:
           jq -e '[.Results[]?.Vulnerabilities[]? | select(.Severity == "HIGH" or .Severity == "CRITICAL")] | length == 0' "$image_report" >/dev/null
           jq -e 'type == "object" and (.Results | type == "array")' "$repo_report" >/dev/null
           jq -e '[.Results[]? | (.Vulnerabilities[]?, .Misconfigurations[]?, .Secrets[]?) | select(.Severity == "HIGH" or .Severity == "CRITICAL")] | length == 0' "$repo_report" >/dev/null
-      - name: Save exact tested image
-        id: save
-        if: success() && steps.gate.outcome == 'success'
+      - name: Verify complete release bundle before export
+        id: bundle
+        if: success() && matrix.publish && steps.gate.outcome == 'success'
         run: |
           set -euo pipefail
-          docker save "local/img-nodejs:nodejs_${{ matrix.major }}-${{ matrix.arch }}" | gzip -1 > "image-${{ matrix.major }}-${{ matrix.arch }}.tar.gz"
+          python3 scripts/verify_release_bundle.py --metadata candidate-metadata.json --oci candidate.oci.tar --scanner-report "trivy-image-${{ matrix.major }}-${{ matrix.arch }}.json" --sbom "trivy-sbom-${{ matrix.major }}-${{ matrix.arch }}.json" --repo-report "trivy-repo-${{ matrix.major }}-${{ matrix.arch }}.json" --expected-arch "${{ matrix.arch }}"
+      - name: Save exact tested image
+        id: save
+        if: success() && steps.gate.outcome == 'success' && steps.bundle.outcome == 'success'
+        run: |
+          set -euo pipefail
+          gzip -1 -c candidate.oci.tar > "image-${{ matrix.major }}-${{ matrix.arch }}.tar.gz"
           sha256sum "image-${{ matrix.major }}-${{ matrix.arch }}.tar.gz" > "image-${{ matrix.major }}-${{ matrix.arch }}.tar.gz.sha256"
       - name: Upload exact tested image
         if: steps.save.outcome == 'success'
@@ -267,6 +295,10 @@ jobs:
             image-${{ matrix.major }}-${{ matrix.arch }}.tar.gz
             image-${{ matrix.major }}-${{ matrix.arch }}.tar.gz.sha256
             candidate-metadata.json
+            trivy-*.json
+            scanner-*.json
+            scanner-db.sha256
+            scan-evidence.sha256
           if-no-files-found: error
 
   publish-arch:
@@ -290,22 +322,26 @@ jobs:
         uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4.3.0
         with:
           name: tested-${{ matrix.major }}-${{ matrix.arch }}
-      - name: Load and push immutable architecture candidate
+      - name: Install OCI registry transport
+        run: sudo apt-get update && sudo apt-get install --no-install-recommends -y skopeo
+      - name: Verify and push immutable OCI architecture candidate
         id: push
         if: matrix.publish
         env:
           IMAGE: ${{ env.IMAGE_NAME }}
           STAGE: nodejs_${{ matrix.major }}-${{ matrix.arch }}-${{ github.sha }}
+          REGISTRY_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           set -euo pipefail
-          gunzip -c "image-${{ matrix.major }}-${{ matrix.arch }}.tar.gz" | docker load
-          python3 scripts/verify_candidate.py --metadata candidate-metadata.json --image "local/img-nodejs:nodejs_${{ matrix.major }}-${{ matrix.arch }}" --expected-arch "${{ matrix.arch }}" --artifact "image-${{ matrix.major }}-${{ matrix.arch }}.tar.gz" --sha256 "image-${{ matrix.major }}-${{ matrix.arch }}.tar.gz.sha256"
-          echo "${{ secrets.GITHUB_TOKEN }}" | docker login "$REGISTRY" -u "${{ github.actor }}" --password-stdin
-          docker tag "local/img-nodejs:nodejs_${{ matrix.major }}-${{ matrix.arch }}" "$IMAGE:$STAGE"
-          docker push "$IMAGE:$STAGE"
-          digest_record="$(docker inspect --format='{{index .RepoDigests 0}}' "$IMAGE:$STAGE")"
-          [[ "$digest_record" =~ ^${IMAGE}@sha256:[0-9a-f]{64}$ ]] || { echo "invalid pushed digest or repository: $digest_record" >&2; exit 1; }
-          printf 'digest=%s\n' "$digest_record" > "digest-${{ matrix.major }}-${{ matrix.arch }}.txt"
+          python3 -c 'from pathlib import Path; from scripts.verify_candidate import verify_sha256; import sys; verify_sha256(Path(sys.argv[1]), Path(sys.argv[2]))' "image-${{ matrix.major }}-${{ matrix.arch }}.tar.gz" "image-${{ matrix.major }}-${{ matrix.arch }}.tar.gz.sha256"
+          sha256sum --check scan-evidence.sha256
+          gunzip -c "image-${{ matrix.major }}-${{ matrix.arch }}.tar.gz" > candidate.oci.tar
+          digest="$(python3 scripts/verify_release_bundle.py --metadata candidate-metadata.json --oci candidate.oci.tar --scanner-report "trivy-image-${{ matrix.major }}-${{ matrix.arch }}.json" --sbom "trivy-sbom-${{ matrix.major }}-${{ matrix.arch }}.json" --repo-report "trivy-repo-${{ matrix.major }}-${{ matrix.arch }}.json" --expected-arch "${{ matrix.arch }}")"
+          echo "$REGISTRY_TOKEN" | skopeo login "$REGISTRY" -u "${{ github.actor }}" --password-stdin
+          skopeo copy --preserve-digests "oci-archive:candidate.oci.tar" "docker://$IMAGE:$STAGE"
+          remote="sha256:$(skopeo inspect --raw "docker://$IMAGE@$digest" | sha256sum | cut -d' ' -f1)"
+          test "$remote" = "$digest"
+          printf 'digest=%s@%s\n' "$IMAGE" "$digest" > "digest-${{ matrix.major }}-${{ matrix.arch }}.txt"
       - name: Upload pushed digest record
         if: steps.push.outcome == 'success'
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2

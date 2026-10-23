@@ -25,6 +25,17 @@ class ResolveTests(unittest.TestCase):
     def test_prerelease_ignored(self):
         self.assertEqual(rv.latest_stable([{"version":"24.99.0-rc.1"},{"version":"24.22.1"}])[24], '24.22.1')
 
+    def test_supported_only_allows_missing_and_stale_eol(self):
+        self.index.write_text(json.dumps([{'version': '22.23.4'}, {'version': '24.22.1'}, {'version': '26.12.1'}, {'version': '18.99.0'}]))
+        self.assertTrue(rv.check_manifest(self.manifest, self.url, supported_only=True))
+        with self.assertRaises(RuntimeError): rv.check_manifest(self.manifest, self.url)
+
+    def test_supported_only_still_rejects_stale_or_missing_supported(self):
+        for versions in (['22.99.0', '24.22.1', '26.12.1'], ['24.22.1', '26.12.1']):
+            self.index.write_text(json.dumps([{'version': v} for v in versions]))
+            with self.subTest(versions=versions), self.assertRaises(RuntimeError):
+                rv.check_manifest(self.manifest, self.url, supported_only=True)
+
     def test_ci_publication_is_supported_only_both_architectures(self):
         matrices = rv.ci_matrices(self.manifest)
         self.assertEqual(len(matrices['verify']['include']), 18)

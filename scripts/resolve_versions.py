@@ -52,10 +52,10 @@ def latest_stable(index):
         if major not in latest or parsed > latest[major][0]: latest[major] = (parsed, version.lstrip("v"))
     return {major: value[1] for major, value in latest.items()}
 
-def check_manifest(manifest_path=MANIFEST, index_url=INDEX_URL, include_eol=False):
+def check_manifest(manifest_path=MANIFEST, index_url=INDEX_URL, include_eol=False, supported_only=False):
     data, entries = load_manifest(manifest_path)
     latest = latest_stable(read_index(index_url))
-    wanted = sorted(entries)
+    wanted = sorted(m for m in entries if not supported_only or (m in (22, 24, 26) and entries[m].get("supported") is True))
     missing = [m for m in wanted if m not in latest]
     if missing and not include_eol: raise RuntimeError("official index has no stable release for majors: " + ", ".join(map(str, missing)))
     stale = [(m, entries[m]["version"], latest[m]) for m in wanted if m in latest and entries[m]["version"] != latest[m]]
@@ -87,10 +87,11 @@ def main(argv=None):
     parser.add_argument("--matrix", action="store_true", help="print JSON build matrix")
     parser.add_argument("--ci-matrices", action="store_true", help="print separate audit and supported-only publication matrices")
     parser.add_argument("--include-eol", action="store_true", help="allow majors absent from the current official index")
+    parser.add_argument("--supported-only", action="store_true", help="check freshness only for publication candidates; EOL remains report-only")
     args = parser.parse_args(argv)
     try:
         if args.check:
-            check_manifest(args.manifest, args.url, args.include_eol)
+            check_manifest(args.manifest, args.url, args.include_eol, args.supported_only)
             print("OK: manifest matches official latest stable versions")
         if args.matrix: print(json.dumps(matrix(args.manifest), separators=(",", ":")))
         if args.ci_matrices: print(json.dumps(ci_matrices(args.manifest), separators=(",", ":")))
