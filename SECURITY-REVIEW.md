@@ -1,66 +1,75 @@
-# Image Node.js: patch runtime siap, publikasi masih ditahan
+# Brotli OS sudah diperbaiki, tetapi rilis image masih diblokir
 
-**Belum layak dinyatakan aman untuk produksi.** Source pembaruan ada di [PR #1](https://github.com/akaanakbaik/img-nodejs/pull/1), tetapi tidak di-merge, tidak dipublikasikan, dan tidak di-deploy. Tag GHCR produksi sebelumnya tetap tidak berubah. Keenam kandidat supported memuat patch Node yang tepat, namun library Brotli OS masih terdampak CVE yang sama dan benar-benar dipakai oleh konsumen lain.
+**PR #1 belum layak dirilis.** Keenam kandidat supported lulus build dan uji kompatibilitas native, termasuk curl yang benar-benar memakai Brotli 1.1.1. Namun setiap kandidat masih dilaporkan memiliki **348 HIGH + 6 CRITICAL**, serta CVE-2026-111497 berstatus vendor-unfixed pada paket custom. Tidak ada temuan diabaikan, ambang diturunkan, PR di-merge, atau image/tag publik diterbitkan oleh pekerjaan ini.
 
-## Hasil terpenting
+Hasil ini berasal dari commit **`db0a8498934ab8526f88ae86775b35754e967921`** pada [CI run 39910150287](https://github.com/akaanakbaik/img-nodejs/actions/runs/39910150287). Commit dokumentasi sesudahnya tidak mengubah image yang diuji.
 
-[Rilis keamanan Node.js 21 Oktober 2026](https://nodejs.org/en/blog/vulnerability/october-2026-security-releases) memperbaiki CVE-2026-111497 pada **22.23.4, 24.22.1, dan 26.12.1**. Manifest juga mencatat patch terakhir seluruh major 18–26 berdasarkan indeks resmi. Major 18/19/20/21/23/25 sudah EOL; patch terakhirnya bukan perbaikan resmi untuk insiden ini.
+## Perbaikan yang benar-benar dilakukan
 
-Pada commit **`dc5855c8da3a8946e9ba9aa1dfde8443ddbf2714`**, [CI run 39876738576](https://github.com/akaanakbaik/img-nodejs/actions/runs/39876738576) melakukan build, verifikasi patch exact, uji Brotli, smoke test kontrak Egg, pemeriksaan linkage, pemindaian image final, SBOM, dan audit konsumen pada runner native **amd64 dan arm64**.
+[Advisory resmi Node.js](https://nodejs.org/en/blog/vulnerability/october-2026-security-releases) menetapkan patch **22.23.4, 24.22.1, dan 26.12.1**. Binary upstream tersebut tetap dipakai dan diverifikasi exact; Brotli bundled Node berbeda dari library OS. Linkage dan shared objects sesudah operasi Brotli tidak menunjukkan Node memuat `libbrotli*` sistem (`node_shared_brotli=false`).
 
-| Runtime | Arsitektur | Patch/runtime/Egg | Linkage Node ke Brotli OS | Decoder OS dipanggil curl dengan HTTP aman | Gate CVE |
+Library OS sebelumnya masih `libbrotli1 1.1.0-2+b7`. [Debian tracker](https://security-tracker.debian.org/tracker/CVE-2026-111497) menyebut perbaikan upstream pada Brotli 1.1.1/1.2.1, tetapi belum menyediakan fixed version paket Debian. Dockerfile sekarang membangun **source upstream Brotli 1.1.1** menjadi paket Debian lokal asli **`1.1.1-0img1~deb13u1`**, bukan menimpa `.so` atau mengganti string versi.
+
+Source dipin ke commit `db0631dfea829194206d269bc7b25d0908cdb97d`, dengan arsip SHA-256 `38f9c17ee36c2e930ce00975b50fcd246a8e5594c1bcf43cd56b14118786b82a`. Packaging Debian, semua checksum input, changelog lokal, `.dsc`, `.changes`, `.buildinfo`, checksum paket, serta alasan custom rebuild dapat ditelusuri dari [metadata source](security/brotli-source.json) dan artifact provenance. Paket custom ini **bukan rilis keamanan resmi Debian**.
+
+Build menjalankan tes CMake normal dan **131 tes Python upstream**, pemeriksaan simbol Debian ketat, serta pembandingan SONAME dan seluruh simbol publik Brotli terhadap baseline. Tidak ada simbol baseline yang boleh hilang. Final image menginstal runtime library dan hanya memperbarui paket Brotli tambahan bila sebelumnya memang terpasang. Curl, git, ffmpeg, compiler, dan fitur Yolks tidak dihapus agar scanner diam.
+
+Pembaruan vendor OS memakai refresh yang fail-closed dan `apt-get upgrade --no-remove`. Pembaruan paralel di branch PR juga dipertahankan: **npm resmi 12.2.1**, diverifikasi SHA-512 sebagai satu rilis utuh; dependency internal tidak ditambal manual. Scan final tidak lagi melaporkan HIGH/CRITICAL pada paket npm tersebut.
+
+## Hasil native kedua arsitektur
+
+| Node exact | Arsitektur | Build + Egg + npm/TypeScript | Decoder OS terverifikasi | HIGH / CRITICAL | Gate CVE target |
 |---|---|---|---|---|---|
-| 22.23.4 | amd64 | Lulus | Tidak ditemukan | Ya | Menolak |
-| 22.23.4 | arm64 | Lulus | Tidak ditemukan | Ya | Menolak |
-| 24.22.1 | amd64 | Lulus | Tidak ditemukan | Ya | Menolak |
-| 24.22.1 | arm64 | Lulus | Tidak ditemukan | Ya | Menolak |
-| 26.12.1 | amd64 | Lulus | Tidak ditemukan | Ya | Menolak |
-| 26.12.1 | arm64 | Lulus | Tidak ditemukan | Ya | Menolak |
+| 22.23.4 | amd64 | Lulus | Brotli 1.1.1 | 348 / 6 | Menolak |
+| 22.23.4 | arm64 | Lulus | Brotli 1.1.1 | 348 / 6 | Menolak |
+| 24.22.1 | amd64 | Lulus | Brotli 1.1.1 | 348 / 6 | Menolak |
+| 24.22.1 | arm64 | Lulus | Brotli 1.1.1 | 348 / 6 | Menolak |
+| 26.12.1 | amd64 | Lulus | Brotli 1.1.1 | 348 / 6 | Menolak |
+| 26.12.1 | arm64 | Lulus | Brotli 1.1.1 | 348 / 6 | Menolak |
 
-Seluruh 12 job EOL (6 major × 2 arsitektur) berhasil sebagai audit non-publishing. Enam job supported gagal **hanya pada gate khusus CVE-2026-111497** setelah scan dan artifact tersimpan. Kedua job publikasi di-skip. Run lama 39875956770 memakai commit 0d3aa88, sebelum isolasi EOL; jangan gunakan run lama tersebut untuk menilai kebijakan EOL yang baru.
+Smoke test memeriksa user `container`, HOME/PWD, Tini, startup Egg, patch/arsitektur Node, instalasi dan uninstall dependency npm lokal tanpa jaringan, kompilasi TypeScript dan eksekusi hasilnya, serta curl/git/ffmpeg. Ini bukan uji Panel/Wings live atau seluruh aplikasi pengguna.
 
-## Node bundled berbeda dari library Debian
+Pada setiap kandidat, ownership dpkg dan SHA-256 ketiga library Brotli dicatat; API decoder yang benar-benar dimuat mengembalikan `0x1001001` (1.1.1). Probe `LD_PRELOAD` dengan payload HTTP Brotli **valid dan tidak berbahaya** kembali mengamati `BrotliDecoderDecompressStream` saat `curl --compressed` berhasil mendekode respons. Kali ini jalur itu menuju library fixed. Uji ini bukan exploit test atau pembuktian bahwa seluruh RCE mustahil. Audit libfreetype/libjxl tetap berupa linkage dan simbol; tidak diklaim sebagai fixture WOFF2/JXL dinamis.
 
-Untuk keenam kandidat final, `ldd` dan `readelf -d /usr/local/bin/node` tidak mencantumkan `libbrotli*`, `process.config.variables.node_shared_brotli=false`, dan shared objects proses sesudah operasi Brotli tidak memuat library OS tersebut. String versi Brotli internal adalah **1.1.0** pada Node 22 dan **1.2.0** pada Node 24/26.
+## Bukti per digest, paket, path, CVE, dan SBOM
 
-String itu tidak cukup untuk menentukan status CVE: catatan rilis resmi [22.23.4](https://nodejs.org/en/blog/release/v22.23.4), [24.22.1](https://nodejs.org/en/blog/release/v24.22.1), dan [26.12.1](https://nodejs.org/en/blog/release/v26.12.1) mencatat cherry-pick perbaikan Brotli `0ed4268`. Bukti linkage mendukung bahwa jalur Brotli built-in Node menggunakan komponen bundled tersebut, bukan `libbrotli1` Debian. Uji fungsional bukan pembuktian matematis atau exploit test bahwa seluruh RCE mustahil.
+[Ringkasan keenam kandidat](docs/security/2026-10-23-remediation/candidates.json) menyimpan digest manifest tiap arsitektur, config/image ID, base digest, snapshot scanner, hasil setiap tahap, temuan priority/critical, dan SHA-256 seluruh artifact. Bukti linkage, konsumen, provenance, dan metadata kecil juga tersimpan di direktori review tersebut. Digest build lokal **bukan** tanda bahwa image sudah dipublikasikan.
 
-Sementara itu, scanner masih melaporkan **CVE-2026-111497 pada `libbrotli1 1.1.0-2+b7`**, status **affected**, severity **UNKNOWN**, tanpa fixed version. [Debian tracker](https://security-tracker.debian.org/tracker/CVE-2026-111497) menandai Brotli Trixie vulnerable/unfixed. Catatan bahwa Debian `nodejs` memakai Brotli sistem berlaku pada packaging Debian; jangan otomatis menyamakannya dengan binary upstream `/usr/local/bin/node`. Status rentan library Debian tetap relevan bagi konsumennya sendiri.
+Artifact `reports-22/24/26-amd64/arm64` pada run CI berisi:
 
-## Library rentan bukan orphan
+- Laporan Trivy image lengkap semua severity dan SBOM CycloneDX; image ID scanner dan SBOM harus cocok dengan kandidat.
+- `package-cve-audit.json`: setiap temuan dicocokkan ke PURL, referensi SBOM, versi, target/path, layer, dan advisory. Temuan yang tidak mempunyai pasangan SBOM menyebabkan audit gagal.
+- `package-paths.json`: inventaris file milik **60 paket OS** yang dilaporkan blocking, termasuk hash ELF. Tidak semua paket OS mempunyai satu path tunggal; path bukan asumsi reachability.
+- Metadata kandidat, hash binary Node, linkage, audit decoder, dan provenance source/paket.
 
-Audit per kandidat mencatat paket/reverse dependencies dan `DT_NEEDED` serta simbol decoder untuk curl, git-remote-http, ffmpeg/ffprobe, libcurl, libjxl, libfreetype, dan Node. Bukti inti pada keenam kandidat:
+Scanner adalah **Trivy 0.76.1**, database schema 2, `UpdatedAt=2026-10-23T01:18:09.482141619Z`. Pemindaian repository menghasilkan dua MEDIUM dan satu LOW, tanpa HIGH/CRITICAL. Hitungan 348/6 adalah pasangan paket/CVE, bukan jumlah CVE unik atau bukti semua temuan dapat dieksploitasi. Baseline sebelumnya 364/6 memakai snapshot database berbeda; jangan menganggap seluruh selisih angka sebagai efek remediasi saja.
 
-- **libcurl OpenSSL dan GnuTLS** membutuhkan `libbrotlidec.so.1` dan mengimpor `BrotliDecoderDecompressStream`.
-- **libfreetype** membutuhkan `libbrotlidec.so.1` dan mengimpor `BrotliDecoderDecompress`.
-- **libjxl** membutuhkan decoder/encoder Brotli dan mengimpor `BrotliDecoderDecompressStream`.
-- **curl** membawa kemampuan Brotli dan memuat library decoder melalui libcurl. Daftar dependency paket juga menunjukkan library tersebut bukan paket tidak terpakai.
+## Mengapa gate tetap merah
 
-Uji dinamis hanya memakai payload Brotli **valid dan tidak berbahaya**: Node membuat fixture, server HTTP loopback mengirim `Content-Encoding: br`, lalu `curl --compressed` mendekodenya. Probe `LD_PRELOAD` memantau dan meneruskan panggilan decoder dengan ABI publik yang benar. **Semua enam kandidat** menghasilkan teks yang benar serta marker `BROTLI_PROBE_CALLED BrotliDecoderDecompressStream`.
+**CVE target:** scanner masih melaporkan CVE-2026-111497 pada `libbrotli1 1.1.1-0img1~deb13u1`, severity UNKNOWN, tanpa fixed version vendor. Source upstream fixed, paket asli, ABI, ownership, dan decoder yang dimuat kini mempunyai bukti teknis, tetapi database Debian belum mengenali status fixed untuk rebuild ini. Tidak ada VEX, ignorelist, penggantian database, atau pengecualian custom yang digunakan. Gate khusus CVE tetap menolak temuan pada severity apa pun.
 
-Dengan demikian, data yang dikendalikan endpoint HTTP dapat mencapai decoder Brotli sistem ketika auto-decode diaktifkan. [Dokumentasi libcurl](https://curl.se/libcurl/c/CURLOPT_ACCEPT_ENCODING.html) dan [source 8.14.1](https://raw.githubusercontent.com/curl/curl/curl-8_14_1/lib/content_encoding.c) mengonfirmasi jalur tersebut. Ini **tidak** menunjukkan branch rentan atau exploit RCE telah dipicu. Default auto-decode libcurl adalah nonaktif; aplikasi harus mengaktifkannya, misalnya melalui `curl --compressed` atau opsi API terkait.
+**Temuan lainnya:** ada **339 pasangan HIGH/CRITICAL dari paket Debian** tanpa fixed version dalam snapshot, ditambah **15 HIGH pada binary TypeScript Go**. Enam CRITICAL adalah:
 
-Jalur [WOFF2 FreeType](https://raw.githubusercontent.com/freetype/freetype/VER-2-13-3/src/sfnt/sfwoff2.c) dan [compressed box JPEG XL](https://raw.githubusercontent.com/libjxl/libjxl/v0.11.1/lib/jxl/box_content_decoder.cc) juga memanggil decoder. Pada audit ini keduanya didukung linkage/simbol dan source, **belum** diuji dengan fixture WOFF2/JXL dinamis. Dependency binary bukan bukti setiap konfigurasi aplikasi otomatis mengonsumsi input tersebut. Audit ini bukan enumerasi seluruh kemungkinan plugin, `dlopen`, modul native, atau aplikasi yang kelak dipasang pengguna; jangan membuat pengecualian global.
+| Paket | CVE | Fixed version di snapshot |
+|---|---|---|
+| liblmdb0 | CVE-2019-16224, CVE-2019-16225, CVE-2019-16227 | Tidak tersedia |
+| libxml2 | CVE-2026-6653 | Tidak tersedia |
+| linux-libc-dev | CVE-2026-93221 | Tidak tersedia |
+| openssh-client | CVE-2026-60002 | Tidak tersedia |
 
-## Scan dan digest yang dapat diperiksa
+Binary TypeScript berada di `/usr/local/lib/node_modules/typescript/node_modules/@typescript/typescript-linux-x64/lib/tsc` atau path platform arm64 yang dicatat scanner. Ia membawa Go stdlib `1.26.4` dan `golang.org/x/text v0.38.0`; penutupan seluruh temuan yang dilaporkan memerlukan binary dibangun dengan setidaknya Go 1.26.10 dan x/text 0.41.0. Meng-upgrade Node saja tidak mengganti dependency yang tertanam di binary tersebut.
 
-Scanner: **Trivy 0.76.1**, schema database **2**, `UpdatedAt` **2026-10-22T19:14:47.059491382Z**. Snapshot tiap runner juga menyimpan `DownloadedAt` dan digest policy bundle. Setiap kandidat supported memiliki **364 pasangan paket/CVE HIGH dan 6 CRITICAL**, ditambah CVE Brotli target pada UNKNOWN. Hitungan bukan CVE unik atau bukti seluruh temuan dapat dieksploitasi.
+Keenam job supported gagal **hanya pada gate CVE target**, sesudah build, smoke, scan, validasi identitas, audit decoder, dan upload bukti selesai. Gate HIGH/CRITICAL berikutnya tidak dieksekusi karena kegagalan sebelumnya; hitungan scan menunjukkan gate itu juga belum dapat lulus. Kegagalan scanner atau laporan invalid tetap fail-closed.
 
-Contoh CRITICAL tanpa fixed version pada snapshot: `liblmdb0` (CVE-2019-16224/16225/16227), `libxml2` (CVE-2026-6653), `linux-libc-dev` (CVE-2026-93221), dan `openssh-client` (CVE-2026-60002). Patch Node tidak memperbaiki seluruh paket OS, npm, atau tool Go yang dibundel upstream.
+## EOL dan izin publikasi
 
-[Ringkasan kandidat final](security/native-candidates-2026-10-23.json) mencatat **digest manifest setiap arsitektur**, image/config ID yang dicocokkan ke laporan scanner, digest base, hash binary Node, snapshot DB, hasil linkage/probe, dan hasil job. [Bukti native per kandidat](security/2026-10-23-native/) menyimpan metadata, linkage, dan audit konsumen. Laporan Trivy lengkap serta SBOM CycloneDX tersedia pada artifact `reports-MAJOR-ARCH` di run CI. Digest kandidat lokal/build bukan bukti image telah tersedia publik; **tidak ada manifest produksi baru yang diterbitkan**.
+Seluruh **12 job EOL** (18/19/20/21/23/25 × dua arsitektur) selesai sebagai laporan non-publishing pada run final. Target `eol-audit` memakai baseline legacy tanpa menjalankan builder Debian supported; ini menghindari kegagalan repositori OS lawas mengganggu audit. `continue-on-error` hanya berlaku untuk EOL, dan matrix publikasi permanen hanya 22/24/26. Tidak ada override publikasi EOL.
 
-## Mengapa tidak langsung menghapus atau mengganti library
+Dua job publikasi di-skip. Source sekarang mengizinkan publikasi hanya melalui `workflow_dispatch` pada `main` dengan `publish=true` setelah persetujuan pemilik dan seluruh gate supported lulus; push/jadwal sendiri hanya audit. Artifact tar, checksum, image ID dan arsitektur diverifikasi kembali sebelum jalur publish. Jalur itu tidak dijalankan dalam pekerjaan ini.
 
-Pemeriksaan paket Node 24 amd64 setelah `apt-get update` masih menunjukkan installed dan candidate `libbrotli1` sama-sama **1.1.0-2+b7**. Brotli upstream fixed pada 1.1.1/1.2.1, tetapi paket fixed yang kompatibel belum tersedia dari repository Trixie yang dikonfigurasi pada pemeriksaan ini.
+## Urutan penyelesaian blocker
 
-Simulasi `apt-get -s remove libbrotli1` mengusulkan penghapusan **28 paket**, termasuk **curl, git, dan ffmpeg**. Tidak ada penghapusan dilakukan: tindakan itu mengubah fitur Yolks/Egg dan tidak boleh dipakai sekadar menyembunyikan hasil scan. Simulasi upgrade OS sebelumnya hanya menawarkan bind9/tzdata; itu tidak memperbaiki seluruh temuan.
-
-## Gerbang dan langkah berikutnya
-
-1. **Pertahankan blokir publikasi.** Kandidat supported ditolak jika CVE-2026-111497 terdeteksi pada severity apa pun, termasuk UNKNOWN; HIGH/CRITICAL dan kegagalan scanner tetap hard-fail. Tidak ada ignorelist atau pengecualian reachability.
-2. **Dapatkan library OS fixed yang dapat dipertanggungjawabkan**, melalui pembaruan vendor/packaging yang benar atau rancangan base alternatif yang menjaga fitur yang diperlukan. Custom backport bukan hasil yang sudah diimplementasikan di PR ini. Jangan sekadar menimpa file atau memalsukan versi paket agar scanner diam.
-3. Setelah perubahan remediasi, ulangi build native kedua arsitektur, audit consumer, decode/regression test Egg, scan final, dan pencocokan digest. Perubahan ini belum menguji Panel/Wings live atau dependency aplikasi pengguna.
-4. **EOL tidak diterbitkan.** Matrix publikasi hanya 22/24/26 × kedua arsitektur; EOL dipindai dan diunggah sebagai laporan nonblocking, tanpa opsi override. Regression test memeriksa matrix/kondisi workflow dan gate CVE pada seluruh severity serta laporan invalid.
-
-Source pembaruan dan pengujian tersedia; **remediasi keseluruhan image belum selesai**. Tag lama serta server produksi tidak otomatis berubah oleh PR ini.
+1. Pertahankan blokir rilis; jangan menganggap custom Brotli fixed sebagai alasan melewati gate CVE atau 354 temuan HIGH/CRITICAL lain.
+2. Dapatkan paket vendor fixed dan status scanner yang sesuai, atau siapkan base/packaging alternatif yang dapat dibuktikan mempertahankan fitur Egg/Yolks. Saat ini pembaruan vendor OS yang tersedia tidak menutup 339 temuan OS tersebut.
+3. Dapatkan rilis TypeScript dengan toolchain tertanam fixed, atau lakukan rebuild terpisah dengan provenance dan regression test compiler yang memadai; jangan menimpa dependency binary atau menghapus compiler sekadar untuk menyembunyikan scan.
+4. Setelah remediasi berikutnya, ulangi keenam build native, kompatibilitas Egg, audit consumer, scan final, dan pencocokan digest/SBOM. Merge, publikasi, dan deployment tetap memerlukan persetujuan eksplisit pemilik.

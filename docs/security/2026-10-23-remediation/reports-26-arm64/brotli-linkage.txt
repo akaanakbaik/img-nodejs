@@ -1,0 +1,58 @@
+v26.12.1
+7d32bda549eb24395c1d9830731470a0045781b15797d5943591c333a085b2da  /usr/local/bin/node
+	linux-vdso.so.1 (0x0000ffcf0a0cc000)
+	libatomic.so.1 => /lib/aarch64-linux-gnu/libatomic.so.1 (0x0000ffcf0a060000)
+	libdl.so.2 => /lib/aarch64-linux-gnu/libdl.so.2 (0x0000ffcf0a030000)
+	libm.so.6 => /lib/aarch64-linux-gnu/libm.so.6 (0x0000ffcf09f80000)
+	libstdc++.so.6 => /lib/aarch64-linux-gnu/libstdc++.so.6 (0x0000ffcf09d10000)
+	libgcc_s.so.1 => /lib/aarch64-linux-gnu/libgcc_s.so.1 (0x0000ffcf09cd0000)
+	libpthread.so.0 => /lib/aarch64-linux-gnu/libpthread.so.0 (0x0000ffcf09ca0000)
+	libc.so.6 => /lib/aarch64-linux-gnu/libc.so.6 (0x0000ffcf09ae0000)
+	/lib/ld-linux-aarch64.so.1 (0x0000ffcf0a090000)
+
+Dynamic section at offset 0x6d0e0d0 contains 33 entries:
+  Tag        Type                         Name/Value
+ 0x0000000000000001 (NEEDED)             Shared library: [libatomic.so.1]
+ 0x0000000000000001 (NEEDED)             Shared library: [libdl.so.2]
+ 0x0000000000000001 (NEEDED)             Shared library: [libm.so.6]
+ 0x0000000000000001 (NEEDED)             Shared library: [libstdc++.so.6]
+ 0x0000000000000001 (NEEDED)             Shared library: [libgcc_s.so.1]
+ 0x0000000000000001 (NEEDED)             Shared library: [libpthread.so.0]
+ 0x0000000000000001 (NEEDED)             Shared library: [libc.so.6]
+ 0x0000000000000001 (NEEDED)             Shared library: [ld-linux-aarch64.so.1]
+ 0x000000000000000c (INIT)               0x820000
+ 0x000000000000000d (FINI)               0x31f82e0
+ 0x0000000000000019 (INIT_ARRAY)         0x70eee30
+ 0x000000000000001b (INIT_ARRAYSZ)       416 (bytes)
+ 0x000000000000001a (FINI_ARRAY)         0x70eefd0
+ 0x000000000000001c (FINI_ARRAYSZ)       16 (bytes)
+ 0x000000006ffffef5 (GNU_HASH)           0x400340
+ 0x0000000000000005 (STRTAB)             0x563750
+ 0x0000000000000006 (SYMTAB)             0x454bc8
+ 0x000000000000000a (STRSZ)              2744672 (bytes)
+ 0x000000000000000b (SYMENT)             24 (bytes)
+ 0x0000000000000015 (DEBUG)              0x0
+ 0x0000000000000003 (PLTGOT)             0x711e330
+ 0x0000000000000002 (PLTRELSZ)           16056 (bytes)
+ 0x0000000000000014 (PLTREL)             RELA
+ 0x0000000000000017 (JMPREL)             0x8194d8
+ 0x0000000000000007 (RELA)               0x818428
+ 0x0000000000000008 (RELASZ)             4272 (bytes)
+ 0x0000000000000009 (RELAENT)            24 (bytes)
+ 0x000000000000001e (FLAGS)              BIND_NOW
+ 0x000000006ffffffb (FLAGS_1)            Flags: NOW
+ 0x000000006ffffffe (VERNEED)            0x8181a8
+ 0x000000006fffffff (VERNEEDNUM)         8
+ 0x000000006ffffff0 (VERSYM)             0x8018b0
+ 0x0000000000000000 (NULL)               0x0
+{"node":"26.12.1","brotli":"1.2.0","sharedBrotli":false}
+libbrotli1:arm64	1.1.1-0img1~deb13u1
+linux-vdso.so.1
+/lib/aarch64-linux-gnu/libatomic.so.1
+/lib/aarch64-linux-gnu/libdl.so.2
+/lib/aarch64-linux-gnu/libm.so.6
+/lib/aarch64-linux-gnu/libstdc++.so.6
+/lib/aarch64-linux-gnu/libgcc_s.so.1
+/lib/aarch64-linux-gnu/libpthread.so.0
+/lib/aarch64-linux-gnu/libc.so.6
+/lib/ld-linux-aarch64.so.1

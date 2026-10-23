@@ -1,0 +1,1008 @@
+{
+  "repo": "akaanakbaik/img-nodejs",
+  "pr": 1,
+  "tested_commit": "db0a8498934ab8526f88ae86775b35754e967921",
+  "workflow_run": 39910150287,
+  "workflow_url": "https://github.com/akaanakbaik/img-nodejs/actions/runs/39910150287",
+  "result": "BLOCKED: priority CVE remains vendor-unfixed; HIGH/CRITICAL also remain. No exceptions or publication.",
+  "baseline": {
+    "workflow_run": 39876738576,
+    "high": 364,
+    "critical": 6,
+    "warning": "Scanner database snapshot changed; numerical delta alone is not proof of remediation."
+  },
+  "eol_job_results": [
+    {
+      "name": "Verify Node.js 18 (arm64)",
+      "conclusion": "success",
+      "url": "https://github.com/akaanakbaik/img-nodejs/actions/runs/39910150287/job/120271715543"
+    },
+    {
+      "name": "Verify Node.js 18 (amd64)",
+      "conclusion": "success",
+      "url": "https://github.com/akaanakbaik/img-nodejs/actions/runs/39910150287/job/120271715574"
+    },
+    {
+      "name": "Verify Node.js 19 (amd64)",
+      "conclusion": "success",
+      "url": "https://github.com/akaanakbaik/img-nodejs/actions/runs/39910150287/job/120271715587"
+    },
+    {
+      "name": "Verify Node.js 20 (amd64)",
+      "conclusion": "success",
+      "url": "https://github.com/akaanakbaik/img-nodejs/actions/runs/39910150287/job/120271715591"
+    },
+    {
+      "name": "Verify Node.js 19 (arm64)",
+      "conclusion": "success",
+      "url": "https://github.com/akaanakbaik/img-nodejs/actions/runs/39910150287/job/120271715609"
+    },
+    {
+      "name": "Verify Node.js 21 (amd64)",
+      "conclusion": "success",
+      "url": "https://github.com/akaanakbaik/img-nodejs/actions/runs/39910150287/job/120271715628"
+    },
+    {
+      "name": "Verify Node.js 25 (amd64)",
+      "conclusion": "success",
+      "url": "https://github.com/akaanakbaik/img-nodejs/actions/runs/39910150287/job/120271715661"
+    },
+    {
+      "name": "Verify Node.js 23 (arm64)",
+      "conclusion": "success",
+      "url": "https://github.com/akaanakbaik/img-nodejs/actions/runs/39910150287/job/120271715670"
+    },
+    {
+      "name": "Verify Node.js 25 (arm64)",
+      "conclusion": "success",
+      "url": "https://github.com/akaanakbaik/img-nodejs/actions/runs/39910150287/job/120271715673"
+    },
+    {
+      "name": "Verify Node.js 23 (amd64)",
+      "conclusion": "success",
+      "url": "https://github.com/akaanakbaik/img-nodejs/actions/runs/39910150287/job/120271715694"
+    },
+    {
+      "name": "Verify Node.js 21 (arm64)",
+      "conclusion": "success",
+      "url": "https://github.com/akaanakbaik/img-nodejs/actions/runs/39910150287/job/120271715768"
+    },
+    {
+      "name": "Verify Node.js 20 (arm64)",
+      "conclusion": "success",
+      "url": "https://github.com/akaanakbaik/img-nodejs/actions/runs/39910150287/job/120271715782"
+    }
+  ],
+  "candidates": [
+    {
+      "candidate": {
+        "base": "ghcr.io/parkervcp/yolks:nodejs_22@sha256:06f6429325dd5cf09443cd09dc5234caaf22daca71474cef22938f4092dd0579",
+        "manifest_digest": "sha256:b7990b7b87da7b5711ed957b26df8ae8b87525470d08f985391ba38badb8474d",
+        "image_id": "sha256:b105730568a4ce8d96dce763083e7abc045b8493720a5e5e4d58564229e27c79",
+        "arch": "amd64",
+        "expected_node": "22.23.4"
+      },
+      "job_url": "https://github.com/akaanakbaik/img-nodejs/actions/runs/39910150287/job/120271715647",
+      "steps": {
+        "Set up job": "success",
+        "Check out source": "success",
+        "Set up Docker Buildx": "success",
+        "Resolve immutable multi-arch base digest": "success",
+        "Build exact candidate (native architecture)": "success",
+        "Test runtime and Egg startup contract": "success",
+        "Record exact candidate and Brotli linkage": "success",
+        "Install pinned Trivy": "success",
+        "Scan image and repository": "success",
+        "Verify candidate identity against scanner and Docker": "success",
+        "Audit system Brotli consumers with benign input": "success",
+        "Upload scan reports": "success",
+        "Block CVE-2026-111497 at every severity": "failure",
+        "Enforce vulnerability and repository security gates": "skipped",
+        "Save exact tested image": "skipped",
+        "Upload exact tested image": "skipped",
+        "Post Build exact candidate (native architecture)": "success",
+        "Post Set up Docker Buildx": "success",
+        "Post Check out source": "success",
+        "Complete job": "success"
+      },
+      "counts": {
+        "CRITICAL": 6,
+        "HIGH": 348,
+        "LOW": 1192,
+        "MEDIUM": 1073,
+        "UNKNOWN": 28
+      },
+      "sbom_components": 715,
+      "blocking_pairs": 355,
+      "blocking_without_vendor_fixed_version": 340,
+      "priority_findings": [
+        {
+          "cve": "CVE-2026-111497",
+          "severity": "UNKNOWN",
+          "package": "libbrotli1",
+          "installed": "1.1.1-0img1~deb13u1",
+          "fixed_version": null,
+          "status": "affected",
+          "target": "local/img-nodejs:nodejs_22-amd64 (debian 13.7)",
+          "type": "debian",
+          "path": null,
+          "path_note": "OS package; binary paths require dpkg/ELF evidence",
+          "purl": "pkg:deb/debian/libbrotli1@1.1.1-0img1~deb13u1?arch=amd64&distro=debian-13.7",
+          "sbom_refs": [
+            "pkg:deb/debian/libbrotli1@1.1.1-0img1~deb13u1?arch=amd64&distro=debian-13.7"
+          ],
+          "sbom_paths": [],
+          "layer": "sha256:968122a15d8d2e60af6be8726de33dfe7725f09dbbb0698770d013855d35e3a1",
+          "source": {
+            "ID": "debian",
+            "Name": "Debian Security Tracker",
+            "URL": "https://salsa.debian.org/security-tracker-team/security-tracker"
+          },
+          "advisory": "https://avd.aquasec.com/nvd/cve-2026-111497"
+        }
+      ],
+      "critical_findings": [
+        {
+          "package": "liblmdb0",
+          "installed": "0.9.31-1+b2",
+          "cve": "CVE-2019-16224",
+          "fixed_version": null,
+          "purl": "pkg:deb/debian/liblmdb0@0.9.31-1%2Bb2?arch=amd64&distro=debian-13.7",
+          "advisory": "https://avd.aquasec.com/nvd/cve-2019-16224"
+        },
+        {
+          "package": "liblmdb0",
+          "installed": "0.9.31-1+b2",
+          "cve": "CVE-2019-16225",
+          "fixed_version": null,
+          "purl": "pkg:deb/debian/liblmdb0@0.9.31-1%2Bb2?arch=amd64&distro=debian-13.7",
+          "advisory": "https://avd.aquasec.com/nvd/cve-2019-16225"
+        },
+        {
+          "package": "liblmdb0",
+          "installed": "0.9.31-1+b2",
+          "cve": "CVE-2019-16227",
+          "fixed_version": null,
+          "purl": "pkg:deb/debian/liblmdb0@0.9.31-1%2Bb2?arch=amd64&distro=debian-13.7",
+          "advisory": "https://avd.aquasec.com/nvd/cve-2019-16227"
+        },
+        {
+          "package": "libxml2",
+          "installed": "2.12.7+dfsg+really2.9.14-2.1+deb13u3",
+          "cve": "CVE-2026-6653",
+          "fixed_version": null,
+          "purl": "pkg:deb/debian/libxml2@2.12.7%2Bdfsg%2Breally2.9.14-2.1%2Bdeb13u3?arch=amd64&distro=debian-13.7",
+          "advisory": "https://avd.aquasec.com/nvd/cve-2026-6653"
+        },
+        {
+          "package": "linux-libc-dev",
+          "installed": "6.12.113-1",
+          "cve": "CVE-2026-93221",
+          "fixed_version": null,
+          "purl": "pkg:deb/debian/linux-libc-dev@6.12.113-1?arch=all&distro=debian-13.7",
+          "advisory": "https://avd.aquasec.com/nvd/cve-2026-93221"
+        },
+        {
+          "package": "openssh-client",
+          "installed": "1:10.0p1-7+deb13u4",
+          "cve": "CVE-2026-60002",
+          "fixed_version": null,
+          "purl": "pkg:deb/debian/openssh-client@10.0p1-7%2Bdeb13u4?arch=amd64&distro=debian-13.7&epoch=1",
+          "advisory": "https://avd.aquasec.com/nvd/cve-2026-60002"
+        }
+      ],
+      "high_critical_by_ecosystem": {
+        "debian": 339,
+        "gobinary": 15
+      },
+      "package_path_inventory_count": 60,
+      "scanner": {
+        "Version": "0.76.1",
+        "VulnerabilityDB": {
+          "Version": 2,
+          "NextUpdate": "2026-10-24T01:18:09.482141078Z",
+          "UpdatedAt": "2026-10-23T01:18:09.482141619Z",
+          "DownloadedAt": "2026-10-23T06:16:18.47966069Z"
+        },
+        "CheckBundle": {
+          "Digest": "sha256:b591e9190cff4aa4e385b1a25bccfd9ecf178d3c77fd194e1410b7ce7e1df058",
+          "DownloadedAt": "2026-10-23T06:16:30.243122208Z"
+        }
+      },
+      "runtime_proof": {
+        "loaded_decoder_version": "1.1.1 (0x1001001)",
+        "curl_benign_decode_and_decoder_probe": "pass",
+        "node_shared_brotli": false
+      },
+      "artifact_name": "reports-22-amd64",
+      "evidence_sha256": {
+        "blocking-os-packages.txt": "2c438a8b888bc9efe0ad8bb97457dbe171d80c1f4bc8776a7f912928c518e29b",
+        "brotli-consumers.txt": "98ce48e311f5bf3e53af6a8c3f41ab7bdfde30d3cfc38c3a514f6c139c6586ce",
+        "brotli-linkage.txt": "128c163058605da82772180ff6078bc7102a6601e62716d5c0ab57e0c3801025",
+        "candidate-metadata.json": "9f1e093fb9b5c507077df783b9ef328e603348f3f46862ed4370a7bacd8c0a9a",
+        "package-cve-audit.json": "43fdc2180a29873f100bcfa7393351dffbafe44901e777ed8b3ee41fbc697686",
+        "package-paths.json": "ab13cf2a46e108d67bbc36e295a3d79cea0472f2158b58a18c781f4d127dbb24",
+        "package-provenance.txt": "2059ec1257377d7e471c29014702abac5329149f12f06ea1560d7c3cfc22e07d",
+        "scanner-metadata.json": "b73b3a71fd794118ea09951fdeb6e4543aa5d0d8ba47b557278fefd3f71d2c05",
+        "trivy-image-22-amd64.json": "77f9aeb16004063237d5f9b6f7fceced5f4d92d0a792679fe30618edd206441e",
+        "trivy-repo-22-amd64.json": "4f5e1d58897a0ee3b2ca36451019c667fb7afcbd634c48f839a54d94534c9175",
+        "trivy-sbom-22-amd64.json": "8d1ab1f8e619a9b5a536aab4c46d0e5d28b6d6001e033dac9e887750255d8208"
+      }
+    },
+    {
+      "candidate": {
+        "base": "ghcr.io/parkervcp/yolks:nodejs_22@sha256:06f6429325dd5cf09443cd09dc5234caaf22daca71474cef22938f4092dd0579",
+        "manifest_digest": "sha256:b97a0d1c6435b82e3839ff32748c8c07667caa772b998f43fb478022010c2b57",
+        "image_id": "sha256:92c90542279208d970ecab7ae8be60b3c53b6d92b426f57bb4bf2276edbf39f8",
+        "arch": "arm64",
+        "expected_node": "22.23.4"
+      },
+      "job_url": "https://github.com/akaanakbaik/img-nodejs/actions/runs/39910150287/job/120271715733",
+      "steps": {
+        "Set up job": "success",
+        "Check out source": "success",
+        "Set up Docker Buildx": "success",
+        "Resolve immutable multi-arch base digest": "success",
+        "Build exact candidate (native architecture)": "success",
+        "Test runtime and Egg startup contract": "success",
+        "Record exact candidate and Brotli linkage": "success",
+        "Install pinned Trivy": "success",
+        "Scan image and repository": "success",
+        "Verify candidate identity against scanner and Docker": "success",
+        "Audit system Brotli consumers with benign input": "success",
+        "Upload scan reports": "success",
+        "Block CVE-2026-111497 at every severity": "failure",
+        "Enforce vulnerability and repository security gates": "skipped",
+        "Save exact tested image": "skipped",
+        "Upload exact tested image": "skipped",
+        "Post Build exact candidate (native architecture)": "success",
+        "Post Set up Docker Buildx": "success",
+        "Post Check out source": "success",
+        "Complete job": "success"
+      },
+      "counts": {
+        "CRITICAL": 6,
+        "HIGH": 348,
+        "LOW": 1192,
+        "MEDIUM": 1071,
+        "UNKNOWN": 28
+      },
+      "sbom_components": 707,
+      "blocking_pairs": 355,
+      "blocking_without_vendor_fixed_version": 340,
+      "priority_findings": [
+        {
+          "cve": "CVE-2026-111497",
+          "severity": "UNKNOWN",
+          "package": "libbrotli1",
+          "installed": "1.1.1-0img1~deb13u1",
+          "fixed_version": null,
+          "status": "affected",
+          "target": "local/img-nodejs:nodejs_22-arm64 (debian 13.7)",
+          "type": "debian",
+          "path": null,
+          "path_note": "OS package; binary paths require dpkg/ELF evidence",
+          "purl": "pkg:deb/debian/libbrotli1@1.1.1-0img1~deb13u1?arch=arm64&distro=debian-13.7",
+          "sbom_refs": [
+            "pkg:deb/debian/libbrotli1@1.1.1-0img1~deb13u1?arch=arm64&distro=debian-13.7"
+          ],
+          "sbom_paths": [],
+          "layer": "sha256:2842db5548ee7abf362c58ee13ecc4ff9686024e50dc74a7d1a6f7ac917dbdea",
+          "source": {
+            "ID": "debian",
+            "Name": "Debian Security Tracker",
+            "URL": "https://salsa.debian.org/security-tracker-team/security-tracker"
+          },
+          "advisory": "https://avd.aquasec.com/nvd/cve-2026-111497"
+        }
+      ],
+      "critical_findings": [
+        {
+          "package": "liblmdb0",
+          "installed": "0.9.31-1+b2",
+          "cve": "CVE-2019-16224",
+          "fixed_version": null,
+          "purl": "pkg:deb/debian/liblmdb0@0.9.31-1%2Bb2?arch=arm64&distro=debian-13.7",
+          "advisory": "https://avd.aquasec.com/nvd/cve-2019-16224"
+        },
+        {
+          "package": "liblmdb0",
+          "installed": "0.9.31-1+b2",
+          "cve": "CVE-2019-16225",
+          "fixed_version": null,
+          "purl": "pkg:deb/debian/liblmdb0@0.9.31-1%2Bb2?arch=arm64&distro=debian-13.7",
+          "advisory": "https://avd.aquasec.com/nvd/cve-2019-16225"
+        },
+        {
+          "package": "liblmdb0",
+          "installed": "0.9.31-1+b2",
+          "cve": "CVE-2019-16227",
+          "fixed_version": null,
+          "purl": "pkg:deb/debian/liblmdb0@0.9.31-1%2Bb2?arch=arm64&distro=debian-13.7",
+          "advisory": "https://avd.aquasec.com/nvd/cve-2019-16227"
+        },
+        {
+          "package": "libxml2",
+          "installed": "2.12.7+dfsg+really2.9.14-2.1+deb13u3",
+          "cve": "CVE-2026-6653",
+          "fixed_version": null,
+          "purl": "pkg:deb/debian/libxml2@2.12.7%2Bdfsg%2Breally2.9.14-2.1%2Bdeb13u3?arch=arm64&distro=debian-13.7",
+          "advisory": "https://avd.aquasec.com/nvd/cve-2026-6653"
+        },
+        {
+          "package": "linux-libc-dev",
+          "installed": "6.12.113-1",
+          "cve": "CVE-2026-93221",
+          "fixed_version": null,
+          "purl": "pkg:deb/debian/linux-libc-dev@6.12.113-1?arch=all&distro=debian-13.7",
+          "advisory": "https://avd.aquasec.com/nvd/cve-2026-93221"
+        },
+        {
+          "package": "openssh-client",
+          "installed": "1:10.0p1-7+deb13u4",
+          "cve": "CVE-2026-60002",
+          "fixed_version": null,
+          "purl": "pkg:deb/debian/openssh-client@10.0p1-7%2Bdeb13u4?arch=arm64&distro=debian-13.7&epoch=1",
+          "advisory": "https://avd.aquasec.com/nvd/cve-2026-60002"
+        }
+      ],
+      "high_critical_by_ecosystem": {
+        "debian": 339,
+        "gobinary": 15
+      },
+      "package_path_inventory_count": 60,
+      "scanner": {
+        "Version": "0.76.1",
+        "VulnerabilityDB": {
+          "Version": 2,
+          "NextUpdate": "2026-10-24T01:18:09.482141078Z",
+          "UpdatedAt": "2026-10-23T01:18:09.482141619Z",
+          "DownloadedAt": "2026-10-23T06:16:15.896052706Z"
+        },
+        "CheckBundle": {
+          "Digest": "sha256:b591e9190cff4aa4e385b1a25bccfd9ecf178d3c77fd194e1410b7ce7e1df058",
+          "DownloadedAt": "2026-10-23T06:16:29.015523647Z"
+        }
+      },
+      "runtime_proof": {
+        "loaded_decoder_version": "1.1.1 (0x1001001)",
+        "curl_benign_decode_and_decoder_probe": "pass",
+        "node_shared_brotli": false
+      },
+      "artifact_name": "reports-22-arm64",
+      "evidence_sha256": {
+        "blocking-os-packages.txt": "2c438a8b888bc9efe0ad8bb97457dbe171d80c1f4bc8776a7f912928c518e29b",
+        "brotli-consumers.txt": "4466e30c6ce63a0e950036eab4748d02d43b1afb641cb84367ebc503acd708b5",
+        "brotli-linkage.txt": "cac1d8e798763f30e17c91f6711eb478947542a2c498a53e2c9cc61924d66713",
+        "candidate-metadata.json": "5eeba5acc1ca227dab61ccbbc5844844a57eda4ac0a8e851918b24a46e6079d5",
+        "package-cve-audit.json": "083c8408957aca447cbf51726f120b582b954d99d16614667ea216bd8e56ea1e",
+        "package-paths.json": "f1743c5637ccead5b01f07560cf629947aa3e6a3edf58982d71483c0ae677350",
+        "package-provenance.txt": "e30bb26b4003042860408f0a11585ece27ddc9e4333e5cde0ee6bc7ad7ac113a",
+        "scanner-metadata.json": "5350a92e11320869386b1a9932d8522d1aa475ac36c7e32cb2c3a55572a2e5cf",
+        "trivy-image-22-arm64.json": "ad21d39103801c1f86ee3fa894582a86489e4b747a51359223c01bf05c9023eb",
+        "trivy-repo-22-arm64.json": "834ccb6784f7b401e020f6c601218e818fd4d18dd16994c30f6895d9012cb091",
+        "trivy-sbom-22-arm64.json": "a32d6a746953b4994946bd56e512893857586a9a45212359c704fd69db654967"
+      }
+    },
+    {
+      "candidate": {
+        "base": "ghcr.io/parkervcp/yolks:nodejs_24@sha256:9e84c334572bf9c0310fbc4d0b0a789a909957d30bd7f2454a7af758ee842919",
+        "manifest_digest": "sha256:718b65608ce52bedc65b90f413262e3bdf291c9d960be31ab7b21442eab229cd",
+        "image_id": "sha256:8841fd35ac02be1a811a95462aaeca6daf0ae6a8b5398f5f4b84d7d59f22cd02",
+        "arch": "amd64",
+        "expected_node": "24.22.1"
+      },
+      "job_url": "https://github.com/akaanakbaik/img-nodejs/actions/runs/39910150287/job/120271715848",
+      "steps": {
+        "Set up job": "success",
+        "Check out source": "success",
+        "Set up Docker Buildx": "success",
+        "Resolve immutable multi-arch base digest": "success",
+        "Build exact candidate (native architecture)": "success",
+        "Test runtime and Egg startup contract": "success",
+        "Record exact candidate and Brotli linkage": "success",
+        "Install pinned Trivy": "success",
+        "Scan image and repository": "success",
+        "Verify candidate identity against scanner and Docker": "success",
+        "Audit system Brotli consumers with benign input": "success",
+        "Upload scan reports": "success",
+        "Block CVE-2026-111497 at every severity": "failure",
+        "Enforce vulnerability and repository security gates": "skipped",
+        "Save exact tested image": "skipped",
+        "Upload exact tested image": "skipped",
+        "Post Build exact candidate (native architecture)": "success",
+        "Post Set up Docker Buildx": "success",
+        "Post Check out source": "success",
+        "Complete job": "success"
+      },
+      "counts": {
+        "CRITICAL": 6,
+        "HIGH": 348,
+        "LOW": 1192,
+        "MEDIUM": 1073,
+        "UNKNOWN": 28
+      },
+      "sbom_components": 715,
+      "blocking_pairs": 355,
+      "blocking_without_vendor_fixed_version": 340,
+      "priority_findings": [
+        {
+          "cve": "CVE-2026-111497",
+          "severity": "UNKNOWN",
+          "package": "libbrotli1",
+          "installed": "1.1.1-0img1~deb13u1",
+          "fixed_version": null,
+          "status": "affected",
+          "target": "local/img-nodejs:nodejs_24-amd64 (debian 13.7)",
+          "type": "debian",
+          "path": null,
+          "path_note": "OS package; binary paths require dpkg/ELF evidence",
+          "purl": "pkg:deb/debian/libbrotli1@1.1.1-0img1~deb13u1?arch=amd64&distro=debian-13.7",
+          "sbom_refs": [
+            "pkg:deb/debian/libbrotli1@1.1.1-0img1~deb13u1?arch=amd64&distro=debian-13.7"
+          ],
+          "sbom_paths": [],
+          "layer": "sha256:c9f49d469753b279feea55dcd20ae50d7b1aa28269a03ce596a2de60646986ee",
+          "source": {
+            "ID": "debian",
+            "Name": "Debian Security Tracker",
+            "URL": "https://salsa.debian.org/security-tracker-team/security-tracker"
+          },
+          "advisory": "https://avd.aquasec.com/nvd/cve-2026-111497"
+        }
+      ],
+      "critical_findings": [
+        {
+          "package": "liblmdb0",
+          "installed": "0.9.31-1+b2",
+          "cve": "CVE-2019-16224",
+          "fixed_version": null,
+          "purl": "pkg:deb/debian/liblmdb0@0.9.31-1%2Bb2?arch=amd64&distro=debian-13.7",
+          "advisory": "https://avd.aquasec.com/nvd/cve-2019-16224"
+        },
+        {
+          "package": "liblmdb0",
+          "installed": "0.9.31-1+b2",
+          "cve": "CVE-2019-16225",
+          "fixed_version": null,
+          "purl": "pkg:deb/debian/liblmdb0@0.9.31-1%2Bb2?arch=amd64&distro=debian-13.7",
+          "advisory": "https://avd.aquasec.com/nvd/cve-2019-16225"
+        },
+        {
+          "package": "liblmdb0",
+          "installed": "0.9.31-1+b2",
+          "cve": "CVE-2019-16227",
+          "fixed_version": null,
+          "purl": "pkg:deb/debian/liblmdb0@0.9.31-1%2Bb2?arch=amd64&distro=debian-13.7",
+          "advisory": "https://avd.aquasec.com/nvd/cve-2019-16227"
+        },
+        {
+          "package": "libxml2",
+          "installed": "2.12.7+dfsg+really2.9.14-2.1+deb13u3",
+          "cve": "CVE-2026-6653",
+          "fixed_version": null,
+          "purl": "pkg:deb/debian/libxml2@2.12.7%2Bdfsg%2Breally2.9.14-2.1%2Bdeb13u3?arch=amd64&distro=debian-13.7",
+          "advisory": "https://avd.aquasec.com/nvd/cve-2026-6653"
+        },
+        {
+          "package": "linux-libc-dev",
+          "installed": "6.12.113-1",
+          "cve": "CVE-2026-93221",
+          "fixed_version": null,
+          "purl": "pkg:deb/debian/linux-libc-dev@6.12.113-1?arch=all&distro=debian-13.7",
+          "advisory": "https://avd.aquasec.com/nvd/cve-2026-93221"
+        },
+        {
+          "package": "openssh-client",
+          "installed": "1:10.0p1-7+deb13u4",
+          "cve": "CVE-2026-60002",
+          "fixed_version": null,
+          "purl": "pkg:deb/debian/openssh-client@10.0p1-7%2Bdeb13u4?arch=amd64&distro=debian-13.7&epoch=1",
+          "advisory": "https://avd.aquasec.com/nvd/cve-2026-60002"
+        }
+      ],
+      "high_critical_by_ecosystem": {
+        "debian": 339,
+        "gobinary": 15
+      },
+      "package_path_inventory_count": 60,
+      "scanner": {
+        "Version": "0.76.1",
+        "VulnerabilityDB": {
+          "Version": 2,
+          "NextUpdate": "2026-10-24T01:18:09.482141078Z",
+          "UpdatedAt": "2026-10-23T01:18:09.482141619Z",
+          "DownloadedAt": "2026-10-23T06:16:15.618972514Z"
+        },
+        "CheckBundle": {
+          "Digest": "sha256:b591e9190cff4aa4e385b1a25bccfd9ecf178d3c77fd194e1410b7ce7e1df058",
+          "DownloadedAt": "2026-10-23T06:16:26.931043097Z"
+        }
+      },
+      "runtime_proof": {
+        "loaded_decoder_version": "1.1.1 (0x1001001)",
+        "curl_benign_decode_and_decoder_probe": "pass",
+        "node_shared_brotli": false
+      },
+      "artifact_name": "reports-24-amd64",
+      "evidence_sha256": {
+        "blocking-os-packages.txt": "2c438a8b888bc9efe0ad8bb97457dbe171d80c1f4bc8776a7f912928c518e29b",
+        "brotli-consumers.txt": "1dd5c07668ff6b7242c60bb123141d67c44cd917278fdf98282cc92a3bd0f713",
+        "brotli-linkage.txt": "a8f552c69adbc07d430c97bb0e8c26fe943fcdc3626ec20e57b758084891953f",
+        "candidate-metadata.json": "19dc62064f9cafc37d7c50fd1616acedb2c856a74bb0d8c1157a624dd0cabca4",
+        "package-cve-audit.json": "b37fd2983ce7230831fcded4bf562f7b5bf023b30fdbfdd4c810e2dc7ba11842",
+        "package-paths.json": "ab13cf2a46e108d67bbc36e295a3d79cea0472f2158b58a18c781f4d127dbb24",
+        "package-provenance.txt": "dbdf9433547cc20f5af68e41309cf0b6054e5ffeaaddd5e6e331446b3ccaed2d",
+        "scanner-metadata.json": "0314543e16dbede78f1970784b2a4f5160ef79d4a377ae1a59ad1679c9b26bbe",
+        "trivy-image-24-amd64.json": "5ba4aa6369d9475a251cbbce5ad3657ab54e7cbeb3819387ed88ccb86d3a4144",
+        "trivy-repo-24-amd64.json": "c0dfcede88e0f30df79d2738b9d02e8dc9fcdfa68007a32204a5d199b4acfa07",
+        "trivy-sbom-24-amd64.json": "d378bcd5544573f3284921a626222571c451edd2fa060f90c0353d6dadaccc87"
+      }
+    },
+    {
+      "candidate": {
+        "base": "ghcr.io/parkervcp/yolks:nodejs_24@sha256:9e84c334572bf9c0310fbc4d0b0a789a909957d30bd7f2454a7af758ee842919",
+        "manifest_digest": "sha256:65a3feb6c3168705805163bb0bea8f70e94f0cd1e9363882fbb901b99689e49b",
+        "image_id": "sha256:7316f4e7741d8451daf82b2e870083e3f2bd213b1367baecd132849c31bac7b1",
+        "arch": "arm64",
+        "expected_node": "24.22.1"
+      },
+      "job_url": "https://github.com/akaanakbaik/img-nodejs/actions/runs/39910150287/job/120271715819",
+      "steps": {
+        "Set up job": "success",
+        "Check out source": "success",
+        "Set up Docker Buildx": "success",
+        "Resolve immutable multi-arch base digest": "success",
+        "Build exact candidate (native architecture)": "success",
+        "Test runtime and Egg startup contract": "success",
+        "Record exact candidate and Brotli linkage": "success",
+        "Install pinned Trivy": "success",
+        "Scan image and repository": "success",
+        "Verify candidate identity against scanner and Docker": "success",
+        "Audit system Brotli consumers with benign input": "success",
+        "Upload scan reports": "success",
+        "Block CVE-2026-111497 at every severity": "failure",
+        "Enforce vulnerability and repository security gates": "skipped",
+        "Save exact tested image": "skipped",
+        "Upload exact tested image": "skipped",
+        "Post Build exact candidate (native architecture)": "success",
+        "Post Set up Docker Buildx": "success",
+        "Post Check out source": "success",
+        "Complete job": "success"
+      },
+      "counts": {
+        "CRITICAL": 6,
+        "HIGH": 348,
+        "LOW": 1192,
+        "MEDIUM": 1071,
+        "UNKNOWN": 28
+      },
+      "sbom_components": 707,
+      "blocking_pairs": 355,
+      "blocking_without_vendor_fixed_version": 340,
+      "priority_findings": [
+        {
+          "cve": "CVE-2026-111497",
+          "severity": "UNKNOWN",
+          "package": "libbrotli1",
+          "installed": "1.1.1-0img1~deb13u1",
+          "fixed_version": null,
+          "status": "affected",
+          "target": "local/img-nodejs:nodejs_24-arm64 (debian 13.7)",
+          "type": "debian",
+          "path": null,
+          "path_note": "OS package; binary paths require dpkg/ELF evidence",
+          "purl": "pkg:deb/debian/libbrotli1@1.1.1-0img1~deb13u1?arch=arm64&distro=debian-13.7",
+          "sbom_refs": [
+            "pkg:deb/debian/libbrotli1@1.1.1-0img1~deb13u1?arch=arm64&distro=debian-13.7"
+          ],
+          "sbom_paths": [],
+          "layer": "sha256:ccd1747b8e32f791fc6de4c8519c203cbd20c0a333c6ee8063325672c7dfe2e3",
+          "source": {
+            "ID": "debian",
+            "Name": "Debian Security Tracker",
+            "URL": "https://salsa.debian.org/security-tracker-team/security-tracker"
+          },
+          "advisory": "https://avd.aquasec.com/nvd/cve-2026-111497"
+        }
+      ],
+      "critical_findings": [
+        {
+          "package": "liblmdb0",
+          "installed": "0.9.31-1+b2",
+          "cve": "CVE-2019-16224",
+          "fixed_version": null,
+          "purl": "pkg:deb/debian/liblmdb0@0.9.31-1%2Bb2?arch=arm64&distro=debian-13.7",
+          "advisory": "https://avd.aquasec.com/nvd/cve-2019-16224"
+        },
+        {
+          "package": "liblmdb0",
+          "installed": "0.9.31-1+b2",
+          "cve": "CVE-2019-16225",
+          "fixed_version": null,
+          "purl": "pkg:deb/debian/liblmdb0@0.9.31-1%2Bb2?arch=arm64&distro=debian-13.7",
+          "advisory": "https://avd.aquasec.com/nvd/cve-2019-16225"
+        },
+        {
+          "package": "liblmdb0",
+          "installed": "0.9.31-1+b2",
+          "cve": "CVE-2019-16227",
+          "fixed_version": null,
+          "purl": "pkg:deb/debian/liblmdb0@0.9.31-1%2Bb2?arch=arm64&distro=debian-13.7",
+          "advisory": "https://avd.aquasec.com/nvd/cve-2019-16227"
+        },
+        {
+          "package": "libxml2",
+          "installed": "2.12.7+dfsg+really2.9.14-2.1+deb13u3",
+          "cve": "CVE-2026-6653",
+          "fixed_version": null,
+          "purl": "pkg:deb/debian/libxml2@2.12.7%2Bdfsg%2Breally2.9.14-2.1%2Bdeb13u3?arch=arm64&distro=debian-13.7",
+          "advisory": "https://avd.aquasec.com/nvd/cve-2026-6653"
+        },
+        {
+          "package": "linux-libc-dev",
+          "installed": "6.12.113-1",
+          "cve": "CVE-2026-93221",
+          "fixed_version": null,
+          "purl": "pkg:deb/debian/linux-libc-dev@6.12.113-1?arch=all&distro=debian-13.7",
+          "advisory": "https://avd.aquasec.com/nvd/cve-2026-93221"
+        },
+        {
+          "package": "openssh-client",
+          "installed": "1:10.0p1-7+deb13u4",
+          "cve": "CVE-2026-60002",
+          "fixed_version": null,
+          "purl": "pkg:deb/debian/openssh-client@10.0p1-7%2Bdeb13u4?arch=arm64&distro=debian-13.7&epoch=1",
+          "advisory": "https://avd.aquasec.com/nvd/cve-2026-60002"
+        }
+      ],
+      "high_critical_by_ecosystem": {
+        "debian": 339,
+        "gobinary": 15
+      },
+      "package_path_inventory_count": 60,
+      "scanner": {
+        "Version": "0.76.1",
+        "VulnerabilityDB": {
+          "Version": 2,
+          "NextUpdate": "2026-10-24T01:18:09.482141078Z",
+          "UpdatedAt": "2026-10-23T01:18:09.482141619Z",
+          "DownloadedAt": "2026-10-23T06:16:23.497277729Z"
+        },
+        "CheckBundle": {
+          "Digest": "sha256:b591e9190cff4aa4e385b1a25bccfd9ecf178d3c77fd194e1410b7ce7e1df058",
+          "DownloadedAt": "2026-10-23T06:16:37.027916822Z"
+        }
+      },
+      "runtime_proof": {
+        "loaded_decoder_version": "1.1.1 (0x1001001)",
+        "curl_benign_decode_and_decoder_probe": "pass",
+        "node_shared_brotli": false
+      },
+      "artifact_name": "reports-24-arm64",
+      "evidence_sha256": {
+        "blocking-os-packages.txt": "2c438a8b888bc9efe0ad8bb97457dbe171d80c1f4bc8776a7f912928c518e29b",
+        "brotli-consumers.txt": "f1f30e48ae87d4f7dcfb99ea9e9d28f3f9a60e5c7249084ff84bfe049e33dee5",
+        "brotli-linkage.txt": "de65a91fa674f6b7dda8f9650dfcb03be21deaf5e3a0aba54659f3d039f5fd02",
+        "candidate-metadata.json": "457bc121a8501d5cc8337ee5c14afb8827f1ae06a0e9ee4953e411fd3d8eca7f",
+        "package-cve-audit.json": "26c35c665a89761d219bb800f4ab93cf19420072db694f11932bc47a9e17c0db",
+        "package-paths.json": "f1743c5637ccead5b01f07560cf629947aa3e6a3edf58982d71483c0ae677350",
+        "package-provenance.txt": "cad86c8a7af78fd1b2e6d3ac527e47fcec2261e4c24ef86a0390b42a195f9bfc",
+        "scanner-metadata.json": "4e816a584e244b6113c293cc7daa5abc1afafe2bb9502bb9b3ac864ae2fffe6a",
+        "trivy-image-24-arm64.json": "6cd05ed54d4681acf7d370b4642b7a1b626dee2d0b0598c3ccb97314238d2553",
+        "trivy-repo-24-arm64.json": "7a578db578d2abab985c291d5a1405b790cd39ec8f0e111398ebe5564ee1e4ac",
+        "trivy-sbom-24-arm64.json": "40c7d14419a63bef752ac9c2195b6ea078e6d7408aa5a7f1027061d07fc93f1f"
+      }
+    },
+    {
+      "candidate": {
+        "base": "ghcr.io/parkervcp/yolks:nodejs_26@sha256:7ef84d861620af3401e7dc945626ce53f9c5a49a58fe845e46544e0c24a99e70",
+        "manifest_digest": "sha256:864e04757523b82b0e9c83c6d486fcce20923845335ff48619e6c043a6e0fcb2",
+        "image_id": "sha256:232f6c42260d9c4da8d57e660c93f8988d2d3b640a18f6c66fc68c0ed42c0377",
+        "arch": "amd64",
+        "expected_node": "26.12.1"
+      },
+      "job_url": "https://github.com/akaanakbaik/img-nodejs/actions/runs/39910150287/job/120271715600",
+      "steps": {
+        "Set up job": "success",
+        "Check out source": "success",
+        "Set up Docker Buildx": "success",
+        "Resolve immutable multi-arch base digest": "success",
+        "Build exact candidate (native architecture)": "success",
+        "Test runtime and Egg startup contract": "success",
+        "Record exact candidate and Brotli linkage": "success",
+        "Install pinned Trivy": "success",
+        "Scan image and repository": "success",
+        "Verify candidate identity against scanner and Docker": "success",
+        "Audit system Brotli consumers with benign input": "success",
+        "Upload scan reports": "success",
+        "Block CVE-2026-111497 at every severity": "failure",
+        "Enforce vulnerability and repository security gates": "skipped",
+        "Save exact tested image": "skipped",
+        "Upload exact tested image": "skipped",
+        "Post Build exact candidate (native architecture)": "success",
+        "Post Set up Docker Buildx": "success",
+        "Post Check out source": "success",
+        "Complete job": "success"
+      },
+      "counts": {
+        "CRITICAL": 6,
+        "HIGH": 348,
+        "LOW": 1192,
+        "MEDIUM": 1073,
+        "UNKNOWN": 28
+      },
+      "sbom_components": 714,
+      "blocking_pairs": 355,
+      "blocking_without_vendor_fixed_version": 340,
+      "priority_findings": [
+        {
+          "cve": "CVE-2026-111497",
+          "severity": "UNKNOWN",
+          "package": "libbrotli1",
+          "installed": "1.1.1-0img1~deb13u1",
+          "fixed_version": null,
+          "status": "affected",
+          "target": "local/img-nodejs:nodejs_26-amd64 (debian 13.7)",
+          "type": "debian",
+          "path": null,
+          "path_note": "OS package; binary paths require dpkg/ELF evidence",
+          "purl": "pkg:deb/debian/libbrotli1@1.1.1-0img1~deb13u1?arch=amd64&distro=debian-13.7",
+          "sbom_refs": [
+            "pkg:deb/debian/libbrotli1@1.1.1-0img1~deb13u1?arch=amd64&distro=debian-13.7"
+          ],
+          "sbom_paths": [],
+          "layer": "sha256:afdff2cb81d50052af6fdb1598a3173f7860f84848e4ab2942be8c91704930bf",
+          "source": {
+            "ID": "debian",
+            "Name": "Debian Security Tracker",
+            "URL": "https://salsa.debian.org/security-tracker-team/security-tracker"
+          },
+          "advisory": "https://avd.aquasec.com/nvd/cve-2026-111497"
+        }
+      ],
+      "critical_findings": [
+        {
+          "package": "liblmdb0",
+          "installed": "0.9.31-1+b2",
+          "cve": "CVE-2019-16224",
+          "fixed_version": null,
+          "purl": "pkg:deb/debian/liblmdb0@0.9.31-1%2Bb2?arch=amd64&distro=debian-13.7",
+          "advisory": "https://avd.aquasec.com/nvd/cve-2019-16224"
+        },
+        {
+          "package": "liblmdb0",
+          "installed": "0.9.31-1+b2",
+          "cve": "CVE-2019-16225",
+          "fixed_version": null,
+          "purl": "pkg:deb/debian/liblmdb0@0.9.31-1%2Bb2?arch=amd64&distro=debian-13.7",
+          "advisory": "https://avd.aquasec.com/nvd/cve-2019-16225"
+        },
+        {
+          "package": "liblmdb0",
+          "installed": "0.9.31-1+b2",
+          "cve": "CVE-2019-16227",
+          "fixed_version": null,
+          "purl": "pkg:deb/debian/liblmdb0@0.9.31-1%2Bb2?arch=amd64&distro=debian-13.7",
+          "advisory": "https://avd.aquasec.com/nvd/cve-2019-16227"
+        },
+        {
+          "package": "libxml2",
+          "installed": "2.12.7+dfsg+really2.9.14-2.1+deb13u3",
+          "cve": "CVE-2026-6653",
+          "fixed_version": null,
+          "purl": "pkg:deb/debian/libxml2@2.12.7%2Bdfsg%2Breally2.9.14-2.1%2Bdeb13u3?arch=amd64&distro=debian-13.7",
+          "advisory": "https://avd.aquasec.com/nvd/cve-2026-6653"
+        },
+        {
+          "package": "linux-libc-dev",
+          "installed": "6.12.113-1",
+          "cve": "CVE-2026-93221",
+          "fixed_version": null,
+          "purl": "pkg:deb/debian/linux-libc-dev@6.12.113-1?arch=all&distro=debian-13.7",
+          "advisory": "https://avd.aquasec.com/nvd/cve-2026-93221"
+        },
+        {
+          "package": "openssh-client",
+          "installed": "1:10.0p1-7+deb13u4",
+          "cve": "CVE-2026-60002",
+          "fixed_version": null,
+          "purl": "pkg:deb/debian/openssh-client@10.0p1-7%2Bdeb13u4?arch=amd64&distro=debian-13.7&epoch=1",
+          "advisory": "https://avd.aquasec.com/nvd/cve-2026-60002"
+        }
+      ],
+      "high_critical_by_ecosystem": {
+        "debian": 339,
+        "gobinary": 15
+      },
+      "package_path_inventory_count": 60,
+      "scanner": {
+        "Version": "0.76.1",
+        "VulnerabilityDB": {
+          "Version": 2,
+          "NextUpdate": "2026-10-24T01:18:09.482141078Z",
+          "UpdatedAt": "2026-10-23T01:18:09.482141619Z",
+          "DownloadedAt": "2026-10-23T06:16:34.354666703Z"
+        },
+        "CheckBundle": {
+          "Digest": "sha256:b591e9190cff4aa4e385b1a25bccfd9ecf178d3c77fd194e1410b7ce7e1df058",
+          "DownloadedAt": "2026-10-23T06:16:55.488959129Z"
+        }
+      },
+      "runtime_proof": {
+        "loaded_decoder_version": "1.1.1 (0x1001001)",
+        "curl_benign_decode_and_decoder_probe": "pass",
+        "node_shared_brotli": false
+      },
+      "artifact_name": "reports-26-amd64",
+      "evidence_sha256": {
+        "blocking-os-packages.txt": "2c438a8b888bc9efe0ad8bb97457dbe171d80c1f4bc8776a7f912928c518e29b",
+        "brotli-consumers.txt": "c0f647577b67ddb0fa307fbd19d9a2fc070dc07f2d3346021145f12ce7ed2968",
+        "brotli-linkage.txt": "3254cfba3f3b10e737e8e777366228edbe2723cf7444252eddc530a68efb0afd",
+        "candidate-metadata.json": "5656fe7c588a0bdcd234cf34e06cf10a1f16b0af341c1bb9dff223b9c5b56d39",
+        "package-cve-audit.json": "c4fbfc46cea856c4574bbc6ccf350603b731ec68314c5d63d39f88ef669e1e62",
+        "package-paths.json": "ab13cf2a46e108d67bbc36e295a3d79cea0472f2158b58a18c781f4d127dbb24",
+        "package-provenance.txt": "fc719bc52a2dea90bf8103ec703d3dad316d5848bd1d9092c9a4fc49df485b66",
+        "scanner-metadata.json": "42ecdea0051e2383c80be51dbc6ac9e783f31f04cf028a63863da4a2f4891ed1",
+        "trivy-image-26-amd64.json": "6be497ad3c2f19c3727a2ae50d4eaec2206a8c67b70e901f8748d71e7a7172fe",
+        "trivy-repo-26-amd64.json": "665bb0431ffeb35804ebd48e83a2da7fcafd353a8556c18fb2b96bca0ab72749",
+        "trivy-sbom-26-amd64.json": "93d47a17d458e23e70d1fcb24bfe60858fa6f6f8ba0dbbbe31850b640ba1c9df"
+      }
+    },
+    {
+      "candidate": {
+        "base": "ghcr.io/parkervcp/yolks:nodejs_26@sha256:7ef84d861620af3401e7dc945626ce53f9c5a49a58fe845e46544e0c24a99e70",
+        "manifest_digest": "sha256:d66a91e91459c487a671df88e74488ed21dc0bc43bdd7412980b6b5770ae8107",
+        "image_id": "sha256:1c075bd2192e821186904cfd3283ee884697d8359c62275cdcdef8462b6ecb2a",
+        "arch": "arm64",
+        "expected_node": "26.12.1"
+      },
+      "job_url": "https://github.com/akaanakbaik/img-nodejs/actions/runs/39910150287/job/120271715701",
+      "steps": {
+        "Set up job": "success",
+        "Check out source": "success",
+        "Set up Docker Buildx": "success",
+        "Resolve immutable multi-arch base digest": "success",
+        "Build exact candidate (native architecture)": "success",
+        "Test runtime and Egg startup contract": "success",
+        "Record exact candidate and Brotli linkage": "success",
+        "Install pinned Trivy": "success",
+        "Scan image and repository": "success",
+        "Verify candidate identity against scanner and Docker": "success",
+        "Audit system Brotli consumers with benign input": "success",
+        "Upload scan reports": "success",
+        "Block CVE-2026-111497 at every severity": "failure",
+        "Enforce vulnerability and repository security gates": "skipped",
+        "Save exact tested image": "skipped",
+        "Upload exact tested image": "skipped",
+        "Post Build exact candidate (native architecture)": "success",
+        "Post Set up Docker Buildx": "success",
+        "Post Check out source": "success",
+        "Complete job": "success"
+      },
+      "counts": {
+        "CRITICAL": 6,
+        "HIGH": 348,
+        "LOW": 1192,
+        "MEDIUM": 1071,
+        "UNKNOWN": 28
+      },
+      "sbom_components": 706,
+      "blocking_pairs": 355,
+      "blocking_without_vendor_fixed_version": 340,
+      "priority_findings": [
+        {
+          "cve": "CVE-2026-111497",
+          "severity": "UNKNOWN",
+          "package": "libbrotli1",
+          "installed": "1.1.1-0img1~deb13u1",
+          "fixed_version": null,
+          "status": "affected",
+          "target": "local/img-nodejs:nodejs_26-arm64 (debian 13.7)",
+          "type": "debian",
+          "path": null,
+          "path_note": "OS package; binary paths require dpkg/ELF evidence",
+          "purl": "pkg:deb/debian/libbrotli1@1.1.1-0img1~deb13u1?arch=arm64&distro=debian-13.7",
+          "sbom_refs": [
+            "pkg:deb/debian/libbrotli1@1.1.1-0img1~deb13u1?arch=arm64&distro=debian-13.7"
+          ],
+          "sbom_paths": [],
+          "layer": "sha256:6574aeb5df71b77aa9dd16b13e8f6dc78261ca98491380e1b1730425457da380",
+          "source": {
+            "ID": "debian",
+            "Name": "Debian Security Tracker",
+            "URL": "https://salsa.debian.org/security-tracker-team/security-tracker"
+          },
+          "advisory": "https://avd.aquasec.com/nvd/cve-2026-111497"
+        }
+      ],
+      "critical_findings": [
+        {
+          "package": "liblmdb0",
+          "installed": "0.9.31-1+b2",
+          "cve": "CVE-2019-16224",
+          "fixed_version": null,
+          "purl": "pkg:deb/debian/liblmdb0@0.9.31-1%2Bb2?arch=arm64&distro=debian-13.7",
+          "advisory": "https://avd.aquasec.com/nvd/cve-2019-16224"
+        },
+        {
+          "package": "liblmdb0",
+          "installed": "0.9.31-1+b2",
+          "cve": "CVE-2019-16225",
+          "fixed_version": null,
+          "purl": "pkg:deb/debian/liblmdb0@0.9.31-1%2Bb2?arch=arm64&distro=debian-13.7",
+          "advisory": "https://avd.aquasec.com/nvd/cve-2019-16225"
+        },
+        {
+          "package": "liblmdb0",
+          "installed": "0.9.31-1+b2",
+          "cve": "CVE-2019-16227",
+          "fixed_version": null,
+          "purl": "pkg:deb/debian/liblmdb0@0.9.31-1%2Bb2?arch=arm64&distro=debian-13.7",
+          "advisory": "https://avd.aquasec.com/nvd/cve-2019-16227"
+        },
+        {
+          "package": "libxml2",
+          "installed": "2.12.7+dfsg+really2.9.14-2.1+deb13u3",
+          "cve": "CVE-2026-6653",
+          "fixed_version": null,
+          "purl": "pkg:deb/debian/libxml2@2.12.7%2Bdfsg%2Breally2.9.14-2.1%2Bdeb13u3?arch=arm64&distro=debian-13.7",
+          "advisory": "https://avd.aquasec.com/nvd/cve-2026-6653"
+        },
+        {
+          "package": "linux-libc-dev",
+          "installed": "6.12.113-1",
+          "cve": "CVE-2026-93221",
+          "fixed_version": null,
+          "purl": "pkg:deb/debian/linux-libc-dev@6.12.113-1?arch=all&distro=debian-13.7",
+          "advisory": "https://avd.aquasec.com/nvd/cve-2026-93221"
+        },
+        {
+          "package": "openssh-client",
+          "installed": "1:10.0p1-7+deb13u4",
+          "cve": "CVE-2026-60002",
+          "fixed_version": null,
+          "purl": "pkg:deb/debian/openssh-client@10.0p1-7%2Bdeb13u4?arch=arm64&distro=debian-13.7&epoch=1",
+          "advisory": "https://avd.aquasec.com/nvd/cve-2026-60002"
+        }
+      ],
+      "high_critical_by_ecosystem": {
+        "debian": 339,
+        "gobinary": 15
+      },
+      "package_path_inventory_count": 60,
+      "scanner": {
+        "Version": "0.76.1",
+        "VulnerabilityDB": {
+          "Version": 2,
+          "NextUpdate": "2026-10-24T01:18:09.482141078Z",
+          "UpdatedAt": "2026-10-23T01:18:09.482141619Z",
+          "DownloadedAt": "2026-10-23T06:16:06.505019281Z"
+        },
+        "CheckBundle": {
+          "Digest": "sha256:b591e9190cff4aa4e385b1a25bccfd9ecf178d3c77fd194e1410b7ce7e1df058",
+          "DownloadedAt": "2026-10-23T06:16:21.668864125Z"
+        }
+      },
+      "runtime_proof": {
+        "loaded_decoder_version": "1.1.1 (0x1001001)",
+        "curl_benign_decode_and_decoder_probe": "pass",
+        "node_shared_brotli": false
+      },
+      "artifact_name": "reports-26-arm64",
+      "evidence_sha256": {
+        "blocking-os-packages.txt": "2c438a8b888bc9efe0ad8bb97457dbe171d80c1f4bc8776a7f912928c518e29b",
+        "brotli-consumers.txt": "c378ad7c19edd07d17caf41ce18d65f0341719efeb8e9083971d3846f9ea842f",
+        "brotli-linkage.txt": "2d255840f31b5a6b509a6be77248a1e9bac051a3a5a31ee00cb76bcb108bd6c6",
+        "candidate-metadata.json": "44b8b15b05438f68fe0b6b59568eeb98b938e106f64444153a0641fd53b19ec8",
+        "package-cve-audit.json": "86dc395ac966670dbccc4ad0a0584d1622c3b05e4c923414ec41ef80b082b2b2",
+        "package-paths.json": "f1743c5637ccead5b01f07560cf629947aa3e6a3edf58982d71483c0ae677350",
+        "package-provenance.txt": "cad86c8a7af78fd1b2e6d3ac527e47fcec2261e4c24ef86a0390b42a195f9bfc",
+        "scanner-metadata.json": "2888610698db74a8db747cab246d242f97dead8961d7e543ba8d9a7dafc30d54",
+        "trivy-image-26-arm64.json": "83ba87845424ea6350b1d6dcaeaea930b247f2acb9c53b6954b4e2be3ec59be5",
+        "trivy-repo-26-arm64.json": "fa8d49a2fe73f76560a6940a8542df8f627bf78210f4113001f62ad0826dc999",
+        "trivy-sbom-26-arm64.json": "9c4c5e3201665400ac37efbdc7e6ac6158a0babb425ecfa7440950fb714771d4"
+      }
+    }
+  ]
+}
