@@ -67,6 +67,17 @@ def matrix(manifest_path=MANIFEST):
     _, entries = load_manifest(manifest_path)
     return [{"node": str(m), "version": entries[m]["version"], "supported": bool(entries[m].get("supported", False))} for m in sorted(entries)]
 
+def ci_matrices(manifest_path=MANIFEST):
+    versions = matrix(manifest_path)
+    verify = []
+    for item in versions:
+        publish = item["supported"] and item["node"] in {"22", "24", "26"}
+        for arch in ("amd64", "arm64"):
+            verify.append({"major": item["node"], "patch": item["version"], "arch": arch, "publish": publish})
+    publish = [item for item in verify if item["publish"]]
+    manifests = [{"major": item["node"], "publish": True} for item in versions if item["supported"] and item["node"] in {"22", "24", "26"}]
+    return {"verify": {"include": verify}, "publish": {"include": publish}, "manifests": {"include": manifests}}
+
 def main(argv=None):
     parser = argparse.ArgumentParser(description="Resolve exact stable Node.js versions from the official index.")
     parser.add_argument("--url", default=INDEX_URL, help="official index JSON URL (or file:// URL for offline tests)")
@@ -74,6 +85,7 @@ def main(argv=None):
     parser.add_argument("--timeout", type=float, default=15)
     parser.add_argument("--check", action="store_true", help="fail if manifest is not latest per major")
     parser.add_argument("--matrix", action="store_true", help="print JSON build matrix")
+    parser.add_argument("--ci-matrices", action="store_true", help="print separate audit and supported-only publication matrices")
     parser.add_argument("--include-eol", action="store_true", help="allow majors absent from the current official index")
     args = parser.parse_args(argv)
     try:
@@ -81,7 +93,8 @@ def main(argv=None):
             check_manifest(args.manifest, args.url, args.include_eol)
             print("OK: manifest matches official latest stable versions")
         if args.matrix: print(json.dumps(matrix(args.manifest), separators=(",", ":")))
-        if not args.check and not args.matrix: parser.error("choose --check or --matrix")
+        if args.ci_matrices: print(json.dumps(ci_matrices(args.manifest), separators=(",", ":")))
+        if not args.check and not args.matrix and not args.ci_matrices: parser.error("choose --check, --matrix or --ci-matrices")
     except (OSError, ValueError, RuntimeError, json.JSONDecodeError) as exc:
         print(f"ERROR: {exc}", file=sys.stderr); return 1
     return 0

@@ -17,12 +17,6 @@ on:
       - scripts/**
       - versions.json
   workflow_dispatch:
-    inputs:
-      include_eol:
-        description: Also publish legacy Node.js 18–21 and 23, 25 (report-only by default)
-        required: false
-        default: false
-        type: boolean
   schedule:
     - cron: "23 4 * * 1"
 
@@ -44,6 +38,7 @@ jobs:
     timeout-minutes: 10
     outputs:
       matrix: ${{ steps.matrix.outputs.matrix }}
+      publish_matrix: ${{ steps.matrix.outputs.publish_matrix }}
       manifests: ${{ steps.matrix.outputs.manifests }}
     steps:
       - name: Check out source
@@ -57,34 +52,26 @@ jobs:
           bash -n scripts/smoke_test_image.sh scripts/install_trivy.sh
           node scripts/test_verify_runtime.js
           python3 scripts/test_resolve_versions.py
+          python3 scripts/test_cve_gate.py
           python3 scripts/resolve_versions.py --check
           test -s versions.json
       - id: matrix
         name: Resolve exact patch matrix
-        env:
-          INCLUDE_EOL: ${{ inputs.include_eol || false }}
         run: |
           set -euo pipefail
-          resolved="$(python3 scripts/resolve_versions.py --matrix --include-eol)"
-          printf '%s\n' "$resolved" | jq -e '
-            type == "array" and length == 9 and
-            all(.[]; (.node | type == "string") and (.version | type == "string") and
-              (.supported | type == "boolean"))'
-          eol=false
-          if [[ "$INCLUDE_EOL" == "true" ]]; then eol=true; fi
-          matrix="$(printf '%s\n' "$resolved" | jq -c --argjson eol "$eol" '
-            {include: [ .[] as $v | ["amd64", "arm64"][] as $arch |
-              {major: $v.node, patch: $v.version, arch: $arch,
-               publish: ($v.supported or $eol)} ]}')"
-          printf 'matrix=%s\n' "$matrix" >> "$GITHUB_OUTPUT"
-          manifests="$(printf '%s\n' "$resolved" | jq -c --argjson eol "$eol" '{include: [.[] | {major: .node, publish: (.supported or $eol)}]}')"
-          printf 'manifests=%s\n' "$manifests" >> "$GITHUB_OUTPUT"
+          resolved="$(python3 scripts/resolve_versions.py --ci-matrices)"
+          printf '%s\n' "$resolved" | jq -e '.verify.include | length == 18' >/dev/null
+          printf 'matrix=%s\n' "$(printf '%s' "$resolved" | jq -c '.verify')" >> "$GITHUB_OUTPUT"
+          printf 'publish_matrix=%s\n' "$(printf '%s' "$resolved" | jq -c '.publish')" >> "$GITHUB_OUTPUT"
+          printf 'manifests=%s\n' "$(printf '%s' "$resolved" | jq -c '.manifests')" >> "$GITHUB_OUTPUT"
 
   verify:
     name: Verify Node.js ${{ matrix.major }} (${{ matrix.arch }})
     needs: validate-metadata
     runs-on: ${{ matrix.arch == 'arm64' && 'ubuntu-24.04-arm' || 'ubuntu-24.04' }}
     timeout-minutes: 45
+    # EOL findings or audit errors are reported, never publication prerequisites.
+    continue-on-error: ${{ !matrix.publish }}
     strategy:
       fail-fast: false
       matrix: ${{ fromJSON(needs.validate-metadata.outputs.matrix) }}
@@ -140,6 +127,11 @@ jobs:
           trivy image --scanners vuln --format cyclonedx --output "trivy-sbom-${{ matrix.major }}-${{ matrix.arch }}.json" "local/img-nodejs:nodejs_${{ matrix.major }}-${{ matrix.arch }}"
           trivy fs --scanners vuln,secret,misconfig --severity UNKNOWN,LOW,MEDIUM,HIGH,CRITICAL --format json --output "trivy-repo-${{ matrix.major }}-${{ matrix.arch }}.json" .
           trivy --version --format json > scanner-metadata.json
+      - name: Audit system Brotli consumers with benign input
+        if: matrix.publish
+        run: |
+          set -euo pipefail
+          docker run --rm --entrypoint /bin/bash --mount "type=bind,src=$PWD/scripts,dst=/audit,readonly" "local/img-nodejs:nodejs_${{ matrix.major }}-${{ matrix.arch }}" /audit/audit_brotli_consumers.sh > brotli-consumers.txt 2>&1
       - name: Upload scan reports
         if: always()
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
@@ -149,9 +141,11 @@ jobs:
             trivy-*.json
             candidate-metadata.json
             brotli-linkage.txt
+            brotli-consumers.txt
             scanner-metadata.json
           if-no-files-found: warn
       - name: Block CVE-2026-111497 at every severity
+        if: matrix.publish
         run: |
           set -euo pipefail
           report="trivy-image-${{ matrix.major }}-${{ matrix.arch }}.json"
@@ -193,7 +187,7 @@ jobs:
       packages: write
     strategy:
       fail-fast: false
-      matrix: ${{ fromJSON(needs.validate-metadata.outputs.matrix) }}
+      matrix: ${{ fromJSON(needs.validate-metadata.outputs.publish_matrix) }}
     steps:
       - name: Download exact tested image
         if: matrix.publish

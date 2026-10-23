@@ -25,4 +25,23 @@ class ResolveTests(unittest.TestCase):
     def test_prerelease_ignored(self):
         self.assertEqual(rv.latest_stable([{"version":"24.99.0-rc.1"},{"version":"24.22.1"}])[24], '24.22.1')
 
+    def test_ci_publication_is_supported_only_both_architectures(self):
+        matrices = rv.ci_matrices(self.manifest)
+        self.assertEqual(len(matrices['verify']['include']), 18)
+        self.assertEqual({(x['major'], x['arch']) for x in matrices['publish']['include']}, {(m,a) for m in ('22','24','26') for a in ('amd64','arm64')})
+        self.assertEqual({x['major'] for x in matrices['manifests']['include']}, {'22','24','26'})
+        self.assertTrue(all(not x['publish'] for x in matrices['verify']['include'] if x['major'] not in ('22','24','26')))
+    def test_eol_cannot_be_published_even_if_manifest_marks_supported(self):
+        data = json.loads(self.manifest.read_text())
+        for item in data['versions']: item['supported'] = True
+        self.manifest.write_text(json.dumps(data))
+        self.assertEqual({x['major'] for x in rv.ci_matrices(self.manifest)['publish']['include']}, {'22','24','26'})
+    def test_workflow_eol_failures_nonblocking_and_cve_gate_supported_only(self):
+        workflow = (Path(__file__).resolve().parents[1] / '.github/workflows/publish.yml').read_text()
+        self.assertIn('continue-on-error: ${{ !matrix.publish }}', workflow)
+        self.assertIn('name: Block CVE-2026-111497 at every severity\n        if: matrix.publish', workflow)
+        self.assertIn('matrix: ${{ fromJSON(needs.validate-metadata.outputs.publish_matrix) }}', workflow)
+        self.assertNotIn('inputs.include_eol', workflow)
+        self.assertIn("github.ref == 'refs/heads/main' && needs.verify.result == 'success'", workflow)
+
 if __name__ == '__main__': unittest.main()

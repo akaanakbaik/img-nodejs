@@ -14,14 +14,21 @@ Contoh temuan kritis Node 24 mencakup `liblmdb0` (CVE-2019-16224/16225/16227), `
 
 Versi 18, 19, 20, 21, 23 dan 25 sudah EOL. Rilis terakhir masing-masing bukan patch keamanan untuk insiden Oktober 2026; migrasi ke line yang didukung tetap diperlukan.
 
+### CVE target masih ditemukan pada library OS
+
+Keenam kandidat supported (22/24/26 × amd64/arm64) pada run [39874754860](https://github.com/akaanakbaik/img-nodejs/actions/runs/39874754860) masih melaporkan **CVE-2026-111497** pada `libbrotli1 1.1.0-2+b7`, status `affected`, severity `UNKNOWN`, tanpa fixed version. Gate HIGH/CRITICAL saja tidak mencakup temuan ini; workflow diperbaiki agar CVE tersebut selalu memblokir kandidat terlepas severity, tanpa ignorelist.
+
+[Debian tracker](https://security-tracker.debian.org/tracker/CVE-2026-111497) menandai Brotli Trixie vulnerable/unfixed dan menyatakan paket Debian `nodejs` memakai Brotli sistem. Binary `/usr/local/bin/node` pada image ini harus diperiksa sendiri: bukti lokal ketiga versi amd64 menunjukkan tidak ada `DT_NEEDED`/hasil `ldd` ke `libbrotli*`, `node_shared_brotli=false`, dan tidak memuat library itu setelah operasi Brotli. Node membawa perbaikan vendored menurut rilis resmi, meskipun string versi Brotli belum berubah. Ini tidak membuktikan library Debian aman bagi konsumen lain dan **tidak digunakan sebagai pengecualian**. Bukti native CI per-digest/arsitektur disimpan bersama laporan.
+
 ## Pemeriksaan yang ditambahkan
 
 - Kecocokan patch exact terhadap indeks rilis resmi, dengan penolakan manifest kedaluwarsa.
 - Minimum perbaikan CVE untuk line 22/24/26; major dan arsitektur runtime diperiksa.
 - Brotli synchronous/streaming round-trip serta penolakan fixture invalid yang tidak mengeksploitasi RCE.
 - Smoke test kontrak Pterodactyl: non-root, HOME, working directory, Tini, npm dan fixture startup.
-- CI native amd64/arm64; pemindaian OS/library dan secret/misconfiguration; SBOM CycloneDX; laporan disimpan walaupun gerbang gagal.
+- CI native amd64/arm64; pemindaian OS/library dan secret/misconfiguration; SBOM CycloneDX; laporan, digest kandidat, snapshot DB scanner dan linkage disimpan walaupun gerbang gagal.
 - Tag produksi dibuat dari image kandidat yang persis sudah diuji, bukan rebuild berbeda. HIGH/CRITICAL atau kegagalan scanner menahan publikasi.
+- CVE-2026-111497 memblokir kandidat pada severity apa pun, termasuk UNKNOWN.
 
 ## Batas verifikasi
 
