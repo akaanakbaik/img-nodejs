@@ -50,6 +50,9 @@ jobs:
       matrix: ${{ steps.matrix.outputs.matrix }}
       publish_matrix: ${{ steps.matrix.outputs.publish_matrix }}
       manifests: ${{ steps.matrix.outputs.manifests }}
+      db_sha256: ${{ steps.db.outputs.db_sha256 }}
+      db_snapshot_sha256: ${{ steps.db.outputs.db_snapshot_sha256 }}
+      db_artifact_name: ${{ steps.db.outputs.db_artifact_name }}
     steps:
       - name: Check out source
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
@@ -88,6 +91,29 @@ jobs:
           printf 'matrix=%s\n' "$(printf '%s' "$resolved" | jq -c '.verify')" >> "$GITHUB_OUTPUT"
           printf 'publish_matrix=%s\n' "$(printf '%s' "$resolved" | jq -c '.publish')" >> "$GITHUB_OUTPUT"
           printf 'manifests=%s\n' "$(printf '%s' "$resolved" | jq -c '.manifests')" >> "$GITHUB_OUTPUT"
+
+      - name: Install pinned Trivy for shared database
+        run: sudo TRIVY_BIN=/usr/local/bin/trivy bash scripts/install_trivy.sh
+      - name: Freeze and record vulnerability database snapshot
+        id: db
+        run: |
+          set -euo pipefail
+          export TRIVY_CACHE_DIR="$PWD/scanner-db-snapshot"
+          trivy image --download-db-only
+          trivy --version --format json > scanner-db-snapshot/scanner-metadata.json
+          (cd scanner-db-snapshot && sha256sum db/trivy.db db/metadata.json > scanner-db.sha256)
+          cp scanner-db-snapshot/db/metadata.json scanner-db-snapshot/scanner-db-metadata.json
+          printf 'db_sha256=%s\n' "$(sha256sum scanner-db-snapshot/db/trivy.db | cut -d' ' -f1)" >> "$GITHUB_OUTPUT"
+          printf 'db_snapshot_sha256=%s\n' "$(sha256sum scanner-db-snapshot/scanner-db.sha256 | cut -d' ' -f1)" >> "$GITHUB_OUTPUT"
+          printf 'db_artifact_name=trivy-db-%s-%s\n' "$GITHUB_RUN_ID" "$GITHUB_RUN_ATTEMPT" >> "$GITHUB_OUTPUT"
+      - name: Upload immutable shared vulnerability database
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: ${{ steps.db.outputs.db_artifact_name }}
+          path: scanner-db-snapshot/
+          if-no-files-found: error
+          compression-level: 1
+          retention-days: 7
 
   verify:
     name: Verify Node.js ${{ matrix.major }} (${{ matrix.arch }})
@@ -165,15 +191,28 @@ jobs:
           test "$(jq -er .candidate.manifest_digest candidate-oci-verification.json)" = "$(jq -er .verified.runtime_manifest_digest candidate-oci-verification.json)"
       - name: Install pinned Trivy
         run: sudo TRIVY_BIN=/usr/local/bin/trivy bash scripts/install_trivy.sh
-      - name: Freeze and record vulnerability database snapshot
+      - name: Download immutable shared vulnerability database
+        uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4.3.0
+        with:
+          name: ${{ needs.validate-metadata.outputs.db_artifact_name }}
+          path: ${{ runner.temp }}/trivy-cache
+      - name: Verify shared vulnerability database snapshot
+        env:
+          EXPECTED_DB_SHA256: ${{ needs.validate-metadata.outputs.db_sha256 }}
+          EXPECTED_SNAPSHOT_SHA256: ${{ needs.validate-metadata.outputs.db_snapshot_sha256 }}
         run: |
           set -euo pipefail
           export TRIVY_CACHE_DIR="$RUNNER_TEMP/trivy-cache"
           printf 'TRIVY_CACHE_DIR=%s\n' "$TRIVY_CACHE_DIR" >> "$GITHUB_ENV"
-          trivy image --download-db-only
+          test "$(sha256sum "$TRIVY_CACHE_DIR/scanner-db.sha256" | cut -d' ' -f1)" = "$EXPECTED_SNAPSHOT_SHA256"
+          (cd "$TRIVY_CACHE_DIR" && sha256sum --check scanner-db.sha256)
+          test "$(sha256sum "$TRIVY_CACHE_DIR/db/trivy.db" | cut -d' ' -f1)" = "$EXPECTED_DB_SHA256"
+          cmp "$TRIVY_CACHE_DIR/scanner-db-metadata.json" "$TRIVY_CACHE_DIR/db/metadata.json"
+          cp "$TRIVY_CACHE_DIR/scanner-db.sha256" scanner-db.sha256
+          cp "$TRIVY_CACHE_DIR/scanner-db-metadata.json" scanner-db-metadata.json
+          jq -n --arg db "$EXPECTED_DB_SHA256" --arg snapshot "$EXPECTED_SNAPSHOT_SHA256" '{db_sha256: $db, snapshot_sha256: $snapshot}' > scanner-db-identity.json
           trivy --version --format json > scanner-metadata.json
-          sha256sum "$TRIVY_CACHE_DIR/db/trivy.db" "$TRIVY_CACHE_DIR/db/metadata.json" > scanner-db.sha256
-          cp "$TRIVY_CACHE_DIR/db/metadata.json" scanner-db-metadata.json
+          test "$(jq -er .Version scanner-metadata.json)" = "$(jq -er .Version "$TRIVY_CACHE_DIR/scanner-metadata.json")"
       - name: Scan image and repository
         id: scan
         run: |
@@ -182,7 +221,7 @@ jobs:
           trivy image --skip-db-update --image-src docker --scanners vuln --severity UNKNOWN,LOW,MEDIUM,HIGH,CRITICAL --format json --output "trivy-image-${{ matrix.major }}-${{ matrix.arch }}.json" "$image"
           trivy image --skip-db-update --image-src docker --scanners vuln --format cyclonedx --output "trivy-sbom-${{ matrix.major }}-${{ matrix.arch }}.json" "$image"
           trivy fs --skip-db-update --skip-files candidate.oci.tar --scanners vuln,secret,misconfig --severity UNKNOWN,LOW,MEDIUM,HIGH,CRITICAL --format json --output "trivy-repo-${{ matrix.major }}-${{ matrix.arch }}.json" .
-          sha256sum --check scanner-db.sha256
+          (cd "$TRIVY_CACHE_DIR" && sha256sum --check scanner-db.sha256)
           trivy --version --format json > scanner-metadata-after.json
           sha256sum trivy-*.json scanner-*.json > scan-evidence.sha256
           python3 scripts/audit_scan.py candidate-metadata.json "trivy-image-${{ matrix.major }}-${{ matrix.arch }}.json" "trivy-sbom-${{ matrix.major }}-${{ matrix.arch }}.json" package-cve-audit.json
@@ -331,10 +370,14 @@ jobs:
           IMAGE: ${{ env.IMAGE_NAME }}
           STAGE: nodejs_${{ matrix.major }}-${{ matrix.arch }}-${{ github.sha }}
           REGISTRY_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          EXPECTED_DB_SHA256: ${{ needs.validate-metadata.outputs.db_sha256 }}
+          EXPECTED_SNAPSHOT_SHA256: ${{ needs.validate-metadata.outputs.db_snapshot_sha256 }}
         run: |
           set -euo pipefail
           python3 -c 'from pathlib import Path; from scripts.verify_candidate import verify_sha256; import sys; verify_sha256(Path(sys.argv[1]), Path(sys.argv[2]))' "image-${{ matrix.major }}-${{ matrix.arch }}.tar.gz" "image-${{ matrix.major }}-${{ matrix.arch }}.tar.gz.sha256"
           sha256sum --check scan-evidence.sha256
+          test "$(jq -er .db_sha256 scanner-db-identity.json)" = "$EXPECTED_DB_SHA256"
+          test "$(sha256sum scanner-db.sha256 | cut -d' ' -f1)" = "$EXPECTED_SNAPSHOT_SHA256"
           gunzip -c "image-${{ matrix.major }}-${{ matrix.arch }}.tar.gz" > candidate.oci.tar
           digest="$(python3 scripts/verify_release_bundle.py --metadata candidate-metadata.json --oci candidate.oci.tar --scanner-report "trivy-image-${{ matrix.major }}-${{ matrix.arch }}.json" --sbom "trivy-sbom-${{ matrix.major }}-${{ matrix.arch }}.json" --repo-report "trivy-repo-${{ matrix.major }}-${{ matrix.arch }}.json" --expected-arch "${{ matrix.arch }}")"
           echo "$REGISTRY_TOKEN" | skopeo login "$REGISTRY" -u "${{ github.actor }}" --password-stdin
