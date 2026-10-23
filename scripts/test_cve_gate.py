@@ -37,5 +37,18 @@ class CveGateTests(unittest.TestCase):
         self.assertTrue(self.accepts({'Results': []}))
         self.assertTrue(self.accepts({'Results': [{'Vulnerabilities': [{'VulnerabilityID': 'CVE-OTHER', 'Severity': 'HIGH'}]}]}))
 
+    def test_general_gate_rejects_both_severities_without_exceptions(self):
+        section = WORKFLOW.read_text().split('name: Enforce vulnerability and repository security gates', 1)[1].split('\n      - name:', 1)[0]
+        expressions = re.findall(r"jq -e '([^']+)'", section)
+        self.assertEqual(len(expressions), 4)
+        for severity in ('HIGH', 'CRITICAL'):
+            report = {'Results': [{'Vulnerabilities': [{'Severity': severity, 'Status': 'affected'}]}]}
+            self.assertNotEqual(subprocess.run(['jq', '-e', expressions[1]], input=json.dumps(report), text=True, capture_output=True).returncode, 0)
+        self.assertIn("!cancelled() && matrix.publish && steps.scan.outcome == 'success'", section)
+        self.assertIn("steps.identity.outcome == 'success'", section)
+        self.assertIn("steps.consumers.outcome == 'success'", section)
+        workflow = WORKFLOW.read_text()
+        self.assertIn("if: success() && steps.gate.outcome == 'success'", workflow)
+
 if __name__ == '__main__':
     unittest.main()

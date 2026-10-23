@@ -6,3 +6,5 @@ __pycache__
 trivy-*.json
 image-*.tar.gz
 node_modules
+docs
+candidate.oci.tar

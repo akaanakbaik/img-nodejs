@@ -29,6 +29,20 @@ RUN chmod 0755 /work/scripts/*.sh \
  && /work/scripts/build_brotli_packages.sh \
  && rm -rf /var/lib/apt/lists/*
 
+FROM ${BASE_IMAGE} AS typescript-build
+USER root
+COPY scripts/install_go_toolchain.sh scripts/build_typescript.sh scripts/test_typescript_source.py /work/scripts/
+COPY security/typescript-source.json /work/security/typescript-source.json
+ENV PATH="/opt/go/bin:${PATH}" \
+    GOTOOLCHAIN=local \
+    GOFLAGS=-p=2 \
+    GOCACHE=/tmp/typescript-go-cache \
+    GOMODCACHE=/tmp/typescript-go-modules
+RUN bash /work/scripts/install_go_toolchain.sh \
+ && OUT_DIR=/work/typescript-packages bash /work/scripts/build_typescript.sh \
+ && TYPESCRIPT_REBUILD_OUTPUT=/work/typescript-packages python3 /work/scripts/test_typescript_source.py \
+ && rm -rf /tmp/typescript-go-cache /tmp/typescript-go-modules
+
 FROM ${BASE_IMAGE} AS supported
 USER root
 COPY --from=brotli-build /work/packages /tmp/brotli-packages
@@ -50,6 +64,11 @@ RUN chmod 0755 /usr/local/sbin/verify_brotli_package \
  && install -Dm0644 /tmp/brotli-packages/provenance.json /usr/share/doc/libbrotli1/brotli-build-provenance.json \
  && install -Dm0644 /tmp/brotli-packages/SHA256SUMS /usr/share/doc/libbrotli1/brotli-package-sha256sums \
  && rm -rf /tmp/brotli-packages /var/lib/apt/lists/*
+
+COPY --from=typescript-build /work/typescript-packages /tmp/typescript-packages
+COPY scripts/install_typescript_rebuild.py /usr/local/share/image-security/install_typescript_rebuild.py
+RUN python3 /usr/local/share/image-security/install_typescript_rebuild.py \
+ && rm -rf /tmp/typescript-packages
 
 ARG NODE_MAJOR=24
 ARG NODE_PATCH=24.22.1

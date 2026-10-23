@@ -68,6 +68,11 @@ jobs:
           python3 scripts/test_verify_candidate.py
           python3 scripts/test_audit_scan.py
           python3 scripts/test_brotli_source.py
+          python3 scripts/test_vendor_package_inventory.py
+          python3 scripts/test_runtime_toolchain_inventory.py
+          python3 scripts/test_triage_groups.py
+          python3 scripts/test_verify_oci_layout.py
+          python3 scripts/test_typescript_source.py
           python3 scripts/resolve_versions.py --check
           test -s versions.json
       - id: matrix
@@ -114,6 +119,7 @@ jobs:
           target: ${{ matrix.publish && 'supported' || 'eol-audit' }}
           platforms: linux/${{ matrix.arch }}
           load: true
+          outputs: ${{ matrix.publish && 'type=oci,dest=candidate.oci.tar' || '' }}
           pull: true
           tags: local/img-nodejs:nodejs_${{ matrix.major }}-${{ matrix.arch }}
           build-args: |
@@ -134,11 +140,24 @@ jobs:
           image="local/img-nodejs:nodejs_${{ matrix.major }}-${{ matrix.arch }}"
           read -r IMAGE_ID IMAGE_ARCH < <(docker inspect --format '{{.Id}} {{.Architecture}}' "$image")
           test -n "$IMAGE_ID"
-          jq -n --arg base "$BASE_REF" --arg digest "$BUILD_DIGEST" --arg imageid "$IMAGE_ID" --arg arch "$IMAGE_ARCH" --arg patch "${{ matrix.patch }}" '{base: $base, manifest_digest: $digest, image_id: $imageid, arch: $arch, expected_node: $patch}' > candidate-metadata.json
+          digest="$BUILD_DIGEST"
+          if test -f candidate.oci.tar; then
+            # Multiple exporters can report different manifest media types.
+            # Use the actual OCI root descriptor, then verify its config below.
+            digest="$(tar -xOf candidate.oci.tar index.json | jq -er '.manifests | if length == 1 then .[0].digest else error("ambiguous OCI roots") end')"
+          fi
+          jq -n --arg base "$BASE_REF" --arg digest "$digest" --arg builddigest "$BUILD_DIGEST" --arg imageid "$IMAGE_ID" --arg arch "$IMAGE_ARCH" --arg patch "${{ matrix.patch }}" '{base: $base, manifest_digest: $digest, build_reported_digest: $builddigest, image_id: $imageid, arch: $arch, expected_node: $patch}' > candidate-metadata.json
           docker run --rm --entrypoint /bin/sh "$image" -ec 'node --version; sha256sum /usr/local/bin/node; ldd /usr/local/bin/node; readelf -d /usr/local/bin/node; node -p "JSON.stringify({node:process.versions.node,brotli:process.versions.brotli,sharedBrotli:process.config.variables.node_shared_brotli})"; dpkg-query -W libbrotli1; node -e '\''require("zlib").brotliCompressSync(Buffer.from("test"));console.log(process.report.getReport().sharedObjects.join("\n"))'\''' > brotli-linkage.txt
+      - name: Bind exported OCI digest to tested config and architecture
+        if: matrix.publish
+        run: |
+          set -euo pipefail
+          python3 scripts/verify_oci_layout.py --metadata candidate-metadata.json --oci candidate.oci.tar > candidate-oci-verification.json
+          rm candidate.oci.tar
       - name: Install pinned Trivy
         run: sudo TRIVY_BIN=/usr/local/bin/trivy bash scripts/install_trivy.sh
       - name: Scan image and repository
+        id: scan
         run: |
           set -euo pipefail
           trivy image --scanners vuln --severity UNKNOWN,LOW,MEDIUM,HIGH,CRITICAL --format json --output "trivy-image-${{ matrix.major }}-${{ matrix.arch }}.json" "local/img-nodejs:nodejs_${{ matrix.major }}-${{ matrix.arch }}"
@@ -149,12 +168,37 @@ jobs:
           jq -r ' .findings[] | select(.type == "debian" and (.severity == "HIGH" or .severity == "CRITICAL" or .cve == "CVE-2026-111497")) | .package' package-cve-audit.json | sort -u > blocking-os-packages.txt
           image="local/img-nodejs:nodejs_${{ matrix.major }}-${{ matrix.arch }}"
           docker run --rm -i --entrypoint python3 --mount "type=bind,src=$PWD/scripts,dst=/audit,readonly" "$image" /audit/installed_package_paths.py < blocking-os-packages.txt > package-paths.json
+      - name: Record refreshed vendor package candidates without installing
+        if: matrix.publish
+        run: |
+          set -euo pipefail
+          image="$(jq -er .image_id candidate-metadata.json)"
+          docker run --rm -i --user root --entrypoint /bin/sh --mount "type=bind,src=$PWD/scripts,dst=/audit,readonly" --mount "type=bind,src=$PWD/candidate-metadata.json,dst=/candidate.json,readonly" "$image" -ec 'apt-get update --error-on=any >&2; python3 /audit/vendor_package_inventory.py --metadata /candidate.json' < blocking-os-packages.txt > vendor-package-candidates.json
+      - name: Triage every Debian blocker by source package path and SBOM
+        if: matrix.publish
+        run: |
+          set -euo pipefail
+          python3 scripts/triage_groups.py --audit package-cve-audit.json --paths package-paths.json --sbom "trivy-sbom-${{ matrix.major }}-${{ matrix.arch }}.json" --scan "trivy-image-${{ matrix.major }}-${{ matrix.arch }}.json" --apt-evidence vendor-package-candidates.json --candidate "nodejs_${{ matrix.major }}-${{ matrix.arch }}" --output debian-triage.json
       - name: Verify candidate identity against scanner and Docker
+        id: identity
         if: matrix.publish
         run: |
           set -euo pipefail
           python3 scripts/verify_candidate.py --metadata candidate-metadata.json --scanner-report "trivy-image-${{ matrix.major }}-${{ matrix.arch }}.json" --image "local/img-nodejs:nodejs_${{ matrix.major }}-${{ matrix.arch }}" --expected-arch "${{ matrix.arch }}"
+      - name: Record installed native TypeScript and embedded Go dependencies
+        if: matrix.publish
+        run: |
+          set -euo pipefail
+          image="$(jq -er .image_id candidate-metadata.json)"
+          docker run --rm --entrypoint python3 --mount "type=bind,src=$PWD/scripts,dst=/audit,readonly" --mount "type=bind,src=$PWD/candidate-metadata.json,dst=/candidate.json,readonly" "$image" /audit/runtime_toolchain_inventory.py --metadata /candidate.json > runtime-toolchain.json
+          compiler="$(jq -er '.native_compilers[0].path' runtime-toolchain.json)"
+          container="$(docker create "$image")"
+          trap 'docker rm "$container" >/dev/null; rm -f native-tsc' EXIT
+          docker cp "$container:$compiler" native-tsc
+          test "$(sha256sum native-tsc | cut -d' ' -f1)" = "$(jq -er '.native_compilers[0].sha256' runtime-toolchain.json)"
+          go version -m native-tsc > typescript-go-buildinfo.txt
       - name: Audit system Brotli consumers with benign input
+        id: consumers
         if: matrix.publish
         run: |
           set -euo pipefail
@@ -168,6 +212,7 @@ jobs:
           path: |
             trivy-*.json
             candidate-metadata.json
+            candidate-oci-verification.json
             brotli-linkage.txt
             brotli-consumers.txt
             scanner-metadata.json
@@ -175,6 +220,10 @@ jobs:
             package-provenance.txt
             blocking-os-packages.txt
             package-paths.json
+            vendor-package-candidates.json
+            runtime-toolchain.json
+            typescript-go-buildinfo.txt
+            debian-triage.json
           if-no-files-found: warn
       - name: Block CVE-2026-111497 at every severity
         if: matrix.publish
@@ -186,7 +235,9 @@ jobs:
           jq -e '[.Results[]?.Vulnerabilities[]? | select(.VulnerabilityID == "CVE-2026-111497")] | length == 0' "$report" >/dev/null
       - name: Enforce vulnerability and repository security gates
         id: gate
-        if: matrix.publish
+        # Evaluate this independently even when the priority-CVE gate rejects.
+        # A failed previous step still fails the job and prevents image export.
+        if: ${{ !cancelled() && matrix.publish && steps.scan.outcome == 'success' && steps.identity.outcome == 'success' && steps.consumers.outcome == 'success' }}
         run: |
           set -euo pipefail
           image_report="trivy-image-${{ matrix.major }}-${{ matrix.arch }}.json"
@@ -199,7 +250,7 @@ jobs:
           jq -e '[.Results[]? | (.Vulnerabilities[]?, .Misconfigurations[]?, .Secrets[]?) | select(.Severity == "HIGH" or .Severity == "CRITICAL")] | length == 0' "$repo_report" >/dev/null
       - name: Save exact tested image
         id: save
-        if: steps.gate.outcome == 'success'
+        if: success() && steps.gate.outcome == 'success'
         run: |
           set -euo pipefail
           docker save "local/img-nodejs:nodejs_${{ matrix.major }}-${{ matrix.arch }}" | gzip -1 > "image-${{ matrix.major }}-${{ matrix.arch }}.tar.gz"

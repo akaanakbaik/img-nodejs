@@ -1,4 +1,14 @@
-# Brotli OS sudah diperbaiki, tetapi rilis image masih diblokir
+# Rilis tetap diblokir; triage lengkap dan rebuild compiler sedang divalidasi
+
+## Kelanjutan PR #1
+
+Triage seluruh **339 pasangan Debian HIGH/CRITICAL pada 19 source package** kini tersedia dalam [ringkasan kelompok](docs/security/2026-10-23-triage/debian-summary.md) dan enam JSON per kandidat. Seluruh 59 binary package terhubung ke inventaris dpkg (termasuk hash ELF), versi, source package raw scan, PURL dan SBOM. Tidak ada fixed version vendor pada snapshot baseline. Kandidat APT pada run berikutnya akan direkam setelah refresh repository; versi tersedia bukan bukti suatu CVE sudah fixed.
+
+Remediasi TypeScript yang sedang diuji **tidak memakai beta atau menghapus compiler**: source stabil 7.0.2 yang dipin dibangun native memakai **Go 1.26.10** dan **x/text v0.41.0**, dengan paket native lengkap, lisensi, metadata custom yang transparan, tes upstream `go test -p 2 ./...`, diff dependency, checksum source/paket dan build-info. Source compiler `.go` harus tidak berubah. Stage builder serta toolchain tidak disalin ke runtime. Ini custom rebuild, bukan binary rilis resmi upstream; hasil dan pengurangan finding **belum boleh dinyatakan berhasil sebelum keenam CI native selesai**.
+
+CI menambah uji compiler strict/multi-file/declarations/diagnostics; inventaris compiler aktual; ikatan digest OCI ke config/image ID dan arsitektur; serta triage vendor per kandidat. Gate HIGH/CRITICAL sekarang dievaluasi terpisah walaupun gate CVE target menolak; kegagalan sebelumnya tetap mencegah ekspor image teruji. Ambang, isi laporan, dan gate CVE tidak dilonggarkan. Tidak ada VEX atau ignorelist. Keputusan policy owner diperlukan sebelum pengecualian apa pun; pekerjaan ini tidak membuat pengecualian tersebut.
+
+## Baseline terakhir yang selesai sebelum perubahan ini
 
 **PR #1 belum layak dirilis.** Keenam kandidat supported lulus build dan uji kompatibilitas native, termasuk curl yang benar-benar memakai Brotli 1.1.1. Namun setiap kandidat masih dilaporkan memiliki **348 HIGH + 6 CRITICAL**, serta CVE-2026-111497 berstatus vendor-unfixed pada paket custom. Tidak ada temuan diabaikan, ambang diturunkan, PR di-merge, atau image/tag publik diterbitkan oleh pekerjaan ini.
 
