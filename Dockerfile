@@ -13,11 +13,13 @@ LABEL org.opencontainers.image.title="Pterodactyl Node.js ${NODE_MAJOR}" \
 # Keep the inherited Yolks tools. Never remove packages to make a scan pass.
 # Failed repository refreshes must stop the build rather than use stale indexes.
 USER root
+COPY scripts/update_supported_npm.js /usr/local/share/image-security/update_supported_npm.js
 RUN case "${APPLY_OS_UPDATES}" in \
       true) apt-get update --error-on=any \
          && DEBIAN_FRONTEND=noninteractive apt-get upgrade -y --no-remove \
          && apt-get clean \
-         && rm -rf /var/lib/apt/lists/* ;; \
+         && rm -rf /var/lib/apt/lists/* \
+         && node /usr/local/share/image-security/update_supported_npm.js ;; \
       false) ;; \
       *) echo "APPLY_OS_UPDATES must be true or false" >&2; exit 1 ;; \
     esac

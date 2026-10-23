@@ -51,6 +51,7 @@ jobs:
           python3 scripts/validate_egg.py
           bash -n scripts/smoke_test_image.sh scripts/install_trivy.sh
           node scripts/test_verify_runtime.js
+          node --check scripts/update_supported_npm.js
           python3 scripts/test_resolve_versions.py
           python3 scripts/test_cve_gate.py
           python3 scripts/test_os_update_policy.py
